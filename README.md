@@ -1,2 +1,2 @@
 # msgDSM7Module
-powershell Module für die SOAP Schnittstelle für Ivanti DSM
+powershell Module SOAP interface Ivanti DSM

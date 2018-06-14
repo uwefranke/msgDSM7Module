@@ -4,7 +4,7 @@
 ModuleToProcess = 'msgDSM7Module.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.0.80'
+ModuleVersion = '1.0.1.0'
 
 # ID used to uniquely identify this module
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -16,10 +16,10 @@ Author = 'Raymond von Wolff, Uwe Franke'
 CompanyName = 'msg services AG'
 
 # Copyright statement for this module
-Copyright = 'msg services AG (c) 2017. All rights reserved.'
+Copyright = 'msg services AG (c) 2018. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'msg powershell Module für die SOAP Schnittstelle für Heatsoftware DSM (Version 7.0 - 2016.2)'
+Description = 'msg powershell Module fï¿½r die SOAP Schnittstelle fï¿½r Heatsoftware DSM (Version 7.0 - 2016.2)'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'

@@ -95,6 +95,7 @@
 		V1.0.0.78 - 25.01.2018 - Uwe Franke - Anpassung 7.4.0 (New-DSM7Object, New-DSM7Computer, New-DSM7OrgTreeContainer, New-DSM7Policy, Copy-DSM7Policy und $global:DSM7CreationSource)
 		V1.0.0.79 - 24.05.2018 - Uwe Franke - Fehlerbehebung (Convert-DSM7PolicyInstacetoPSObject)
 		V1.0.0.80 - 31.05.2018 - Uwe Franke - Fehlerbehebung (Update-DSM7Policy)
+		V1.0.1.0 - 14.06.2018 - Uwe Franke - Fehlerbehebung (Convert-DSM7PolicyInstanceListtoPSObject, change Convert-DSM7PolicytoPSObject,Copy-DSM7Policy,New-DSM7PolicyObject, Convert-DSM7PolicyInstancetoPSObject) , Changelog.md , new Helpfiles *.md
 .LINK  
 		http://www.msg-services.de
 .LINK  
@@ -809,8 +810,10 @@ function Convert-DSM7PolicytoPSObject {
 		if ($AssignedObjectName -ne $AssignedObjectNameOld) {
 			$AssignedObjectName = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).Name 
 			$AssignedObjectUniqueId = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).UniqueId 
+			$AssignedObjectSchemaTag = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).SchemaTag
 		}
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectName -Value $AssignedObjectName
+		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectSchemaTag -Value $AssignedObjectSchemaTag
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectUniqueId -Value $AssignedObjectUniqueId 
 		$AssignedObjectNameOld = $AssignedObjectName
 	}
@@ -851,7 +854,7 @@ function Convert-DSM7PolicytoPSObject {
 	}
 	return $Raw
 }
-function Convert-DSM7PolicyInstacetoPSObject {
+function Convert-DSM7PolicyInstancetoPSObject {
 	[CmdletBinding()] 
 	param ( 
 		$DSM7Object,
@@ -938,7 +941,7 @@ function Convert-DSM7PolicyInstacetoPSObject {
 	}
 	return $Raw
 }
-function Convert-DSM7PolicyInstaceListtoPSObject {
+function Convert-DSM7PolicyInstanceListtoPSObject {
 	[CmdletBinding()] 
 	param ( $ObjectList,[switch]$resolvedName = $false)
 	if ($DSM7Version -gt "7.3.0") {
@@ -957,7 +960,7 @@ function Convert-DSM7PolicyInstaceListtoPSObject {
 	} 
 	$DSM7ObjectMembers = ($ObjectList|Get-Member -MemberType Properties).Name
 	foreach ($DSM7Object in $ObjectList) {
-		$DSM7Object = Convert-DSM7PolicyInstacetoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -DSM7Objects $DSM7Objects -DSM7Configs $DSM7Configs -resolvedName:$resolvedName
+		$DSM7Object = Convert-DSM7PolicyInstancetoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -DSM7Objects $DSM7Objects -DSM7Configs $DSM7Configs -resolvedName:$resolvedName
 		$DSM7ObjectList += @($DSM7Object)
 	}
 	return $DSM7ObjectList
@@ -4606,7 +4609,7 @@ function Update-DSM7Policy {
 				if ($Policy) {
 					if ($Policy.IsActive -and $ActivationStartDate) {
 						$Policy.IsActive = $false
-						$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $InstallationParametersOfSwSetComponents
+						$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $Policy.SwInstallationParameters
 					}
 					if ($ActivationStartDate) {
 						Write-Log 0 "Start Datum ist:($ActivationStartDate)" $MyInvocation.MyCommand
@@ -4641,7 +4644,7 @@ function Update-DSM7Policy {
 						}
 					}
 
-					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $InstallationParametersOfSwSetComponents
+					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $Policy.SwInstallationParameters
 					if ($Policy) {
 						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich geändert." $MyInvocation.MyCommand
 						return $true
@@ -5260,6 +5263,8 @@ function Copy-DSM7Policy {
 		[Parameter(Position=3, Mandatory=$false)]
 		[system.string]$ActivationStartDate,
 		[Parameter(Position=4, Mandatory=$false)]
+		[system.array]$SwSetComponentPolicyIDs,
+		[Parameter(Position=4, Mandatory=$false)]
 		[switch]$IsActiv = $false,
 		[Parameter(Position=5, Mandatory=$false)]
 		[switch]$IsUserPolicy = $false,
@@ -5292,6 +5297,16 @@ function Copy-DSM7Policy {
 				$StartDate = $StartDate + 36000000000
 			}
 			if ($TargetObject) {
+				if ($SwSetComponentPolicyIDs) {
+				$SwInstallationParameters=@{}
+				$i=0
+				foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
+					$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID	
+					$SwInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
+					
+				}
+					
+				}
 				$Policy = Get-DSM7PolicyObject -ID $ID
 				$Policy.IsActive = $IsActiv
 				if ($DSM7Version -gt "7.3.2") {
@@ -5311,7 +5326,7 @@ function Copy-DSM7Policy {
 				$PolicyTarget.TargetObjectID = $TargetObject.ID
 				$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
 
-				$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget
+				$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -InstallationParametersOfSwSetComponents $SwInstallationParameters
 				if ($result) {
 					$result = Convert-DSM7PolicytoPSObject ($result)
 					Write-Log 0 "Neue Policy ($($result.ID)) mit Ziel ($($TargetObject.Name)) erstellt." $MyInvocation.MyCommand
@@ -5351,7 +5366,15 @@ function New-DSM7PolicyObject {
 			$Webrequest.PolicyToCreate = New-Object $DSM7Types["PolicyToManage"]
 			$Webrequest.PolicyToCreate.Policy = $NewPolicy
 			$Webrequest.PolicyToCreate.Policy.TargetObjectList = $PolicyTarget
-			$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents = $InstallationParametersOfSwSetComponents
+			if ($InstallationParametersOfSwSetComponents) {
+			$i=0
+				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
+					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents+= New-Object $DSM7Types["SwSetComponentInstallationParameters"]
+					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents[$i].SwInstallationParameters = $InstallationParametersOfSwSetComponents[$key]
+					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
+					$i++
+				}				 
+			}			
 			if ($DSM7Version -gt "7.4.0") {
 				$Webrequest.PolicyToCreate.Policy.GenTypeData = new-object $DSM7Types["MdsGenType"]
 				$CreationSource = $MyInvocation.MyCommand.Module.Name
@@ -6231,7 +6254,7 @@ function Get-DSM7PolicyInstanceListByNode {
 			if ($result) {
 				Write-Log 0 "PolicyInstances am Object $ID!" $MyInvocation.MyCommand 
 
-				$result = Convert-DSM7PolicyInstaceListtoPSObject -resolvedName:$resolvedName $result 
+				$result = Convert-DSM7PolicyInstanceListtoPSObject -resolvedName:$resolvedName $result 
 				return $result
 			}
 			else {
@@ -6466,6 +6489,7 @@ function Get-DSM7SwInstallationConfigurationsObject {
 		return $false 
 	} 
 }
+Export-ModuleMember -Function  Get-DSM7SwInstallationConfigurationsObject
 ###############################################################################
 # DSM7 Funktionen - Software 
 function Get-DSM7SoftwarebyIDs {
@@ -8216,8 +8240,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUENtl4b7Dce7iw+zSkYFYUxpR
-# VD+gggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUpwVtNDBPxoeSPoHrNoOaqjZz
+# ++agggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -8232,9 +8256,9 @@ Export-ModuleMember -Function Get-DSM7User
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQV
-# KVr/P64PNbWWyDii4uF0n+vPfjANBgkqhkiG9w0BAQEFAASBgI9REDbL4jMQUHJz
-# FF2u/nAN59QJxR31dfotTdi6Vl+bBZ675SEQs9XvEjWmCa0546xIS1SaMhtlD6md
-# r1bqFKL7RS6hkso/ITKelPAYdC/0s3AGzS3EpCzJRosbkNtRIHGCIr/lNIOHv+/5
-# i21biXvCSPyjJx2pUuzLwedGWRqB
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBR3
+# 5UMNqT9NPjxaZ7ckz2FuCDsGyzANBgkqhkiG9w0BAQEFAASBgHOYVbah1o8qi1Rj
+# z80WI6VGUPWv4iqhEGm7XaRdHb/512PWBiSVfC2nGji7ZI/9CWP3AjXoW5IDkTrQ
+# 5sUaai3GV2S6zPz767HqJEZuE2tpbdHbHB24fenUBrKNa1GQCi8X8dU/dFic6CGN
+# evNV0GxUhGbjqaxKTmuajXEW1L8N
 # SIG # End signature block
