@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.0.1.0] - 2018-06-14
+## [1.0.1.0](/uwefranke/msgDSM7Module/releases/tag/1.0.0.80) - 2018-06-14
 
 ### Fixed
 
@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file.
 * Changelog.md
 * new Helpfiles /docs/*.md
 
-## [1.0.0.80](archive/1.0.0.80.zip) - 2018-05-31
+## [1.0.0.80](/uwefranke/msgDSM7Module/releases/tag/1.0.0.80) - 2018-05-31
 
 ### Fixed
 
