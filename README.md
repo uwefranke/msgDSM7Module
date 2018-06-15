@@ -23,7 +23,7 @@ powershell Module SOAP interface Ivanti DSM
 
 ## History
 
-[CHANGELOG.md](/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md)
+[CHANGELOG.md](/CHANGELOG.md)
 
 ## Credits
 
@@ -31,4 +31,4 @@ TODO: Write credits
 
 ## License
 
-[LICENSE](/uwefranke/msgDSM7Module/blob/master/LICENSE)
+[LICENSE](/LICENSE)
