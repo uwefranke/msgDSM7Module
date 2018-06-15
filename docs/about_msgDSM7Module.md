@@ -1,57 +1,39 @@
 ﻿# msgDSM7Module
+
 ## about_msgDSM7Module
 
 ```
-ABOUT TOPIC NOTE:
-The first header of the about topic should be the topic name.
-The second header contains the lookup name used by the help system.
+powershell Module for SOAP interface [Ivanti](https://www.ivanti.com) DSM
 
-IE:
-# Some Help Topic Name
-## SomeHelpTopicFileName
-
-This will be transformed into the text file
-as `about_SomeHelpTopicFileName`.
-Do not include file extensions.
-The second header should have no spaces.
 ```
 
 # SHORT DESCRIPTION
-{{ Short Description Placeholder }}
 
+powershell Module for SOAP interface [Ivanti](https://www.ivanti.com) DSM
 ```
-ABOUT TOPIC NOTE:
-About topics can be no longer than 80 characters wide when rendered to text.
-Any topics greater than 80 characters will be automatically wrapped.
-The generated about topic will be encoded UTF-8.
+to connect SOAP interface:
+http://bls.example.com:8080/blsAdministration/AdministrationService.asmx
 ```
 
 # LONG DESCRIPTION
-{{ Long Description Placeholder }}
 
-## Optional Subtopics
-{{ Optional Subtopic Placeholder }}
+## function in msgDSM7Module
+
+* DSM computer objects
+    * [Get-DSM7Computer](Get-DSM7Computer.md)
+    * [Get-DSM7ComputerList](Get-DSM7ComputerList.md)
+    * [Update-DSM7Computer](Update-DSM7Computer.md)
+    * [Install-DSM7Computer](Install-DSM7Computer.md)
+    * [New-DSM7Computer](New-DSM7Computer.md)
+    * [Remove-DSM7Computer](Remove-DSM7Computer.md)
+    * [Move-DSM7Computer](Move-DSM7Computer.md)
 
 # EXAMPLES
-{{ Code or descriptive examples of how to leverage the functions described. }}
 
 # NOTE
-{{ Note Placeholder - Additional information that a user needs to know.}}
 
 # TROUBLESHOOTING NOTE
-{{ Troubleshooting Placeholder - Warns users of bugs}}
-
-{{ Explains behavior that is likely to change with fixes }}
 
 # SEE ALSO
-{{ See also placeholder }}
-
-{{ You can also list related articles, blogs, and video URLs. }}
 
 # KEYWORDS
-{{List alternate names or titles for this topic that readers might use.}}
-
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
-- {{ Keyword Placeholder }}
