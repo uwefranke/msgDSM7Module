@@ -36,7 +36,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-* function Update-DSM7Policy 
+* function Update-DSM7Policy
 
 ## [1.0.0.79] - 2018-05-24
 
@@ -54,7 +54,7 @@ All notable changes to this project will be documented in this file.
 * function New-DSM7Policy (DSM 2018.1)
 * function Copy-DSM7Policy (DSM 2018.1)
 
-### Added 
+### Added
 
 * variable $global:DSM7CreationSource (DSM 2018.1)
 
@@ -81,7 +81,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.74] - 2017-11-17
 
-### Added 
+### Added
 
 * function Get-DSM7SoftwareCategoryList
 * function Get-DSM7SoftwareCategory
@@ -208,11 +208,11 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.56] - 2017-01-16
 
-### Added 
+### Added
 
 * function Get-DSM7User
 * function Add-DSM7ComputerToUser
-* function Remove-DSM7ComputerToUser 
+* function Remove-DSM7ComputerToUser
 
 ## [1.0.0.55] - 2017-01-10
 
@@ -247,7 +247,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.51] - 2016-08-26
 
-### Fixed 
+### Fixed
 
 * function Update-DSM7MembershipInGroups
 * function Update-DSM7MemberListOfGroup
@@ -290,7 +290,7 @@ All notable changes to this project will be documented in this file.
 * function Get-DSM7OrgTreeContainers
 * function Get-DSM7Objects
 
-### Fixed 
+### Fixed
 
 * function New-DSM7Policy
 
@@ -299,7 +299,6 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 * function Move-DSM7Group
-
 
 ## [1.0.0.44] - 2016-02-16
 
@@ -321,7 +320,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.42] - 2016-01-12
 
-### Changed 
+### Changed
 
 * support for version DSM 7.3
 * function Update-DSM7PolicyObject
@@ -370,7 +369,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.35] - 2015-08-19
 
-### Changed 
+### Changed
 
 * function Update-DSM7Policy
 
@@ -388,13 +387,13 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.32] - 2015-07-09
 
-### Fixed 
+### Fixed
 
 * function Get-DSM7SoftwareList
 
 ## [1.0.0.31] - 2015-07-08
 
-### Fixed 
+### Fixed
 
 * group functions with empty
 
@@ -452,7 +451,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.23] - 2015-03-10
 
-### Fixed 
+### Fixed
 
 * Credential
 
@@ -465,7 +464,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.21] - 2014-12-05
 
-### Added 
+### Added
 
 *function Copy-DSM7PolicyListNewTarget
 
@@ -501,7 +500,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.15] - 2014-05-26
 
-### Fixed 
+### Fixed
 
 * function Update-DSM7Computer retrun value
 
@@ -572,7 +571,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.0.3] - 2013-03-27
 
-### Changed 
+### Changed
 
 * all computer object functions
 
@@ -591,6 +590,3 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0.0] - 2013-01-10
 
 * Intitial
-
-
-
