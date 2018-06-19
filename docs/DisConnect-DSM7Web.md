@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgDSM7Module
+Module Name: msgDSM7module
 online version:
 schema: 2.0.0
 ---
@@ -13,7 +13,7 @@ Verbindung trennen.
 ## SYNTAX
 
 ```
-DisConnect-DSM7Web
+DisConnect-DSM7Web [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -27,6 +27,9 @@ DisConnect-DSM7Web
 ```
 
 ## PARAMETERS
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

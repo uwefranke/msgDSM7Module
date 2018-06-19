@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgDSM7Module
+Module Name: msgDSM7module
 online version:
 schema: 2.0.0
 ---
@@ -14,8 +14,8 @@ schema: 2.0.0
 
 ```
 Copy-DSM7Policy [-ID] <Int32> [[-TargetID] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
- [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy] [-IsUserPolicyCurrentComputer]
- [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [<CommonParameters>]
+ [[-ActivationStartDate] <String>] [[-SwSetComponentPolicyIDs] <Array>] [-IsActiv] [-IsUserPolicy]
+ [-IsUserPolicyCurrentComputer] [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -110,6 +110,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -SwSetComponentPolicyIDs
+{{Fill SwSetComponentPolicyIDs Description}}
+
+```yaml
+Type: Array
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -IsActiv
 {{Fill IsActiv Description}}
 
@@ -186,8 +201,7 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
-For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
