@@ -4,7 +4,7 @@
 ModuleToProcess = 'msgDSM7Module.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1.0'
+ModuleVersion = '1.0.1.1'
 
 # ID used to uniquely identify this module
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'

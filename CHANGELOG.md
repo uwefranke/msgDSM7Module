@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 * function New-DSM7PolicyObject
 
+## [1.0.1.1] - 2018-06-19
+
+### Changed
+
+* help files and Changelog.md
+
 ## [1.0.1.0] - 2018-06-14
 
 ### Fixed
@@ -36,7 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-* function Convert-DSM7PolicyInstacetoPSObject proerty AssignedObjectID change since DSM 2016.2
+* function Convert-DSM7PolicyInstacetoPSObject property AssignedObjectID change since DSM 2016.2
 
 ## [1.0.0.78] - 2018-01-25
 
@@ -324,47 +330,265 @@ All notable changes to this project will be documented in this file.
 * function Update-DSM7PolicyInstances
 * function Install-DSM7ReinstallComputer
 
-## [1.0.0.41] - 2015-
-## [1.0.0.40] - 2015-
-## [1.0.0.39] - 2015-
-## [1.0.0.38] - 2015-
-## [1.0.0.37] - 2015-
-## [1.0.0.36] - 2015-
-## [1.0.0.35] - 2015-
-## [1.0.0.34] - 2015-
-## [1.0.0.33] - 2015-
-## [1.0.0.32] - 2015-
-## [1.0.0.31] - 2015-
-## [1.0.0.30] - 2015-
-## [1.0.0.29] - 2015-
-## [1.0.0.28] - 2015-
-## [1.0.0.27] - 2015-
-## [1.0.0.26] - 2015-
-## [1.0.0.25] - 2015-
-## [1.0.0.24] - 2015-
-## [1.0.0.23] - 2015-
-## [1.0.0.22] - 2015-
-## [1.0.0.21] - 2014-
-## [1.0.0.20] - 2014-
-## [1.0.0.19] - 2014-
-## [1.0.0.18] - 2014-
-## [1.0.0.17] - 2014-
-## [1.0.0.16] - 2014-
-## [1.0.0.15] - 2014-
-## [1.0.0.14] - 2014-
-## [1.0.0.12] - 2013-
-## [1.0.0.11] - 2013-
-## [1.0.0.10] - 2013-
-## [1.0.0.9] - 2013-
-## [1.0.0.8] - 2013-
-## [1.0.0.7] - 2013-
-## [1.0.0.6] - 2013-
-## [1.0.0.5] - 2013-
-## [1.0.0.4] - 2013-
-## [1.0.0.3] - 2013-
-## [1.0.0.2] - 2013-
-## [1.0.0.1] - 2013-
-## [1.0.0.0] - 2013-01-17
+## [1.0.0.41] - 2015-11-12
+
+### Changed
+
+* function Copy-DSM7PolicyListNewTarget
+* function Copy-DSM7Policy
+
+## [1.0.0.40] - 2015-11-12
+
+### Changed
+
+* function Write-Host for Ochestrator
+* function Update-DSM7PolicyInstances
+
+## [1.0.0.39] - 2015-10-27
+
+### Changed
+
+* function Remove-DSM7Policy
+
+## [1.0.0.38] - 2015-09-30
+
+### Changed
+
+* function Get-DSM7Object
+
+## [1.0.0.37] - 2015-09-23
+
+### Changed
+
+* for DSM CallScript
+
+## [1.0.0.36] - 2015-08-25
+
+### Added
+
+* function Confirm-Connect
+
+## [1.0.0.35] - 2015-08-19
+
+### Changed 
+
+* function Update-DSM7Policy
+
+## [1.0.0.34] - 2015-08-10
+
+### Changed
+
+* help for group functions
+
+## [1.0.0.33] - 2015-07-28
+
+### Changed
+
+* function New-DSM7Computer
+
+## [1.0.0.32] - 2015-07-09
+
+### Fixed 
+
+* function Get-DSM7SoftwareList
+
+## [1.0.0.31] - 2015-07-08
+
+### Fixed 
+
+* group functions with empty
+
+## [1.0.0.30] - 2015-06-19
+
+### Added
+
+* function Update-DSM7Software
+
+## [1.0.0.29] - 2015-06-17
+
+### Added
+
+* new objects version DSM 7.2.3
+* function Get-DSM7GroupMembers replaced Get-DSM7ComputerGroupMembers
+* function Get-DSM7ListOfMemberships replaced Get-DSM7ComputerInGroups
+* function Get-DSM7GroupMembers replaced Get-DSM7ExternalGroupMembers
+* function Update-DSM7MembershipInGroups
+* function Update-DSM7MemberListOfGroup
+
+## [1.0.0.28] - 2015-06-08
+
+### Fixed
+
+* function Get-DSM7Group
+
+### Added
+
+* function Connect-DSM7WebRandom
+
+## [1.0.0.27] - 2015-06-05
+
+### Fixed
+
+* function Connect-DSM7Web
+
+## [1.0.0.26] - 2015-03-19
+
+### Added
+
+* function Confirm-Creds
+* function Convert-ArrayToHash
+
+## [1.0.0.25] - 2015-03-12
+
+### Fixed
+
+* Powershell version required, error with array
+
+## [1.0.0.24] - 2015-03-11
+
+### Fixed
+
+* LDAPPATH
+
+## [1.0.0.23] - 2015-03-10
+
+### Fixed 
+
+* Credential
+
+## [1.0.0.22] - 2015-02-20
+
+### Added
+
+* function PSCredential
+* function Get-DSM7ExternalGroupMembers
+
+## [1.0.0.21] - 2014-12-05
+
+### Added 
+
+*function Copy-DSM7PolicyListNewTarget
+
+## [1.0.0.20] - 2014-11-07
+
+### Added
+
+* function Update-DSM7Group
+
+## [1.0.0.19] - 2014-10-22
+
+### Added
+
+* function Remove-DSM7PolicyInstance
+
+## [1.0.0.18] - 2014-09-24
+
+### Added
+
+* function Get-DSM7PolicyListByTarget
+
+## [1.0.0.17] - 2014-07-29
+
+### Added
+
+* object PolicyInstance
+
+## [1.0.0.16] - 2014-05-27
+
+### Changed
+
+* function Get-DSM7ComputerInGroups
+
+## [1.0.0.15] - 2014-05-26
+
+### Fixed 
+
+* function Update-DSM7Computer retrun value
+
+## [1.0.0.14] - 2014-05-26
+
+### Fixed
+
+* function Update-DSM7Computer - value description
+
+## [1.0.0.12] - 2013-06-17
+
+### Added
+
+* function Get-DSM7SwInstallationParamDefinitions
+
+## [1.0.0.11] - 2013-06-17
+
+### Changed
+
+* function Move-DSM7Computer
+
+## [1.0.0.10] - 2013-05-23
+
+### Added
+
+* function Get-DSM7PolicyStatisticsByTarget
+
+## [1.0.0.9] - 2013-04-22
+
+### Changed
+
+* function Get-DSM7SoftwareList
+
+## [1.0.0.8] - 2013-04-09
+
+### Fixed
+
+* function Get-DSM7SoftwareList
+
+## [1.0.0.7] - 2013-04-03
+
+### Added
+
+* function Update-DSM7Group
+* function Move-DSM7Group
+
+## [1.0.0.6] - 2013-04-02
+
+### Fixed
+
+* time offset
+
+## [1.0.0.5] - 2013-03-28
+
+### Changed
+
+* all group functions
+
+### Added
+
+* function New-DSM7Group
+
+## [1.0.0.4] - 2013-03-27
+
+### Changed
+
+* all container functions
+
+## [1.0.0.3] - 2013-03-27
+
+### Changed 
+
+* all computer object functions
+
+## [1.0.0.2] - 2013-03-26
+
+### Added
+
+* structurobjects
+
+## [1.0.0.1] - 2013-03-25
+
+### Fixed
+
+* objectlist
+
+## [1.0.0.0] - 2013-01-10
 
 * Intitial
 

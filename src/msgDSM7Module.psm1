@@ -6,96 +6,12 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.0.79
+	Version		: 1.0.1.1
     Requires	: PowerShell V3 CTP3  
-	History		:
-		V1.0.0.0 - 10.01.2013 - Uwe Franke - Intitial
-		V1.0.0.1 - 25.03.2013 - Uwe Franke - Fehlerbereinigung (Objectlist) 
-		V1.0.0.2 - 26.03.2013 - Uwe Franke - Strukturojekte vervollständigt
-		V1.0.0.3 - 27.03.2013 - Uwe Franke - Computer Funktionen überarbeitet
-		V1.0.0.4 - 27.03.2013 - Uwe Franke - Container Funktionen überarbeitet
-		V1.0.0.5 - 28.03.2013 - Uwe Franke - Gruppen Funktionen überarbeitet, neu New-DSM7Group
-		V1.0.0.6 - 02.04.2013 - Uwe Franke - Fehlerbereinigung (Sommerzeit) 
-		V1.0.0.7 - 03.04.2013 - Uwe Franke - neu Update-DSM7Group, Move-DSM7Group
-		V1.0.0.8 - 09.04.2013 - Uwe Franke - Fehlerbereinigung (Get-DSM7SoftwareList)
-		V1.0.0.9 - 22.04.2013 - Uwe Franke - Erweiterung (Get-DSM7SoftwareList)
-		V1.0.0.10 - 23.05.2013 - Uwe Franke - Erweiterung (Get-DSM7PolicyStatisticsByTarget)
-		V1.0.0.11 - 17.06.2013 - Uwe Franke - Ueberarbeitung (Move-DSM7Computer)
-		V1.0.0.12 - 17.06.2013 - Uwe Franke - Erweiterung (Get-DSM7SwInstallationParamDefinitions)
-		V1.0.0.14 - 26.05.2014 - Uwe Franke - Fehlerbereinigung Description(Update-DSM7Computer)
-		V1.0.0.15 - 26.05.2014 - Uwe Franke - Fehlerbereinigung return Wert(Update-DSM7Computer)
-		V1.0.0.16 - 27.05.2014 - Uwe Franke - Ueberarbeitung (Get-DSM7ComputerInGroups)
-		V1.0.0.17 - 29.07.2014 - Uwe Franke - Erweiterung PolicyInstance
-		V1.0.0.18 - 24.09.2014 - Uwe Franke - Erweiterung Ueberarbeitung (Get-DSM7PolicyListByTarget)
-		V1.0.0.19 - 22.10.2014 - Uwe Franke - Erweiterung Ueberarbeitung (Remove-DSM7PolicyInstance)
-		V1.0.0.20 - 07.11.2014 - Uwe Franke - Erweiterung Ueberarbeitung (Update-DSM7Group)
-		V1.0.0.21 - 05.12.2014 - Uwe Franke - Erweiterung Ueberarbeitung (Copy-DSM7PolicyListNewTarget)
-		V1.0.0.22 - 20.02.2015 - Uwe Franke - Erweiterung PSCredential, Get-DSM7ExternalGroupMembers 
-		V1.0.0.23 - 10.03.2015 - Uwe Franke - Fehlerbereinigung Credential
-		V1.0.0.24 - 11.03.2015 - Uwe Franke - Fehlerbereinigung LDAPPATH
-		V1.0.0.25 - 12.03.2015 - Uwe Franke - Powershell Version Abfrage, wegen Fehler mit Array
-		V1.0.0.26 - 19.03.2015 - Uwe Franke - Erweiterung Confirm-Creds, Convert-ArrayToHash
-		V1.0.0.27 - 05.06.2015 - Uwe Franke - Fehlerbereinigung Connect-DSM7Web
-		V1.0.0.28 - 08.06.2015 - Uwe Franke - Fehlerbereinigung Get-DSM7Group, Neue Funktion Connect-DSM7WebRandom
-		V1.0.0.29 - 17.06.2015 - Uwe Franke - Get-DSM7ComputerGroupMembers durch Get-DSM7GroupMembers ersetzt 
-											  Get-DSM7ComputerInGroups durch Get-DSM7ListOfMemberships ersetzt
-											  Get-DSM7ExternalGroupMembers durch Get-DSM7GroupMembers ersetzt
-											  neue Objekte ab Version 7.2.3
-											  neue Funktion Update-DSM7MembershipInGroups
-											  neue Funktion Update-DSM7MemberListOfGroup
-		V1.0.0.30 - 19.06.2015 - Uwe Franke - Fehlerbereinigung, neue Funktion Update-DSM7Software, alte Funktionen überarbeitet
-		V1.0.0.31 - 08.07.2015 - Uwe Franke - Fehlerbereinigung Gruppen Funktionen - Wenn Gruppe leer oder Computer in keiner Gruppe jetzt mit richtigem Ergebnis
-		V1.0.0.32 - 09.07.2015 - Uwe Franke - Fehlerbereinigung Get-DSM7SoftwareList 
-		V1.0.0.33 - 28.07.2015 - Uwe Franke - Erweiterung Ueberarbeitung New-DSM7Computer
-		V1.0.0.34 - 10.08.2015 - Uwe Franke - Ueberarbeitet Hilfe für Gruppen Funktionen
-		V1.0.0.35 - 19.08.2015 - Uwe Franke - Ueberarbeitet Update-DSM7Policy
-		V1.0.0.36 - 25.08.2015 - Uwe Franke - Teste auf Verbindung (Confirm-Connect)
-		V1.0.0.37 - 23.09.2015 - Uwe Franke - Anpassung für DSM CallScript
-		V1.0.0.38 - 30.09.2015 - Uwe Franke - Anpassung Get-DSM7Object
-		V1.0.0.39 - 27.10.2015 - Uwe Franke - Anpassung Remove-DSM7Policy
-		V1.0.0.40 - 12.11.2015 - Uwe Franke - Anpassung Write-Host geändert für Ochestrator, Update-DSM7PolicyInstances
-		V1.0.0.41 - 12.11.2015 - Uwe Franke - Erweiterung Ueberarbeitung (Copy-DSM7PolicyListNewTarget Copy-DSM7Policy)
-		V1.0.0.42 - 12.01.2016 - Uwe Franke - Anpassen an Version 7.3 Update-DSM7PolicyObject, Remove-DSM7PolicyObject, New-DSM7Policy, Update-DSM7PolicyInstances, Install-DSM7ReinstallComputer und Fehlerbehebung
-		V1.0.0.43 - 27.01.2016 - Uwe Franke - Fehlerbereinigung Update-DSM7PolicyInstances, neue Funktion Get-DSM7SwInstallationConfigurations
-		V1.0.0.44 - 16.02.2016 - Uwe Franke - Ueberarbeitung (Update-DSM7Policy, Get-DSM7Policy, Convert-DSM7PolicytoPSObject)
-		V1.0.0.45 - 17.02.2016 - Uwe Franke - neue Funktion  (Move-DSM7Group)
-		V1.0.0.46 - 18.02.2016 - Uwe Franke - neue Funktion  (Get-DSM7OrgTreeContainers, Get-DSM7Objects) Fehlerbereinigung (New-DSM7Policy)
-		V1.0.0.47 - 01.03.2016 - Uwe Franke - Fehlerbereinigung (Remove-DSM7Policy, Get-DSM7Group)
-		V1.0.0.48 - 23.03.2016 - Uwe Franke - Fehlerbereinigung (Convert-DSM7PolicyListtoPSObject)
-		V1.0.0.49 - 08.08.2016 - Uwe Franke - neue Funktion Remove-Log, Fehlerbereinigung (Get-DSM7SoftwareList, Get-DSM7ComputerList) 
-		V1.0.0.50 - 25.08.2016 - Uwe Franke - Fehlerbereinigung (Get-DSM7SoftwareList, Get-DSM7ComputerList) 
-		V1.0.0.51 - 26.08.2016 - Uwe Franke - Fehlerbereinigung (Update-DSM7MembershipInGroups, Update-DSM7MemberListOfGroup)
-		V1.0.0.52 - 24.11.2016 - Uwe Franke - Fehlerbereinigung (Convert-DSM7PolicyInstaceListtoPSObject - Deny Policy haben keine Konfig)
-		V1.0.0.53 - 15.12.2016 - Uwe Franke - Anpassen an Version 7.3.2 (Get-DSM7GroupMembersObject)
-		V1.0.0.54 - 20.12.2016 - Uwe Franke - neue Funktion (Get-DSM7VariableGroups, Get-DSM7ResolveVariablesForTarget, Set-DSM7VariablesOnTarget, Remove-DSM7VariablesOnTarget)
-		V1.0.0.55 - 10.01.2017 - Uwe Franke - Anpassen an Version 7.3.2 und Fehlerbereinigung (Get-DSM7AssociationsObjectchemaList, Get-DSM7AssociationList, New-DSM7Association)
-		V1.0.0.56 - 16.01.2017 - Uwe Franke - neue Funktionen (Get-DSM7User, Add-DSM7ComputerToUser,Remove-DSM7ComputerToUser )
-		V1.0.0.57 - 18.01.2017 - Uwe Franke - Fehlerbehebung Versionsabhänigkeiten
-		V1.0.0.58 - 20.01.2017 - Uwe Franke - neue Funktionen (Get-DSM7SoftwareCategory,New-DSM7SoftwareCategory,Update-DSM7SoftwareCategory,Remove-DSM7SoftwareCategory,Remove-DSM7Group)
-											  Anpassung für SwCategory (Get-DSM7GroupMembers, Get-DSM7ListOfMemberships, Update-DSM7MembershipInGroups, Update-DSM7MemberListOfGroup)
-		V1.0.0.59 - 25.01.2017 - Uwe Franke - Fehlerbehebung (Get-DSM7ObjectList)
-		V1.0.0.60 - 27.01.2017 - Uwe Franke - Fehlerbehebung (Convert-DSM7PolicyInstaceListtoPSObject)
-		V1.0.0.61 - 30.01.2017 - Uwe Franke - Fehlerbehebung (Add-DSM7TargetToPolicy, New-DSM7Policy) und Help Bereinigung
-		V1.0.0.62 - 10.03.2017 - Uwe Franke - Fehlerbehebung (Get-DSM7ComputerList) und Version 2016.2.1
-		V1.0.0.63 - 17.03.2017 - Uwe Franke - Fehlerbehebung (Get-DSM7AssociationList) 
-		V1.0.0.64 - 30.03.2017 - Uwe Franke - Erweiterung Get-DSM7ObjectList
-		V1.0.0.65 - 03.05.2017 - Uwe Franke - neue Funktion (remove-DSM7TargetFromPolicy)
-		V1.0.0.66 - 09.06.2017 - Uwe Franke - Erweiterung (Update-DSM7Object, Connect-DSM7Web)
-		V1.0.0.67 - 12.06.2017 - Uwe Franke - Fehlerbehebung (DisConnect-DSM7Web)
-		V1.0.0.68 - 14.06.2017 - Uwe Franke - Fehlerbehebung (New-DSM7Policy, Remove-DSM7PolicyFromTarget)
-		V1.0.0.69 - 19.06.2017 - Uwe Franke - Fehlerbehebung (Update-DSM7Object)
-		V1.0.0.70 - 11.07.2017 - Uwe Franke - Export Get-DSM7LADPPath
-		V1.0.0.71 - 16.08.2017 - Uwe Franke - Erweiterung New-DSM7SoftwareCategory mit APM
-		V1.0.0.72 - 31.08.2017 - Uwe Franke - Fehlerbehebung (Update-DSM7Software)
-		V1.0.0.73 - 14.11.2017 - Uwe Franke - Fehlerbehebung (Connect-DSM7Web - reconnect)
-		V1.0.0.74 - 17.11.2017 - Uwe Franke - Erweiterung (Get-DSM7SoftwareCategoryList,Get-DSM7SoftwareCategory,New-DSM7SoftwareCategory,Update-DSM7SoftwareCategory)
-		V1.0.0.75 - 27.11.2017 - Uwe Franke - Erweiterung (Get-DSM7SoftwareCategoryList,Get-DSM7SoftwareList,Get-DSM7ComputerList,Get-DSM7ObjectList)
-		V1.0.0.76 - 13.12.2017 - Uwe Franke - Anpassung 7.3.3 (Get-DSM7GroupMembers)
-		V1.0.0.77 - 25.01.2018 - Uwe Franke - Anpassung 7.3.3 (Get-DSM7ServerInfo) für Installationsmodus
-		V1.0.0.78 - 25.01.2018 - Uwe Franke - Anpassung 7.4.0 (New-DSM7Object, New-DSM7Computer, New-DSM7OrgTreeContainer, New-DSM7Policy, Copy-DSM7Policy und $global:DSM7CreationSource)
-		V1.0.0.79 - 24.05.2018 - Uwe Franke - Fehlerbehebung (Convert-DSM7PolicyInstacetoPSObject)
-		V1.0.0.80 - 31.05.2018 - Uwe Franke - Fehlerbehebung (Update-DSM7Policy)
-		V1.0.1.0 - 14.06.2018 - Uwe Franke - Fehlerbehebung (Convert-DSM7PolicyInstanceListtoPSObject, change Convert-DSM7PolicytoPSObject,Copy-DSM7Policy,New-DSM7PolicyObject, Convert-DSM7PolicyInstancetoPSObject) , Changelog.md , new Helpfiles *.md
+	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
+	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
+.LINK  
+		https://github.com/uwefranke/msgDSM7Module
 .LINK  
 		http://www.msg-services.de
 .LINK  
@@ -8240,8 +8156,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUpwVtNDBPxoeSPoHrNoOaqjZz
-# ++agggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUNr8n0tr+pxMgI/vP12GYi+zh
+# sBKgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -8256,9 +8172,9 @@ Export-ModuleMember -Function Get-DSM7User
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBR3
-# 5UMNqT9NPjxaZ7ckz2FuCDsGyzANBgkqhkiG9w0BAQEFAASBgHOYVbah1o8qi1Rj
-# z80WI6VGUPWv4iqhEGm7XaRdHb/512PWBiSVfC2nGji7ZI/9CWP3AjXoW5IDkTrQ
-# 5sUaai3GV2S6zPz767HqJEZuE2tpbdHbHB24fenUBrKNa1GQCi8X8dU/dFic6CGN
-# evNV0GxUhGbjqaxKTmuajXEW1L8N
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT8
+# 3fIDzhK9k213DayCHobnEsJISzANBgkqhkiG9w0BAQEFAASBgGlYJ+JKyydvpUjZ
+# hhRe81JITMoNAdqZeGM7C2QQE3n09Zln/OWMNmukisL5tNOp6G/J9TZ+vj4qyD/X
+# U+80EDRAGT0rJRuacWi3sdFSiLU4JdDueCpNdqzypO2DlQpvCIvk4g7ZdCcoOM1l
+# bDj2ff8owZh2P3v4yvFPCMoL2a4e
 # SIG # End signature block
