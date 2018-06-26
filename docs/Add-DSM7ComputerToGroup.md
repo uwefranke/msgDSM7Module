@@ -1,7 +1,7 @@
 ---
 external help file: msgDSM7Module-help.xml
 Module Name: msgdsm7module
-online version:
+online version: https://github.com/uwefranke/msgDSM7Module/edit/master/docs/Add-DSM7ComputerToGroup.md
 schema: 2.0.0
 ---
 
