@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgDSM7module
+Module Name: msgdsm7module
 online version:
 schema: 2.0.0
 ---
@@ -12,7 +12,7 @@ schema: 2.0.0
 
 ## SYNTAX
 
-```
+```powershell
 Add-DSM7ComputerToGroup [[-Name] <String>] [[-LDAPPath] <String>] [[-GroupName] <String>]
  [[-GroupLDAPPath] <String>] [<CommonParameters>]
 ```
@@ -23,6 +23,7 @@ Add-DSM7ComputerToGroup [[-Name] <String>] [[-LDAPPath] <String>] [[-GroupName] 
 ## EXAMPLES
 
 ### Example 1
+
 ```powershell
 PS C:\> {{ Add example code here }}
 ```
@@ -92,7 +93,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

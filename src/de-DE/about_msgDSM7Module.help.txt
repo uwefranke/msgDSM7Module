@@ -1,0 +1,160 @@
+﻿TOPIC
+    about_msgdsm7module
+
+    powershell Module for SOAP interface
+    Ivanti
+    DSM
+
+SHORT DESCRIPTION
+    powershell Module for SOAP interface
+    Ivanti
+    DSM
+
+    to connect SOAP interface:
+    http://bls.example.com:8080/blsAdministration/AdministrationService.asmx
+
+LONG DESCRIPTION
+EXAMPLE
+    PS> Connect-DSM7Web -WebServer <BLSServer> -UseDefaultCredential
+    PS> New-DSM7Computer -Name <Computername> -LDAPPath "Managed Users & Computers/OU1/OU2" -InitialMACAddress "0123456789Ac" -Values @("Computer.ComputerType=Server:String","Description=Test123","CustomInventory.Patchlink=1")
+    PS> Install-DSM7Computer -Name <Computername> -UpgradePolicyInstances -RecalculateInstallationOrder -UpdatePolicyInstancesActive
+
+NOTE
+TROUBLESHOOTING NOTE
+SEE ALSO
+functions in msgDSM7Module
+    COMMON FUNCTIONS
+    *
+    Write-Log
+    *
+    Remove-Log
+    *
+    Confirm-Creds
+
+    DSM CONNECT
+    *
+    Connect-DSM7Web
+    *
+    Connect-DSM7WebRandom
+    *
+    DisConnect-DSM7Web
+
+    DSM OBJECTS
+    *
+    Get-DSM7ObjectList
+    *
+    Get-DSM7Object
+    *
+    Get-DSM7Objects
+
+    DSM COMPUTER OBJECTS
+    *
+    Get-DSM7ComputerList
+    *
+    Get-DSM7Computer
+    *
+    Update-DSM7Computer
+    *
+    Install-DSM7Computer
+    *
+    New-DSM7Computer
+    *
+    Remove-DSM7Computer
+    *
+    Move-DSM7Computer
+
+    DSM GROUP OBJECTS
+    *
+    Get-DSM7Group
+    *
+    New-DSM7Group
+    *
+    Move-DSM7Group
+    *
+    Update-DSM7Group
+    *
+    Remove-DSM7Group
+    *
+    Get-DSM7GroupMembers
+    *
+    Get-DSM7ListOfMemberships
+    *
+    Add-DSM7ComputerToGroup
+    *
+    Remove-DSM7ComputerFromGroup
+
+    DSM POLICY OBJECTS
+    *
+    Get-DSM7PolicyList
+    *
+    Get-DSM7Policy
+    *
+    Remove-DSM7Policy
+    *
+    New-DSM7Policy
+    *
+    Add-DSM7PolicyToTarget
+    *
+    Move-DSM7PolicyToTarget
+    *
+    Update-DSM7Policy
+    *
+    Get-DSM7PolicyListByTarget
+    *
+    Get-DSM7PolicyListByAssignedSoftware
+    *
+    Copy-DSM7PolicyListNewTarget
+    *
+    Get-DSM7PolicyStatisticsByTarget
+    *
+    Get-DSM7PolicyStatistics
+
+    DSM POLICY INSTANCE OBJECTS
+    *
+    Get-DSM7PolicyInstanceCountByPolicy
+    *
+    Get-DSM7PolicyInstanceListByNode
+    *
+    Update-DSM7PolicyInstance
+
+    DSM SOFTWARE OBJECTS
+    *
+    Get-DSM7SoftwareList
+    *
+    Get-DSM7SoftwareIDs
+    *
+    Get-DSM7Software
+    *
+    Update-DSM7Software
+    *
+    Get-DSM7SoftwareCategoryList
+    *
+    Get-DSM7SoftwareCategory
+    *
+    New-DSM7SoftwareCategory
+    *
+    Update-DSM7SoftwareCategory
+    *
+    Remove-DSM7SoftwareCategory
+    *
+    Get-DSM7GroupMembers
+    *
+    Get-DSM7ListOfMemberships
+    *
+    Update-DSM7MembershipInGroups
+    *
+    Update-DSM7MemberListOfGroup
+
+    DSM ORGTREECONTAINERS
+    *
+    Get-DSM7OrgTreeContainer
+    *
+    New-DSM7OrgTreeContainer
+    *
+    Move-DSM7OrgTreeContainer
+    *
+    Remove-DSM7OrgTreeContainer
+    *
+    Update-DSM7OrgTreeContainer
+
+KEYWORDS

@@ -5,26 +5,28 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-DSM7PolicyStatisticsByPolicies
+# Get-DSM7SwInstallationConfigurationsObject
 
 ## SYNOPSIS
-Gibt eine Statistik von einer Software zurück.
+{{Fill in the Synopsis}}
 
 ## SYNTAX
 
 ```
-Get-DSM7PolicyStatisticsByPolicies [-IDs] <Array> [<CommonParameters>]
+Get-DSM7SwInstallationConfigurationsObject [-IDs] <Array> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Gibt eine Statistik von einer Software zurück.
+{{Fill in the Description}}
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### Example 1
 ```
-Get-DSM7PolicyStatisticsByTarget -Name "Software" -LDAPPath "Global Software Library/SwFolder1/SwFolder2"
+PS C:\> {{ Add example code here }}
 ```
+
+{{ Add example description here }}
 
 ## PARAMETERS
 
@@ -37,7 +39,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 1
+Position: 0
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -49,33 +51,12 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
+### Keine
+
 ## OUTPUTS
+
+### System.Object
 
 ## NOTES
 
 ## RELATED LINKS
-
-[Get-DSM7PolicyList]()
-
-[Remove-DSM7Policy]()
-
-[New-DSM7Policy]()
-
-[Copy-DSM7Policy]()
-
-[Add-DSM7PolicyToTarget]()
-
-[Move-DSM7PolicyToTarget]()
-
-[Update-DSM7Policy]()
-
-[Get-DSM7PolicyListByTarget]()
-
-[Get-DSM7PolicyListByAssignedSoftware]()
-
-[Copy-DSM7PolicyListNewTarget]()
-
-[Get-DSM7PolicyStatisticsByTarget]()
-
-[Get-DSM7PolicyStatistics]()
-

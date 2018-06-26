@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.1
+	Version		: 1.0.1.2
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -6047,7 +6047,7 @@ function Get-DSM7ComputerMissingPatch {
 							$IDs += $Patch.TargetObjectID
 						}
 					} 
-					$result = Get-DSM7SoftwarebyIDs -IDs $IDs
+					$result = Get-DSM7SoftwareIDs -IDs $IDs
 					return $result
 				}
 				else {
@@ -6408,19 +6408,19 @@ function Get-DSM7SwInstallationConfigurationsObject {
 Export-ModuleMember -Function  Get-DSM7SwInstallationConfigurationsObject
 ###############################################################################
 # DSM7 Funktionen - Software 
-function Get-DSM7SoftwarebyIDs {
+function Get-DSM7SoftwareIDs {
 	<#
 	.SYNOPSIS
 		Gibt ein Software Objekte zurück.
 	.DESCRIPTION
 		Gibt ein Software Objekte zurück.
 	.EXAMPLE
-		Get-DSM7SoftwarebyIDs -IDs 12345,123456
+		Get-DSM7SoftwareIDs -IDs 12345,123456
 	.NOTES
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -6471,7 +6471,7 @@ function Get-DSM7SoftwarebyIDs {
 		} 
 	}
 }
-Export-ModuleMember -Function Get-DSM7SoftwarebyIDs
+Export-ModuleMember -Function Get-DSM7SoftwareIDs -Alias Get-DSM7SoftwarebyIDs
 function Get-DSM7Software {
 	<#
 	.SYNOPSIS
@@ -6484,7 +6484,7 @@ function Get-DSM7Software {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -6566,7 +6566,7 @@ function Update-DSM7Software {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -6655,7 +6655,7 @@ function Get-DSM7SoftwareList {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -6752,7 +6752,7 @@ function Get-DSM7SoftwareCategoryList {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -6852,7 +6852,7 @@ function Get-DSM7SoftwareCategory {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -6974,7 +6974,7 @@ function New-DSM7SoftwareCategory {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -7188,7 +7188,7 @@ function Update-DSM7SoftwareCategory {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -7346,7 +7346,7 @@ function Remove-DSM7SoftwareCategory {
 	.LINK
 		Get-DSM7SoftwareList
 	.LINK
-		Get-DSM7SoftwarebyIDs
+		Get-DSM7SoftwareIDs
 	.LINK
 		Get-DSM7Software
 	.LINK
@@ -8156,8 +8156,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUNr8n0tr+pxMgI/vP12GYi+zh
-# sBKgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUMtNDfD7bjSycMwjhLdBCfCgC
+# K4SgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -8172,9 +8172,9 @@ Export-ModuleMember -Function Get-DSM7User
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT8
-# 3fIDzhK9k213DayCHobnEsJISzANBgkqhkiG9w0BAQEFAASBgGlYJ+JKyydvpUjZ
-# hhRe81JITMoNAdqZeGM7C2QQE3n09Zln/OWMNmukisL5tNOp6G/J9TZ+vj4qyD/X
-# U+80EDRAGT0rJRuacWi3sdFSiLU4JdDueCpNdqzypO2DlQpvCIvk4g7ZdCcoOM1l
-# bDj2ff8owZh2P3v4yvFPCMoL2a4e
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTq
+# fak4/FLlUAk+Zk/b6JROXr/5hzANBgkqhkiG9w0BAQEFAASBgI1hYnrNkst1m/dD
+# RnkVJc4NnxLwhQbREMu3wtUdAXOAZxu+h7YINBJFOM0fQxywq2zj5BPHQNrDASDq
+# wIoYt+IfIGsA087Vt7EE9gMROrVyHGYHuhgBneb8oq3e5t3Jp9efDRSIaAIc6Xzn
+# bDkGRreRaoBIQT2QhCMfbOkyBmMu
 # SIG # End signature block

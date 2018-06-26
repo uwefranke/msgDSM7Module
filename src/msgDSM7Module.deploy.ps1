@@ -5,8 +5,6 @@
    Installiert Powershell Module msgDSM7Module
 .EXAMPLE
    msgDSM7Module.deploy.ps1 
-.EXAMPLE
-   msgDSM7Module.deploy.ps1 -nolink
 #>
 [CmdletBinding()]
 Param(
@@ -39,7 +37,8 @@ if (!(test-path "$destpath\$psmodule\de-DE")) {
 write-host "Kopiere Module nach ($destpath)."
 Copy-Item "$scriptpath\*.psd1" "$destpath\$psmodule" -Verbose:$VerbosePreference
 Copy-Item "$scriptpath\*.psm1" "$destpath\$psmodule" -Verbose:$VerbosePreference
-Copy-Item "$scriptpath\..\docs\*.md" "$destpath\$psmodule\de-DE" -Verbose:$VerbosePreference 
+Copy-Item "$scriptpath\de-DE\*.txt" "$destpath\$psmodule\de-DE" -Verbose:$VerbosePreference 
+Copy-Item "$scriptpath\de-DE\*.xml" "$destpath\$psmodule\de-DE" -Verbose:$VerbosePreference 
 
 $p = [Environment]::GetEnvironmentVariable("PSModulePath","Machine")
 if ($p -notlike "*$destpath*"){
@@ -47,25 +46,11 @@ if ($p -notlike "*$destpath*"){
 	$p += ";$destpath"
 	[Environment]::SetEnvironmentVariable("PSModulePath",$p,"Machine")
 }
-<#
-if (!$nolink) {
-	write-host "Erstelle Startmenü Eintrag."
-	$psmoduledir = "$env:ALLUSERSPROFILE\Microsoft\Windows\Start Menu\Programs\$($psmoduleget.CompanyName)"
-	if (!(test-path $psmoduledir)) {mkdir $psmoduledir -Verbose:$VerbosePreference| Out-Null}
-	$TargetFile = "$destpath\$psmodule\index.html"
-	$ShortcutFile = "$psmoduledir\Hilfe für $psmodule.lnk"
-	$WScriptShell = New-Object -ComObject WScript.Shell
-	$Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
-	$Shortcut.TargetPath = $TargetFile
-	$Shortcut.Save()
-}
-
-#>
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUW0Kw+T+83INcDWN8kJVv0jGK
-# NxOgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU6MeLrDg9mYXr6HNcKhQQD/3m
+# 7qygggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -80,9 +65,9 @@ if (!$nolink) {
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQg
-# NM/D4/SHYaxo/AgNiyaBpxnT+zANBgkqhkiG9w0BAQEFAASBgBuu18qycsgk7Esq
-# ZsfRIZOJu/o2Ebag67VSSNLzLHyi9yAOxgAWDsC+SzLveEEt1LpgYG0MGj+1eFBL
-# ut2ZYM7dSqhpNDafggQ6SQ4FBeQmLIIPRUdyvT4NOtbye0MSVC0SOKYSaj1niFUs
-# d7vyNREZq6dE/p+hY40oT7f+Yq/I
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTx
+# Cx8jDixQxxpWe3k1Cx4NSYMLGzANBgkqhkiG9w0BAQEFAASBgJ3GVqpxq08NYE1v
+# laKPTmXoa7XsQ0S42yXUkuBhbpHEG9U4+DQ43h3h3EskcZVZfP5Iow4Zt+jir3SH
+# 1Vr/wLYuKA7afEiFTY6ibcyg/96zUa41iYV2WMyzLA6LMTSV1ZBlTMEzajyN3ce3
+# K1bIXpRtNQu2J5SUteM9HHIebazI
 # SIG # End signature block

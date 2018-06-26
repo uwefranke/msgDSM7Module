@@ -1,29 +1,29 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgdsm7module
+Module Name: msgDSM7Module
 online version:
 schema: 2.0.0
 ---
 
-# Get-DSM7PolicyStatisticsByPolicies
+# Get-DSM7SoftwareIDs
 
 ## SYNOPSIS
-Gibt eine Statistik von einer Software zurück.
+Gibt ein Software Objekte zurück.
 
 ## SYNTAX
 
 ```
-Get-DSM7PolicyStatisticsByPolicies [-IDs] <Array> [<CommonParameters>]
+Get-DSM7SoftwareIDs [-IDs] <Object> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Gibt eine Statistik von einer Software zurück.
+Gibt ein Software Objekte zurück.
 
 ## EXAMPLES
 
 ### BEISPIEL 1
 ```
-Get-DSM7PolicyStatisticsByTarget -Name "Software" -LDAPPath "Global Software Library/SwFolder1/SwFolder2"
+Get-DSM7SoftwareIDs -IDs 12345,123456
 ```
 
 ## PARAMETERS
@@ -32,7 +32,7 @@ Get-DSM7PolicyStatisticsByTarget -Name "Software" -LDAPPath "Global Software Lib
 {{Fill IDs Description}}
 
 ```yaml
-Type: Array
+Type: Object
 Parameter Sets: (All)
 Aliases:
 
@@ -55,27 +55,29 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## RELATED LINKS
 
-[Get-DSM7PolicyList]()
+[Get-DSM7SoftwareList]()
 
-[Remove-DSM7Policy]()
+[Get-DSM7SoftwareIDs]()
 
-[New-DSM7Policy]()
+[Get-DSM7Software]()
 
-[Copy-DSM7Policy]()
+[Update-DSM7Software]()
 
-[Add-DSM7PolicyToTarget]()
+[Get-DSM7SoftwareCategoryList]()
 
-[Move-DSM7PolicyToTarget]()
+[Get-DSM7SoftwareCategory]()
 
-[Update-DSM7Policy]()
+[New-DSM7SoftwareCategory]()
 
-[Get-DSM7PolicyListByTarget]()
+[Update-DSM7SoftwareCategory]()
 
-[Get-DSM7PolicyListByAssignedSoftware]()
+[Remove-DSM7SoftwareCategory]()
 
-[Copy-DSM7PolicyListNewTarget]()
+[Get-DSM7GroupMembers]()
 
-[Get-DSM7PolicyStatisticsByTarget]()
+[Get-DSM7ListOfMemberships]()
 
-[Get-DSM7PolicyStatistics]()
+[Update-DSM7MembershipInGroups]()
+
+[Update-DSM7MemberListOfGroup]()
 

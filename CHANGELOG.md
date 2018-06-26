@@ -6,7 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-* function New-DSM7PolicyObject
+* function New-DSM7Policy
+
+## [1.0.1.2] - 2018-06-26
+
+### Changed
+
+* Get-DSM7SoftwareIDs
 
 ## [1.0.1.1] - 2018-06-19
 

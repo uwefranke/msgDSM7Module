@@ -4,7 +4,7 @@
 ModuleToProcess = 'msgDSM7Module.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1.1'
+ModuleVersion = '1.0.1.2'
 
 # ID used to uniquely identify this module
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -79,7 +79,34 @@ ModuleList = @()
 FileList = @()
 
 # Private data to pass to the module specified in ModuleToProcess
-PrivateData = ''
+PrivateData = @{
+
+    PSData = @{
+
+        # Tags applied to this module. These help with module discovery in online galleries.
+        # Tags = @()
+
+        # A URL to the license for this module.
+        LicenseUri = 'https://github.com/uwefranke/msgDSM7Module/blob/master/LICENSE'
+
+        # A URL to the main website for this project.
+        ProjectUri = 'https://github.com/uwefranke/msgDSM7Module'
+
+        # A URL to an icon representing this module.
+        # IconUri = ''
+
+        # ReleaseNotes of this module
+        ReleaseNotes = 'https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md'
+
+    } # End of PSData hashtable
+
+} # End of PrivateData hashtable
+
+# HelpInfo URI of this module
+HelpInfoURI = 'https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md'
+
+# Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
+# DefaultCommandPrefix = ''
 
 }
 # SIG # Begin signature block
