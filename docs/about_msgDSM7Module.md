@@ -20,13 +20,10 @@ http://bls.example.com:8080/blsAdministration/AdministrationService.asmx
 PS> Connect-DSM7Web -WebServer <BLSServer> -UseDefaultCredential
 PS> New-DSM7Computer -Name <Computername> -LDAPPath "Managed Users & Computers/OU1/OU2" -InitialMACAddress "0123456789Ac" -Values @("Computer.ComputerType=Server:String","Description=Test123","CustomInventory.Patchlink=1")
 PS> Install-DSM7Computer -Name <Computername> -UpgradePolicyInstances -RecalculateInstallationOrder -UpdatePolicyInstancesActive
+PS> DisConnect-DSM7Web
 ```
 
 # NOTE
-
-# TROUBLESHOOTING NOTE
-
-# SEE ALSO
 
 ## functions in msgDSM7Module
 
@@ -102,8 +99,8 @@ PS> Install-DSM7Computer -Name <Computername> -UpgradePolicyInstances -Recalcula
 * [New-DSM7SoftwareCategory](New-DSM7SoftwareCategory.md)
 * [Update-DSM7SoftwareCategory](Update-DSM7SoftwareCategory.md)
 * [Remove-DSM7SoftwareCategory](Remove-DSM7SoftwareCategory.md)
-* [Get-DSM7GroupMembers](Get-DSM7GroupMembers)
-* [Get-DSM7ListOfMemberships](Get-DSM7ListOfMemberships)
+* [Get-DSM7GroupMembers](Get-DSM7GroupMembers.md)
+* [Get-DSM7ListOfMemberships](Get-DSM7ListOfMemberships.md)
 * [Update-DSM7MembershipInGroups](Update-DSM7MembershipInGroups.md)
 * [Update-DSM7MemberListOfGroup](Update-DSM7MemberListOfGroup.md)
 
@@ -115,6 +112,9 @@ PS> Install-DSM7Computer -Name <Computername> -UpgradePolicyInstances -Recalcula
 * [Remove-DSM7OrgTreeContainer](Remove-DSM7OrgTreeContainer.md)
 * [Update-DSM7OrgTreeContainer](Update-DSM7OrgTreeContainer.md)
 
+# TROUBLESHOOTING NOTE
+
+# SEE ALSO
 
 # KEYWORDS
 
