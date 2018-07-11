@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 * function New-DSM7Policy
 
+## [1.0.1.3] - 2018-07-11
+
+### Fixed
+
+* msgDSM7Module.psd1
+
 ## [1.0.1.2] - 2018-06-26
 
 ### Changed

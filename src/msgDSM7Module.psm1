@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.2
+	Version		: 1.0.1.3
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -5180,15 +5180,15 @@ function Copy-DSM7Policy {
 		[system.string]$ActivationStartDate,
 		[Parameter(Position=4, Mandatory=$false)]
 		[system.array]$SwSetComponentPolicyIDs,
-		[Parameter(Position=4, Mandatory=$false)]
-		[switch]$IsActiv = $false,
 		[Parameter(Position=5, Mandatory=$false)]
-		[switch]$IsUserPolicy = $false,
+		[switch]$IsActiv = $false,
 		[Parameter(Position=6, Mandatory=$false)]
-		[switch]$IsUserPolicyCurrentComputer = $false,
+		[switch]$IsUserPolicy = $false,
 		[Parameter(Position=7, Mandatory=$false)]
-		[switch]$IsUserPolicyAllassociatedComputer = $false,
+		[switch]$IsUserPolicyCurrentComputer = $false,
 		[Parameter(Position=8, Mandatory=$false)]
+		[switch]$IsUserPolicyAllassociatedComputer = $false,
+		[Parameter(Position=9, Mandatory=$false)]
 		[switch]$JobPolicy = $false
 
 	)
@@ -8153,11 +8153,12 @@ function Get-DSM7User {
 } 
 Export-ModuleMember -Function Get-DSM7User
 
+
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUMtNDfD7bjSycMwjhLdBCfCgC
-# K4SgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUBuUD34RkddV3vqIOqRmyN1OG
+# qdegggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -8172,9 +8173,9 @@ Export-ModuleMember -Function Get-DSM7User
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTq
-# fak4/FLlUAk+Zk/b6JROXr/5hzANBgkqhkiG9w0BAQEFAASBgI1hYnrNkst1m/dD
-# RnkVJc4NnxLwhQbREMu3wtUdAXOAZxu+h7YINBJFOM0fQxywq2zj5BPHQNrDASDq
-# wIoYt+IfIGsA087Vt7EE9gMROrVyHGYHuhgBneb8oq3e5t3Jp9efDRSIaAIc6Xzn
-# bDkGRreRaoBIQT2QhCMfbOkyBmMu
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRk
+# yuuLU2gEIy2tjGN2Ohiw5SzS6zANBgkqhkiG9w0BAQEFAASBgCM83imQ1v2x2cHA
+# M8tUP2SFt2PKJmkMa7LxK0c4mRHPZpNqxeCyf1BLMpJKZscHtVAnG0ea/uUnDfGR
+# KanxNa5DJ+MbtuWUESDq7Nxx/yXmHstWy4PineauSvAqkHTHcMIyjvY+mJQNJslx
+# iRETZ8bWe871kWzabJfy/gRnMk0B
 # SIG # End signature block

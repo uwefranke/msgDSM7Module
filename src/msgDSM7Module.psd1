@@ -1,84 +1,127 @@
+#
+# Modulmanifest für das Modul "PSGet_msgDSM7Module"
+#
+# Generiert von: Uwe Franke
+#
+# Generiert am: 11.07.2018
+#
+
 @{
 
-# Script module or binary module file associated with this manifest
-ModuleToProcess = 'msgDSM7Module.psm1'
+# Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
+RootModule = 'msgDSM7Module.psm1'
 
-# Version number of this module.
-ModuleVersion = '1.0.1.2'
+# Die Versionsnummer dieses Moduls
+ModuleVersion = '1.0.1.3'
 
-# ID used to uniquely identify this module
+# ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
 
-# Author of this module
-Author = 'Raymond von Wolff, Uwe Franke'
+# Autor dieses Moduls
+Author = 'Uwe Franke'
 
-# Company or vendor of this module
+# Unternehmen oder Hersteller dieses Moduls
 CompanyName = 'msg services AG'
 
-# Copyright statement for this module
-Copyright = 'msg services AG (c) 2018. All rights reserved.'
+# Urheberrechtserklärung für dieses Modul
+Copyright = 'msg services AG (c) 20013-2018. All rights reserved.'
 
-# Description of the functionality provided by this module
-Description = 'msg powershell Module fï¿½r die SOAP Schnittstelle fï¿½r Heatsoftware DSM (Version 7.0 - 2016.2)'
+# Beschreibung der von diesem Modul bereitgestellten Funktionen
+Description = 'powershell Module for SOAP interface Ivanti(https://www.ivanti.com) DSM'
 
-# Minimum version of the Windows PowerShell engine required by this module
+# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
 PowerShellVersion = '3.0'
 
-# Name of the Windows PowerShell host required by this module
-PowerShellHostName = ''
+# Der Name des für dieses Modul erforderlichen Windows PowerShell-Hosts
+# PowerShellHostName = ''
 
-# Minimum version of the Windows PowerShell host required by this module
-PowerShellHostVersion = ''
+# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Hosts
+# PowerShellHostVersion = ''
 
-# Minimum version of the .NET Framework required by this module
+# Die für dieses Modul mindestens erforderliche Microsoft .NET Framework-Version
 DotNetFrameworkVersion = '2.0'
 
-# Minimum version of the common language runtime (CLR) required by this module
+# Die für dieses Modul mindestens erforderliche Version der CLR (Common Language Runtime)
 CLRVersion = '2.0.50727'
 
-# Processor architecture (None, X86, Amd64, IA64) required by this module
-ProcessorArchitecture = 'None'
+# Die für dieses Modul erforderliche Prozessorarchitektur ("Keine", "X86", "Amd64").
+# ProcessorArchitecture = ''
 
-# Modules that must be imported into the global environment prior to importing
-# this module
-RequiredModules = @()
+# Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden müssen
+# RequiredModules = @()
 
-# Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @()
+# Die Assemblys, die vor dem Importieren dieses Moduls geladen werden müssen
+# RequiredAssemblies = @()
 
-# Script files (.ps1) that are run in the caller's environment prior to
-# importing this module
-ScriptsToProcess = @()
+# Die Skriptdateien (PS1-Dateien), die vor dem Importieren dieses Moduls in der Umgebung des Aufrufers ausgeführt werden.
+# ScriptsToProcess = @()
 
-# Type files (.ps1xml) to be loaded when importing this module
-TypesToProcess = @()
+# Die Typdateien (.ps1xml), die beim Importieren dieses Moduls geladen werden sollen
+# TypesToProcess = @()
 
-# Format files (.ps1xml) to be loaded when importing this module
-FormatsToProcess = @()
+# Die Formatdateien (.ps1xml), die beim Importieren dieses Moduls geladen werden sollen
+# FormatsToProcess = @()
 
-# Modules to import as nested modules of the module specified in
-# ModuleToProcess
-NestedModules = @()
+# Die Module, die als geschachtelte Module des in "RootModule/ModuleToProcess" angegebenen Moduls importiert werden sollen.
+# NestedModules = @()
 
-# Functions to export from this module
-FunctionsToExport = '*'
+# Aus diesem Modul zu exportierende Funktionen
+FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-Creds', 
+               'Connect-DSM7Web', 'Connect-DSM7WebRandom', 'DisConnect-DSM7Web', 
+               'Get-DSM7ObjectList', 'Get-DSM7ObjectObject', 'Get-DSM7Object', 
+               'Get-DSM7Objects', 'Get-DSM7LDAPPath', 'Get-DSM7AssociationList', 
+               'Get-DSM7AssociationschemaList', 'New-DSM7Association', 
+               'Get-DSM7DisplayNameLists', 'Get-DSM7ComputerList', 
+               'Get-DSM7Computer', 'Update-DSM7Computer', 'Install-DSM7Computer', 
+               'New-DSM7Computer', 'Remove-DSM7Computer', 'Move-DSM7Computer', 
+               'Get-DSM7OrgTreeContainer', 'Get-DSM7OrgTreeContainers', 
+               'New-DSM7OrgTreeContainer', 'Move-DSM7OrgTreeContainer', 
+               'Update-DSM7OrgTreeContainer', 'Remove-DSM7OrgTreeContainer', 
+               'Get-DSM7Group', 'New-DSM7Group', 'Update-DSM7Group', 'Move-DSM7Group', 
+               'Remove-DSM7Group', 'Get-DSM7ComputerGroupMembers', 
+               'Get-DSM7ComputerInGroups', 'Get-DSM7ExternalGroupMembers', 
+               'Get-DSM7GroupMembers', 'Get-DSM7ListOfMemberships', 
+               'Update-DSM7MembershipInGroups', 'Update-DSM7MemberListOfGroup', 
+               'Add-DSM7ComputerToGroup', 'Remove-DSM7ComputerFromGroup', 
+               'Get-DSM7Policy', 'Update-DSM7Policy', 'Get-DSM7PolicyList', 
+               'Move-DSM7PolicyToTarget', 'Remove-DSM7PolicyFromTarget', 
+               'Add-DSM7PolicyToTarget', 'New-DSM7Policy', 'Copy-DSM7Policy', 
+               'Remove-DSM7Policy', 'Get-DSM7PolicyListByAssignedSoftware', 
+               'Get-DSM7PolicyListByTarget', 'Copy-DSM7PolicyListNewTarget', 
+               'Get-DSM7PolicyStatisticsByTarget', 'Get-DSM7PolicyStatistics', 
+               'Get-DSM7PolicyStatisticsByPolicies', 
+               'Get-DSM7ComputerMissingPatch', 
+               'Get-DSM7PolicyInstanceCountByPolicy', 
+               'Get-DSM7PolicyInstanceListByNode', 'Update-DSM7PolicyInstances', 
+               'Remove-DSM7PolicyInstance', 
+               'Get-DSM7SwInstallationConfigurationsObject', 'Get-DSM7SoftwareIDs', 
+               'Get-DSM7Software', 'Update-DSM7Software', 'Get-DSM7SoftwareList', 
+               'Get-DSM7SoftwareCategoryList', 'Get-DSM7SoftwareCategory', 
+               'New-DSM7SoftwareCategory', 'Update-DSM7SoftwareCategory', 
+               'Remove-DSM7SoftwareCategory', 'Get-DSM7ResolveVariablesForTarget', 
+               'Get-DSM7VariableGroups', 'Set-DSM7VariablesOnTarget', 
+               'Remove-DSM7VariablesOnTarget', 'Add-DSM7ComputerToUser', 
+               'Remove-DSM7ComputerToUser', 'Get-DSM7User'
 
-# Cmdlets to export from this module
+# Aus diesem Modul zu exportierende Cmdlets
 CmdletsToExport = '*'
 
-# Variables to export from this module
+# Die aus diesem Modul zu exportierenden Variablen
 VariablesToExport = '*'
 
-# Aliases to export from this module
-AliasesToExport = '*'
+# Aus diesem Modul zu exportierende Aliase
+AliasesToExport = 'Get-DSM7SoftwarebyIDs'
 
-# List of all modules packaged with this module
-ModuleList = @()
+# Aus diesem Modul zu exportierende DSC-Ressourcen
+# DscResourcesToExport = @()
 
-# List of all files packaged with this module
-FileList = @()
+# Liste aller Module in diesem Modulpaket
+# ModuleList = @()
 
-# Private data to pass to the module specified in ModuleToProcess
+# Liste aller Dateien in diesem Modulpaket
+# FileList = @()
+
+# Die privaten Daten, die an das in "RootModule/ModuleToProcess" angegebene Modul übergeben werden sollen. Diese können auch eine PSData-Hashtabelle mit zusätzlichen von PowerShell verwendeten Modulmetadaten enthalten.
 PrivateData = @{
 
     PSData = @{
@@ -98,39 +141,24 @@ PrivateData = @{
         # ReleaseNotes of this module
         ReleaseNotes = 'https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md'
 
+        # Prerelease string of this module
+        # Prerelease = ''
+
+        # Flag to indicate whether the module requires explicit user acceptance for install/update
+        # RequireLicenseAcceptance = $false
+
+        # External dependent modules of this module
+        # ExternalModuleDependencies = @()
+
     } # End of PSData hashtable
 
-} # End of PrivateData hashtable
+ } # End of PrivateData hashtable
 
-# HelpInfo URI of this module
+# HelpInfo-URI dieses Moduls
 HelpInfoURI = 'https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md'
 
-# Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
+# Standardpräfix für Befehle, die aus diesem Modul exportiert werden. Das Standardpräfix kann mit "Import-Module -Prefix" überschrieben werden.
 # DefaultCommandPrefix = ''
 
 }
-# SIG # Begin signature block
-# MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUklpI42nyKDv3tXqOH44HhIVf
-# 5EygggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
-# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
-# MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
-# IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
-# v0Lx3FIBWwSSu8g2pB3ye4VcqWWjFj3kGaUQZ7JNJcH/uy74jhtfmQgE2NnEbh1X
-# HM3gbSGyPBHsqSFLpTIqM0VTyOVJk3yB1qfIFxUguEZz87C2yZFFagXbwJHamXR7
-# LtB+yjARIrbMUf69c5FFMLS93aRg9cLsGJ3dy4fEVQIDAQABo3EwbzATBgNVHSUE
-# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBBp+xZ1jGKZkXWWdUjyNz19oSkwJzEl
-# MCMGA1UEAxMcVXdlIEZyYW5rZSAobXNnIHNlcnZpY2VzIEFHKYIQUW95fLQCIbVO
-# uAnpDDc4ZTAJBgUrDgMCHQUAA4GBAGclar+QSH1mKf1gt1oNurpTiXBZbM58Pw2Z
-# GRRgVc5TaPodd11hJOVYD0GE9MCVu5lA6q2I4aYfN5DWcu5LgmCqfTC1UwTlG9bG
-# fx+tTVJlbejYRJ/6ETxZ5ZYSnWB8C31hT2g+0wGW16rB7ddnd4enVCEzNW6d1GDQ
-# gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
-# c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
-# BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTO
-# BjUOAifCPz9dTg0+EmLi5IoC5zANBgkqhkiG9w0BAQEFAASBgK9o2p/J/coVgp8L
-# 9zn6fgGM4WVAEIf7S+gOFoxcM645gyFl2a0KWimE4+Qgb6ZtgyiDXDJ1GlgiJKmX
-# EBgrahgUQ+DdsMRwoLWTlKyqSmTuXUNXSOLI+a8Nn0VKSbIRTeKvO3JZZB5Lo6/o
-# imMf4VPX2LRaT695LgIOg3g6/dHe
-# SIG # End signature block
+
