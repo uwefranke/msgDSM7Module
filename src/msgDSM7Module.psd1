@@ -3,7 +3,7 @@
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 11.07.2018
+# Generiert am: 12.07.2018
 #
 
 @{
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.3'
+ModuleVersion = '1.0.1.4'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -24,7 +24,7 @@ Author = 'Uwe Franke'
 CompanyName = 'msg services AG'
 
 # Urheberrechtserklärung für dieses Modul
-Copyright = 'msg services AG (c) 20013-2018. All rights reserved.'
+Copyright = 'msg services AG (c) 2013-2018. All rights reserved.'
 
 # Beschreibung der von diesem Modul bereitgestellten Funktionen
 Description = 'powershell Module for SOAP interface Ivanti(https://www.ivanti.com) DSM'

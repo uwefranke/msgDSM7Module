@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 * function New-DSM7Policy
 
+## [1.0.1.4] - 2018-07-19
+
+### Added
+
+* Upload to [www.powershellgallery.com](https://www.powershellgallery.com/packages/msgDSM7Module)
+
 ## [1.0.1.3] - 2018-07-11
 
 ### Fixed

@@ -4,9 +4,8 @@ powershell Module SOAP interface [Ivanti](https://www.ivanti.com) DSM
 
 ## Installation
 
-* Download the [*.zip](https://github.com/uwefranke/msgDSM7Module/releases) file
-* extract this file
-* execute in powershell .\src\msgDSM7Module.deploy.ps1
+* [www.powershellgallery.com](https://www.powershellgallery.com/packages/msgDSM7Module)
+* Install-Module msgDSM7Module
 
 ## Usage
 
