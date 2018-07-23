@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 * function New-DSM7Policy
 
+## [1.0.1.5] - 2018-07-23
+
+### Added
+
+* function Move-DSM7Software
+
 ## [1.0.1.4] - 2018-07-19
 
 ### Added
@@ -24,7 +30,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-* Get-DSM7SoftwareIDs
+* function Get-DSM7SoftwareIDs
 
 ## [1.0.1.1] - 2018-06-19
 
