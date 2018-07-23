@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.3
+	Version		: 1.0.1.5
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -1449,7 +1449,7 @@ function Move-DSM7Object {
 		$Webrequest.ObjectToMove = $Object
 		$Webrequest.NewParentOrgTreeContainer = Get-DSM7OrgTreeContainerObject -ID $ParentContID
 		$Webresult = $DSM7WebService.MoveObject($Webrequest).MovedObject
-		Write-Log 0 "MovedObject $($Object.Name) ($($Object.ID)) erfolgreich." $MyInvocation.MyCommand
+		Write-Log 0 "Verschieben von $($Object.Name) ($($Object.ID)) erfolgreich." $MyInvocation.MyCommand
 		return $Webresult
 	}
 	catch [system.exception] 
@@ -5214,14 +5214,14 @@ function Copy-DSM7Policy {
 			}
 			if ($TargetObject) {
 				if ($SwSetComponentPolicyIDs) {
-				$SwInstallationParameters=@{}
-				$i=0
-				foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
-					$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID	
-					$SwInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
-					
-				}
-					
+					$SwInstallationParameters = @{}
+					$i = 0
+					foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
+						$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID 
+						$SwInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
+
+					}
+
 				}
 				$Policy = Get-DSM7PolicyObject -ID $ID
 				$Policy.IsActive = $IsActiv
@@ -5283,14 +5283,14 @@ function New-DSM7PolicyObject {
 			$Webrequest.PolicyToCreate.Policy = $NewPolicy
 			$Webrequest.PolicyToCreate.Policy.TargetObjectList = $PolicyTarget
 			if ($InstallationParametersOfSwSetComponents) {
-			$i=0
+				$i = 0
 				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
 					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents+= New-Object $DSM7Types["SwSetComponentInstallationParameters"]
 					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents[$i].SwInstallationParameters = $InstallationParametersOfSwSetComponents[$key]
 					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
 					$i++
-				}				 
-			}			
+				} 
+			} 
 			if ($DSM7Version -gt "7.4.0") {
 				$Webrequest.PolicyToCreate.Policy.GenTypeData = new-object $DSM7Types["MdsGenType"]
 				$CreationSource = $MyInvocation.MyCommand.Module.Name
@@ -6405,7 +6405,7 @@ function Get-DSM7SwInstallationConfigurationsObject {
 		return $false 
 	} 
 }
-Export-ModuleMember -Function  Get-DSM7SwInstallationConfigurationsObject
+Export-ModuleMember -Function Get-DSM7SwInstallationConfigurationsObject
 ###############################################################################
 # DSM7 Funktionen - Software 
 function Get-DSM7SoftwareIDs {
@@ -6490,6 +6490,8 @@ function Get-DSM7Software {
 	.LINK
 		Update-DSM7Software
 	.LINK
+		Move-DSM7Software
+	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
 		Get-DSM7SoftwareCategory
@@ -6554,6 +6556,127 @@ function Get-DSM7Software {
 	}
 }
 Export-ModuleMember -Function Get-DSM7Software
+function Move-DSM7Software {
+	<#
+	.SYNOPSIS
+		Verschiebt ein Softwareobjekt.
+	.DESCRIPTION
+		Verschiebt ein Softwareobjekt.
+	.EXAMPLE
+		Move-DSM7Software -Name "%Softwarename%" -toLDAPPath "Global Software Library/Folder1/Folder2"
+	.EXAMPLE
+		Move-DSM7Software -ID 12345 -toLDAPPathID 12345
+	.EXAMPLE
+		Move-DSM7Software -UniqueID "{UniqueID}" -toLDAPPath "Global Software Library/Folder1/Folder2"
+	.NOTES
+	.LINK
+		Get-DSM7SoftwareList
+	.LINK
+		Get-DSM7SoftwareIDs
+	.LINK
+		Get-DSM7Software
+	.LINK
+		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
+	.LINK
+		Get-DSM7SoftwareCategoryList
+	.LINK
+		Get-DSM7SoftwareCategory
+	.LINK
+		New-DSM7SoftwareCategory
+	.LINK
+		Update-DSM7SoftwareCategory
+	.LINK
+		Remove-DSM7SoftwareCategory
+	.LINK
+		Get-DSM7GroupMembers
+	.LINK
+		Get-DSM7ListOfMemberships
+	.LINK
+		Update-DSM7MembershipInGroups
+	.LINK
+		Update-DSM7MemberListOfGroup
+	#>
+	[CmdletBinding()] 
+	param (
+		[Parameter(Position=0, Mandatory=$false)]
+		[system.string]$Name,
+		[Parameter(Position=1, Mandatory=$false)]
+		[int]$ID,
+		[Parameter(Position=1, Mandatory=$false)]
+		[System.String]$UniqueID,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.string]$LDAPPath,
+		[Parameter(Position=3, Mandatory=$false)]
+		[system.string]$toLDAPPath,
+		[Parameter(Position=4, Mandatory=$false)]
+		[Int]$toLDAPPathID
+	)
+	if (Confirm-Connect) {
+		try {
+			if (($Name -or $ID -gt 0 -or $UniqueID) -and ($toLDAPPath -or $toLDAPPathID -gt 0) ) {
+				if ($ID -eq 0) {
+					if ($UniqueID) {
+						$search = Get-DSM7Software -UniqueID $UniqueID
+					}
+					else {
+						$search = Get-DSM7Software -Name $Name -LDAPPath $LDAPPath -UniqueID
+					}
+					if ($search) {
+						$ID = $search.ID
+					}
+					else {
+						Write-Log 1 "Software kann nicht nach ($toLDAPPath) verschoben werden!" $MyInvocation.MyCommand 
+						return $false
+					}
+
+				}
+				if ($ID -gt 0) {
+					if ($toLDAPPathID -gt 0) {
+						$ParentContID = $toLDAPPathID
+					}
+					else {
+						$ParentContID = Get-DSM7LDAPPathID -LDAPPath $toLDAPPath
+					} 
+					$Object = Get-DSM7ObjectObject -ID $ID
+					if ($Object) {
+						if ($Object.ParentContID -eq $ParentContID) {
+							Write-Log 1 "Software ($($Object.Name)) befindet sich schon in ($($Object.ParentContID))." $MyInvocation.MyCommand
+							return $false
+						}
+						else {
+							$result = Move-DSM7Object -Object $Object -ParentContID $ParentContID
+							if ($result) { 
+								$result = Convert-DSM7ObjecttoPSObject($result)
+								Write-Log 0 "Software ($($result.Name)) erfolgreich nach ($($result.ParentContID)) verschoben." $MyInvocation.MyCommand
+								return $true
+							}
+							else {
+								return $false
+							}
+						}
+					}
+					else {
+						Write-Log 1 "Software kann nicht nach ($toLDAPPath$toLDAPPathID) verschoben werden." $MyInvocation.MyCommand
+					}
+				} 
+			}
+			else {
+				Write-Log 1 "Name, UniqueID oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
+				return $false
+			}
+
+		}
+		catch [system.exception] 
+		{
+			Write-Log 2 $_ $MyInvocation.MyCommand 
+			return $false 
+		} 
+	}
+}
+Export-ModuleMember -Function Move-DSM7Software
+
 function Update-DSM7Software {
 	<#
 	.SYNOPSIS
@@ -6571,6 +6694,8 @@ function Update-DSM7Software {
 		Get-DSM7Software
 	.LINK
 		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
 	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
@@ -6660,6 +6785,8 @@ function Get-DSM7SoftwareList {
 		Get-DSM7Software
 	.LINK
 		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
 	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
@@ -6757,6 +6884,8 @@ function Get-DSM7SoftwareCategoryList {
 		Get-DSM7Software
 	.LINK
 		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
 	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
@@ -6857,6 +6986,8 @@ function Get-DSM7SoftwareCategory {
 		Get-DSM7Software
 	.LINK
 		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
 	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
@@ -6979,6 +7110,8 @@ function New-DSM7SoftwareCategory {
 		Get-DSM7Software
 	.LINK
 		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
 	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
@@ -7194,6 +7327,8 @@ function Update-DSM7SoftwareCategory {
 	.LINK
 		Update-DSM7Software
 	.LINK
+		Move-DSM7Software
+	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
 		Get-DSM7SoftwareCategory
@@ -7351,6 +7486,8 @@ function Remove-DSM7SoftwareCategory {
 		Get-DSM7Software
 	.LINK
 		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
 	.LINK
 		Get-DSM7SoftwareCategoryList
 	.LINK
@@ -8157,8 +8294,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUBuUD34RkddV3vqIOqRmyN1OG
-# qdegggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU4jap67vyHUXSGla8nPZuwI03
+# cPugggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -8173,9 +8310,9 @@ Export-ModuleMember -Function Get-DSM7User
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRk
-# yuuLU2gEIy2tjGN2Ohiw5SzS6zANBgkqhkiG9w0BAQEFAASBgCM83imQ1v2x2cHA
-# M8tUP2SFt2PKJmkMa7LxK0c4mRHPZpNqxeCyf1BLMpJKZscHtVAnG0ea/uUnDfGR
-# KanxNa5DJ+MbtuWUESDq7Nxx/yXmHstWy4PineauSvAqkHTHcMIyjvY+mJQNJslx
-# iRETZ8bWe871kWzabJfy/gRnMk0B
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQg
+# iCQ7NiSyt4T0gcqw+0a3Es2hUDANBgkqhkiG9w0BAQEFAASBgDHK63Xa3disCkwZ
+# MtfiMRxDAr/hkFdIFBQsbQNz/Ys1vUYNo1Du/PnNJh97/V9qNt01I7O6iJ+Dzwfy
+# 4zm4TztkiNEAWCMoOCG1aicLqqiUL6t7y2klAAcLNAk09EIt0sGDl63796TbEdUy
+# Atr3G5QqyEZYhTPQN9fj65eHUAVa
 # SIG # End signature block

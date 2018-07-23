@@ -5,26 +5,36 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-DSM7Software
+# Move-DSM7Software
 
 ## SYNOPSIS
-Gibt ein Software Objekt zurück.
+Verschiebt ein Softwareobjekt.
 
 ## SYNTAX
 
 ```
-Get-DSM7Software [[-Name] <String>] [[-ID] <String>] [[-UniqueID] <String>] [[-LDAPPath] <String>]
- [<CommonParameters>]
+Move-DSM7Software [[-Name] <String>] [[-ID] <Int32>] [[-UniqueID] <String>] [[-LDAPPath] <String>]
+ [[-toLDAPPath] <String>] [[-toLDAPPathID] <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Gibt ein Software Objekt zurück.
+Verschiebt ein Softwareobjekt.
 
 ## EXAMPLES
 
 ### BEISPIEL 1
 ```
-Get-DSM7Software -Name "Software" -LDAPPath ""Global Software Library/SWF1"
+Move-DSM7Software -Name "%Softwarename%" -toLDAPPath "Global Software Library/Folder1/Folder2"
+```
+
+### BEISPIEL 2
+```
+Move-DSM7Software -ID 12345 -toLDAPPathID 12345
+```
+
+### BEISPIEL 3
+```
+Move-DSM7Software -UniqueID "{UniqueID}" -toLDAPPath "Global Software Library/Folder1/Folder2"
 ```
 
 ## PARAMETERS
@@ -48,13 +58,13 @@ Accept wildcard characters: False
 {{Fill ID Description}}
 
 ```yaml
-Type: String
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 2
-Default value: None
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -68,7 +78,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 3
+Position: 2
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -83,14 +93,45 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -toLDAPPath
+{{Fill toLDAPPath Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -toLDAPPathID
+{{Fill toLDAPPathID Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -102,11 +143,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [Get-DSM7SoftwareList]()
 
-[Get-DSM7SoftwarebyIDs]()
+[Get-DSM7SoftwareIDs]()
 
 [Get-DSM7Software]()
 
 [Update-DSM7Software]()
+
+[Move-DSM7Software]()
 
 [Get-DSM7SoftwareCategoryList]()
 

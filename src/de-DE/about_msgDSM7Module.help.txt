@@ -18,10 +18,9 @@ EXAMPLE
     PS> Connect-DSM7Web -WebServer <BLSServer> -UseDefaultCredential
     PS> New-DSM7Computer -Name <Computername> -LDAPPath "Managed Users & Computers/OU1/OU2" -InitialMACAddress "0123456789Ac" -Values @("Computer.ComputerType=Server:String","Description=Test123","CustomInventory.Patchlink=1")
     PS> Install-DSM7Computer -Name <Computername> -UpgradePolicyInstances -RecalculateInstallationOrder -UpdatePolicyInstancesActive
+    PS> DisConnect-DSM7Web
 
 NOTE
-TROUBLESHOOTING NOTE
-SEE ALSO
 functions in msgDSM7Module
     COMMON FUNCTIONS
     *
@@ -157,4 +156,6 @@ functions in msgDSM7Module
     *
     Update-DSM7OrgTreeContainer
 
+TROUBLESHOOTING NOTE
+SEE ALSO
 KEYWORDS
