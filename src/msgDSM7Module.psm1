@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.5
+	Version		: 1.0.1.6
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -688,7 +688,7 @@ function Convert-DSM7PolicytoPSObject {
 
 	$Raw = New-Object PSObject
 	foreach ($DSM7ObjectMember in $DSM7ObjectMembers) {
-		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "SwInstallationParameters" -and $DSM7ObjectMember -ne "PropGroupList") {
+		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "SwInstallationParameters" -and $DSM7ObjectMember -ne "PropGroupList" -and $DSM7ObjectMember -ne "PolicyRestrictionList") {
 			if ($DSM7ObjectMember -like "*List") {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
 				if ($DSM7ObjectMemberLists.Count -gt 0){
@@ -720,6 +720,9 @@ function Convert-DSM7PolicytoPSObject {
 		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
+	}
+	if ($DSM7Object.PolicyRestrictionList) {
+		add-member -inputobject $Raw -MemberType NoteProperty -name "PolicyRestrictionList" -Value $DSM7Object.PolicyRestrictionList
 	}
 
 	if ($resolvedName) {
@@ -8294,8 +8297,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU4jap67vyHUXSGla8nPZuwI03
-# cPugggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUWbEJaYvuMgjX8UqyY6BiEXxx
+# u0igggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -8310,9 +8313,9 @@ Export-ModuleMember -Function Get-DSM7User
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQg
-# iCQ7NiSyt4T0gcqw+0a3Es2hUDANBgkqhkiG9w0BAQEFAASBgDHK63Xa3disCkwZ
-# MtfiMRxDAr/hkFdIFBQsbQNz/Ys1vUYNo1Du/PnNJh97/V9qNt01I7O6iJ+Dzwfy
-# 4zm4TztkiNEAWCMoOCG1aicLqqiUL6t7y2klAAcLNAk09EIt0sGDl63796TbEdUy
-# Atr3G5QqyEZYhTPQN9fj65eHUAVa
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRs
+# k0p3Ml7uYaiFD9FyYHDNq5HanDANBgkqhkiG9w0BAQEFAASBgGIZn3US2nqXBn7x
+# xTlcHA7vJNPk9BeOzhD9oAJROW7y0juqIWafsgPPCsG/NnQ82o4Wv2qcmHvq0CWl
+# 2nndWNLtVfCjx1b/IG7rwNSIOhv6pyFIc3Y+omzToqP/nJzWWyK9ckPzdmSLg8u6
+# n1xIxJqyfB5XTBCpZ10k5Z69ZcOk
 # SIG # End signature block

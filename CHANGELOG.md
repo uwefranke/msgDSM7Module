@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 * function New-DSM7Policy
 
+## [1.0.1.6] - 2018-07-24
+
+### Change
+
+* function Get-DSM7PolicyListByTarget (PolicyRestrictionList was empty)
+
 ## [1.0.1.5] - 2018-07-23
 
 ### Added

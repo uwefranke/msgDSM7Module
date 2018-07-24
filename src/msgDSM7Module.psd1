@@ -3,7 +3,7 @@
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 23.07.2018
+# Generiert am: 24.07.2018
 #
 
 @{
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.5'
+ModuleVersion = '1.0.1.6'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -66,7 +66,42 @@ CLRVersion = '2.0.50727'
 # NestedModules = @()
 
 # Aus diesem Modul zu exportierende Funktionen
-FunctionsToExport = '*'
+FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-Creds', 
+               'Connect-DSM7Web', 'Connect-DSM7WebRandom', 'DisConnect-DSM7Web', 
+               'Get-DSM7ObjectList', 'Get-DSM7ObjectObject', 'Get-DSM7Object', 
+               'Get-DSM7Objects', 'Get-DSM7LDAPPath', 'Get-DSM7AssociationList', 
+               'Get-DSM7AssociationschemaList', 'New-DSM7Association', 
+               'Get-DSM7DisplayNameLists', 'Get-DSM7ComputerList', 
+               'Get-DSM7Computer', 'Update-DSM7Computer', 'Install-DSM7Computer', 
+               'New-DSM7Computer', 'Remove-DSM7Computer', 'Move-DSM7Computer', 
+               'Get-DSM7OrgTreeContainer', 'Get-DSM7OrgTreeContainers', 
+               'New-DSM7OrgTreeContainer', 'Move-DSM7OrgTreeContainer', 
+               'Update-DSM7OrgTreeContainer', 'Remove-DSM7OrgTreeContainer', 
+               'Get-DSM7Group', 'New-DSM7Group', 'Update-DSM7Group', 'Move-DSM7Group', 
+               'Remove-DSM7Group', 'Get-DSM7ComputerGroupMembers', 
+               'Get-DSM7ComputerInGroups', 'Get-DSM7ExternalGroupMembers', 
+               'Get-DSM7GroupMembers', 'Get-DSM7ListOfMemberships', 
+               'Update-DSM7MembershipInGroups', 'Update-DSM7MemberListOfGroup', 
+               'Add-DSM7ComputerToGroup', 'Remove-DSM7ComputerFromGroup', 
+               'Get-DSM7Policy', 'Update-DSM7Policy', 'Get-DSM7PolicyList', 
+               'Move-DSM7PolicyToTarget', 'Remove-DSM7PolicyFromTarget', 
+               'Add-DSM7PolicyToTarget', 'New-DSM7Policy', 'Copy-DSM7Policy', 
+               'Remove-DSM7Policy', 'Get-DSM7PolicyListByAssignedSoftware', 
+               'Get-DSM7PolicyListByTarget', 'Copy-DSM7PolicyListNewTarget', 
+               'Get-DSM7PolicyStatisticsByTarget', 'Get-DSM7PolicyStatistics', 
+               'Get-DSM7PolicyStatisticsByPolicies', 
+               'Get-DSM7ComputerMissingPatch', 
+               'Get-DSM7PolicyInstanceCountByPolicy', 
+               'Get-DSM7PolicyInstanceListByNode', 'Update-DSM7PolicyInstances', 
+               'Remove-DSM7PolicyInstance', 
+               'Get-DSM7SwInstallationConfigurationsObject', 'Get-DSM7SoftwareIDs', 
+               'Get-DSM7Software', 'Move-DSM7Software', 'Update-DSM7Software', 
+               'Get-DSM7SoftwareList', 'Get-DSM7SoftwareCategoryList', 
+               'Get-DSM7SoftwareCategory', 'New-DSM7SoftwareCategory', 
+               'Update-DSM7SoftwareCategory', 'Remove-DSM7SoftwareCategory', 
+               'Get-DSM7ResolveVariablesForTarget', 'Get-DSM7VariableGroups', 
+               'Set-DSM7VariablesOnTarget', 'Remove-DSM7VariablesOnTarget', 
+               'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser', 'Get-DSM7User'
 
 # Aus diesem Modul zu exportierende Cmdlets
 CmdletsToExport = '*'
