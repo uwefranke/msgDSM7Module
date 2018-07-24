@@ -93,6 +93,7 @@ PS> DisConnect-DSM7Web
 * [Get-DSM7SoftwareList](Get-DSM7SoftwareList.md)
 * [Get-DSM7SoftwareIDs](Get-DSM7SoftwareIDs.md)
 * [Get-DSM7Software](Get-DSM7Software.md)
+* [Move-DSM7Software](Move-DSM7Software.md)
 * [Update-DSM7Software](Update-DSM7Software.md)
 * [Get-DSM7SoftwareCategoryList](Get-DSM7SoftwareCategoryList.md)
 * [Get-DSM7SoftwareCategory](Get-DSM7SoftwareCategory.md)
