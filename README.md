@@ -11,7 +11,7 @@ powershell Module SOAP interface [Ivanti](https://www.ivanti.com) DSM
 
 * Import-Module msgDSM7Module
 * Connect-DSM7Web -WebServer "BLSServer" -UseDefaultCredential
-* [read more](/docs/about_msgDSM7Module.md)
+* [read more](https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md)
 
 ## Contributing
 
@@ -23,7 +23,7 @@ powershell Module SOAP interface [Ivanti](https://www.ivanti.com) DSM
 
 ## History
 
-[CHANGELOG.md](/CHANGELOG.md)
+[CHANGELOG.md](https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md)
 
 ## Credits
 
@@ -31,4 +31,4 @@ TODO: Write credits
 
 ## License
 
-[LICENSE](/LICENSE)
+[LICENSE](https://github.com/uwefranke/msgDSM7Module/blob/master/LICENSE)
