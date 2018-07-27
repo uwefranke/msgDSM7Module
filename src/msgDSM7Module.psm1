@@ -6,16 +6,18 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.6
+	Version		: 1.0.1.7
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
 .LINK  
 		https://github.com/uwefranke/msgDSM7Module
+.LINK
+		https://www.powershellgallery.com/packages/msgDSM7Module
 .LINK  
-		http://www.msg-services.de
+		https://www.msg-services.de
 .LINK  
-		http://www.ivanti.com
+		https://www.ivanti.com
 #>
 ###############################################################################
 # Allgemeine Variablen
@@ -688,7 +690,7 @@ function Convert-DSM7PolicytoPSObject {
 
 	$Raw = New-Object PSObject
 	foreach ($DSM7ObjectMember in $DSM7ObjectMembers) {
-		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "SwInstallationParameters" -and $DSM7ObjectMember -ne "PropGroupList" -and $DSM7ObjectMember -ne "PolicyRestrictionList") {
+		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "PropGroupList" -and $DSM7ObjectMember -ne "PolicyRestrictionList" -and $DSM7ObjectMember -ne "SwInstallationParameters") {
 			if ($DSM7ObjectMember -like "*List") {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
 				if ($DSM7ObjectMemberLists.Count -gt 0){
@@ -736,15 +738,32 @@ function Convert-DSM7PolicytoPSObject {
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectUniqueId -Value $AssignedObjectUniqueId 
 		$AssignedObjectNameOld = $AssignedObjectName
 	}
+
 	if ($DSM7Object.SwInstallationParameters) {
-		$SW = 0
+		$SwInstallationParameterList = @()
 		foreach ($SwInstallationParameter in $DSM7Object.SwInstallationParameters) {
-			add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameter.$($SwInstallationParameter.Tag).Name" -Value $SwInstallationParameter.Tag
-			add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameter.$($SwInstallationParameter.Tag).ID" -Value $SwInstallationParameter.ID
-			add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameter.$($SwInstallationParameter.Tag).Value" -Value $SwInstallationParameter.Value
-			$SW++
+			$SwInstallationParameterPSObject = New-Object PSObject
+			$DSM7ObjectMemberListsMembers = ($DSM7Object.SwInstallationParameters|Get-Member -MemberType Properties).Name
+			foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers){
+				if ($DSM7ObjectMemberListsMember -eq "GenTypeData") {
+					foreach ($GenTypeData in $($SwInstallationParameter.GenTypeData|get-member -membertype properties)) { 
+						add-member -inputobject $SwInstallationParameterPSObject -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $SwInstallationParameter.GenTypeData.$($GenTypeData.Name)
+					}
+				} 
+				else {
+					add-member -inputobject $SwInstallationParameterPSObject -MemberType NoteProperty -name "$DSM7ObjectMemberListsMember" -Value $SwInstallationParameter.$DSM7ObjectMemberListsMember
+
+
+
+				}
+			}
+			$SwInstallationParameterList += $SwInstallationParameterPSObject
 		}
+		add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameter" -Value $SwInstallationParameterList
+
 	}
+
+
 	if ($DSM7Object.PropGroupList) {
 		foreach ($PropGroup in $DSM7Object.PropGroupList) {
 			$Groupname = $PropGroup.Tag
@@ -2563,7 +2582,7 @@ function New-DSM7OrgTreeContainerObject {
 			$Webrequest.NewOrgTreeContainer.GenTypeData.CreationSource = $CreationSource
 		}
 		$Webresult = $DSM7WebService.CreateOrgTreeContainer($Webrequest).CreatedOrgTreeContainer
-		Write-Log 0 "($Name) ($($Webresult.ID)) erfolgreich." $MyInvocation.MyCommand
+		Write-Log 0 "($($Webresult.Name)) ($($Webresult.ID)) erfolgreich." $MyInvocation.MyCommand
 		return $Webresult
 
 	}
@@ -4405,6 +4424,44 @@ function Get-DSM7PolicyObject {
 		} 
 	}
 }
+function Get-DSM7PoliciesObject {
+	[CmdletBinding()] 
+	param (
+		[system.array]$IDs
+	)
+	if (Confirm-Connect) {
+		try {
+			$Webrequest = Get-DSM7RequestHeader -action "GetPolicies"
+			$Webrequest.PolicyIds = $IDs
+			$Webresult = $DSM7WebService.GetPolicies($Webrequest).PolicyList
+			return $Webresult
+		}
+		catch [system.exception] 
+		{
+			Write-Log 2 $_ $MyInvocation.MyCommand 
+			return $false 
+		} 
+	}
+}
+function Update-DSM7PolicyListObject {
+	[CmdletBinding()] 
+	param (
+		$PolicyList
+	)
+	if (Confirm-Connect) {
+		try {
+			$Webrequest = Get-DSM7RequestHeader -action "UpdatePolicyList"
+			$Webrequest.PolicyListToUpdate = $PolicyList
+			$Webresult = $DSM7WebService.UpdatePolicyList($Webrequest).UpdatedPolicyList
+			return $Webresult
+		}
+		catch [system.exception] 
+		{
+			Write-Log 2 $_ $MyInvocation.MyCommand 
+			return $false 
+		} 
+	}
+}
 function Update-DSM7PolicyObject {
 	[CmdletBinding()] 
 	param (
@@ -4416,11 +4473,27 @@ function Update-DSM7PolicyObject {
 		if ($DSM7Version -gt "7.3.0") {
 			$Webrequest.PolicyToUpdate = New-Object $DSM7Types["PolicyToManage"]
 			$Webrequest.PolicyToUpdate.Policy = $Policy
-			$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents = $InstallationParametersOfSwSetComponents
+			if ($InstallationParametersOfSwSetComponents) {
+				$i = 0
+				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
+					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents+= New-Object $DSM7Types["SwSetComponentInstallationParameters"]
+					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents[$i].SwInstallationParameters = $InstallationParametersOfSwSetComponents[$key]
+					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
+					$i++
+				} 
+			} 
 		}
 		else {
 			$Webrequest.PolicyToUpdate = $Policy
-			$Webrequest.InstallationParametersOfSwSetComponents = $InstallationParametersOfSwSetComponents
+			if ($InstallationParametersOfSwSetComponents) {
+				$i = 0
+				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
+					$Webrequest.InstallationParametersOfSwSetComponents+= New-Object $DSM7Types["SwSetComponentInstallationParameters"]
+					$Webrequest.InstallationParametersOfSwSetComponents[$i].SwInstallationParameters = $InstallationParametersOfSwSetComponents[$key]
+					$Webrequest.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
+					$i++
+				} 
+			} 
 		}
 		$Webresult = $DSM7WebService.UpdatePolicy($Webrequest).UpdatedPolicy
 		return $Webresult
@@ -4444,6 +4517,8 @@ function Update-DSM7Policy {
 		Update-DSM7Policy -SwUniqueID "{A42DB21A-D859-4789-BD1C-FC5B5C61EA27}" -IsActiv -ActivationStartDate "22:00 01.01.1970" -TargetName "Ziel"
 	.EXAMPLE
 		Update-DSM7Policy -SwName "Software" -IsActiv -ActivationStartDate "22:00 01.01.1970" -TargetName "Ziel"
+	.EXAMPLE
+		Update-DSM7Policy -SwName "Software" -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
 	.NOTES
 	.LINK
 		Get-DSM7PolicyList
@@ -4480,6 +4555,10 @@ function Update-DSM7Policy {
 		[system.string]$SwUniqueID,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$SwLDAPPath,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.array]$SwInstallationParams,
+		[Parameter(Position=3, Mandatory=$false)]
+		[system.int32]$TargetId,
 		[Parameter(Position=3, Mandatory=$false)]
 		[system.string]$TargetName,
 		[Parameter(Position=4, Mandatory=$false)]
@@ -4508,7 +4587,19 @@ function Update-DSM7Policy {
 				if ($SwUniqueID) {
 					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
 				}
-				$TargetObject = Get-DSM7ObjectObject -ID (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
+				if ($TargetID -eq 0) {
+					$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath)
+				}
+				if ($TargetID -gt 0) {
+					$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
+					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+						$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+					}
+					else {
+						$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+					}
+
+				} 
 				if ($TargetObject -and $AssignedObject) {
 					Write-Log 0 "($($AssignedObject.Name)) und ($TargetName) gefunden." $MyInvocation.MyCommand
 					$Policys = Convert-DSM7PolicyListtoPSObject(Get-DSM7PolicyListByAssignedSoftwareObject -ID $AssignedObject.ID)|Select-Object ID -ExpandProperty TargetObjectList|where {$_.TargetObjectID -eq $TargetObject.ID}
@@ -4526,9 +4617,42 @@ function Update-DSM7Policy {
 					$AssignedObject = Get-DSM7Software -ID $policy.AssignedObjectID
 				}
 				if ($Policy) {
+					if ($SwInstallationParams) {
+
+						$SwSetComponentInstallationParameters = @{}
+						if ($AssignedObject.SchemaTag -eq "OSSoftwareSet" -or $AssignedObject.SchemaTag -eq "eScriptSoftwareSet" ) {
+							$PolicyList = Get-DSM7PolicyListByTarget -ID $policy.TargetObjectList[0].TargetObjectID
+							$PolicyListComponentIds = $PolicyList|where {$_.'SwSetComponentPolicy.ParentPolicyId' -eq $Policy.ID}|select -ExpandProperty ID
+							$PolicyListObjects = Get-DSM7PoliciesObject -IDs $PolicyListComponentIds
+							foreach ($PolicyListObject in $PolicyListObjects) {
+								$i = 0
+								foreach ($SwInstallationParam in $SwInstallationParams) {
+									$ValueName = $SwInstallationParam.split("=",2)[0]
+									$ValueValue = $SwInstallationParam.split("=",2)[1]
+									$policyparam = $PolicyListObject.swinstallationparameters|where {$_.Tag -eq $ValueName}
+									if ($policyparam) {
+										$policyparam.Value = $ValueValue
+										$SwSetComponentInstallationParameters[$PolicyListObject.ID]+= $policyparam
+										Write-Log 0 "Parameter ($ValueName=$ValueValue) geändert." $MyInvocation.MyCommand
+										$i++
+									}
+								}
+							}
+						}
+						else {
+							foreach ($SwInstallationParam in $SwInstallationParams) {
+								$ValueName = $SwInstallationParam.split("=",2)[0]
+								$ValueValue = $SwInstallationParam.split("=",2)[1]
+								$policyparam = $policy.swinstallationparameters|where {$_.Tag -eq $ValueName}
+								$policyparam.Value = $ValueValue
+								Write-Log 0 "Parameter ($ValueName=$ValueValue) geändert." $MyInvocation.MyCommand
+
+							}
+						}
+					} 
 					if ($Policy.IsActive -and $ActivationStartDate) {
 						$Policy.IsActive = $false
-						$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $Policy.SwInstallationParameters
+						$Policy = Update-DSM7PolicyObject -Policy $Policy 
 					}
 					if ($ActivationStartDate) {
 						Write-Log 0 "Start Datum ist:($ActivationStartDate)" $MyInvocation.MyCommand
@@ -4562,8 +4686,12 @@ function Update-DSM7Policy {
 							}
 						}
 					}
-
-					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $Policy.SwInstallationParameters
+					if ($PolicyListObjects) {
+						foreach ($PolicyListObject in $PolicyListObjects) {
+							$PolicyListObject = Update-DSM7PolicyObject -Policy $PolicyListObject
+						}
+					}
+					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters
 					if ($Policy) {
 						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich geändert." $MyInvocation.MyCommand
 						return $true
@@ -4751,7 +4879,14 @@ function Move-DSM7PolicyToTarget {
 				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
 			}
 			if ($TargetID -gt 0) {
-				$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
+				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+				}
+				else {
+					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				}
+
 			} 
 			if ($TargetObject) {
 				Write-Log 0 "($($AssignedObject.Name)) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
@@ -4847,7 +4982,14 @@ function Remove-DSM7PolicyFromTarget {
 				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
 			}
 			if ($TargetID -gt 0) {
-				$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
+				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+				}
+				else {
+					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				}
+
 			} 
 			if ($TargetObject) {
 				Write-Log 0 "($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
@@ -4937,7 +5079,14 @@ function Add-DSM7PolicyToTarget {
 				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
 			}
 			if ($TargetID -gt 0) {
-				$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
+				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+				}
+				else {
+					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				}
+
 			} 
 			if ($TargetObject) {
 				$Policy = Get-DSM7PolicyObject -ID $ID
@@ -4975,7 +5124,7 @@ function New-DSM7Policy {
 	.EXAMPLE
 		New-DSM7Policy -SwName "Microsoft Windows Update Agent (x64)" -TargetName "Ziel" -IsActiv
 	.EXAMPLE
-
+		New-DSM7Policy -swid 12345 -TargetID 54321 -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
 	.NOTES
 	.LINK
 		Get-DSM7PolicyList
@@ -5006,10 +5155,14 @@ function New-DSM7Policy {
 	param (
 		[Parameter(Position=0, Mandatory=$false)]
 		[system.string]$SwName,
+		[Parameter(Position=0, Mandatory=$false)]
+		[system.int32]$SwID,
 		[Parameter(Position=1, Mandatory=$false)]
 		[system.string]$SwUniqueID,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$SwLDAPPath,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.array]$SwInstallationParams,
 		[Parameter(Position=3, Mandatory=$false)]
 		[system.int32]$TargetID,
 		[Parameter(Position=3, Mandatory=$false)]
@@ -5039,90 +5192,182 @@ function New-DSM7Policy {
 			if ($SwUniqueID) {
 				$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
 			}
-			if ($TargetID -eq 0) {
-				$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath)
+			if ($SwID) {
+				$AssignedObject = Get-DSM7Software -ID $SwID
 			}
-			if ($Target) {
-				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-				}
-				else {
-					$TargetID = $Target.ID 
-				}
-			}
-			if ($TargetID -gt 0) {
-				$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-			} 
-			if ($ActivationStartDate) {
-				$StartDate = $(Get-Date($ActivationStartDate)) 
-
-			}
-			else {
-				$StartDate = $(Get-Date) 
-			}
-			$StartDate = $StartDate + [System.TimeZoneInfo]::Local.BaseUtcOffset
-			if ([System.TimeZoneInfo]::Local.IsDaylightSavingTime($StartDate)) {
-				$StartDate = $StartDate + 36000000000
-			}
-			if ($AssignedObject -and $TargetObject) {
-				switch ($AssignedObject.Schematag) {
-					"MSWUV6Package" {$SchemaTag = "PatchPolicy"}
-					"LPRPatchPackage" {$SchemaTag = "PatchPolicy"}
-					"PnpPackage" {$SchemaTag = "PnpPolicy"}
-					default {$SchemaTag = "SwPolicy"}
-				}
-				switch ($AssignedObject."Software.ReleaseStatus") {
-					0 {$StagingMode = "InstallationTest"}
-					1 {$StagingMode = "Standard"}
-					2 {$NoPolicy = $true}
-					default {$StagingMode = "Standard"}
-				}
-				if ($JobPolicy) {
-					{						$SchemaTag = "JobPolicy"}
-				}
-				if ($NoPolicy) {
-					Write-Log 1 "Es kann keine Policy erstellt werden Paket ist zurueckgezogen!!!" $MyInvocation.MyCommand
-				}
-				else {
-					Write-Log 0 "($($AssignedObject.Name)) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
-					$Policy = New-Object $DSM7Types["MdsPolicy"]
-					$Policy.SchemaTag = $SchemaTag
-					$Policy.AssignedObjectID = $AssignedObject.ID
-					$Policy.Name = ""
-					$Policy.Description = ""
-					$Policy.IsActive = $IsActiv
-					if ($DSM7Version -gt "7.3.2") {
-						$Policy.TargetSelectionMode = 0
-						if ($IsUserPolicyCurrentComputer -or $IsUserPolicy) {
-							$Policy.TargetSelectionMode = 1
+			if ($AssignedObject) {
+				$DSMSwSetIds = Get-DSM7AssociationList -SchemaTag "SwSetComponents" -SourceObjectID $AssignedObject.ID|select -ExpandProperty TargetObjectID
+				if ($DSMSwSetIds) {
+					Write-Log 0 "Software ist ein Set." $MyInvocation.MyCommand
+					$DSMInstallationParamDefinitions = @{}
+					foreach ($DSMSwSetId in $DSMSwSetIds) {
+						$DSMInstallationParamDefinitions[$DSMSwSetId] = Get-DSM7SwInstallationParamDefinitionsObject $DSMSwSetId
+						$DSMTestnoValue =$DSMInstallationParamDefinitions[$DSMSwSetId]|where {$_.IsMandatory -and !$_.DefaultValue}
+						if ($DSMTestnoValue -and !$SwInstallationParams -and !$SwSetComponentPolicyIDs) {
+							Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
+							return $false 
 						}
-						if ($IsUserPolicyAllassociatedComputer) {
-							$Policy.TargetSelectionMode = 2
+
+					}
+					if ($SwInstallationParams) {
+						$SwSetComponentInstallationParameters = @{}
+						foreach ($key in $DSMInstallationParamDefinitions.Keys) {
+							$i = 0
+							foreach ($SwInstallationParam in $SwInstallationParams) {
+								$ValueName = $SwInstallationParam.split("=",2)[0]
+								$ValueValue = $SwInstallationParam.split("=",2)[1]
+								$DSMInstallationParamDefinition = $DSMInstallationParamDefinitions[$key]|where {$_.Tag -eq $ValueName}
+								if ($DSMInstallationParamDefinition) {
+									$SwSetComponentInstallationParameters[$key]+= New-Object $DSM7Types["MdsSWInstallationParam"]
+									$SwSetComponentInstallationParameters[$key][$i].Tag = $DSMInstallationParamDefinition.Tag
+									$SwSetComponentInstallationParameters[$key][$i].SwInstallationParamDefID = $DSMInstallationParamDefinition.ID
+									$SwSetComponentInstallationParameters[$key][$i].Type = "SwInstallationConfiguration"
+									$SwSetComponentInstallationParameters[$key][$i].Value = $ValueValue
+									$i++
+								}
+							}
 						}
 					}
-					else {
-						$Policy.IsUserPolicy = $IsUserPolicy
+				}
+				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject $AssignedObject.ID
+				$DSMTestnoValue =$DSMInstallationParamDefinitions|where {$_.IsMandatory -and !$_.DefaultValue}
+				if ($DSMTestnoValue -and !$SwInstallationParams) {
+					Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
+					return $false 
+				}
+				if ($SwInstallationParams) {
+					$SwInstallationParameters = @{}
+					$i = 0
+					foreach ($SwInstallationParam in $SwInstallationParams) {
+						$ValueName = $SwInstallationParam.split("=",2)[0]
+						$ValueValue = $SwInstallationParam.split("=",2)[1]
+						$DSMInstallationParamDefinition = $DSMInstallationParamDefinitions|where {$_.Tag -eq $ValueName}
+						if ($DSMInstallationParamDefinition) {
+							$Raw = New-Object PSObject
+							add-member -inputobject $Raw -MemberType NoteProperty -name Id -Value $DSMInstallationParamDefinition.ID
+							add-member -inputobject $Raw -MemberType NoteProperty -name Tag -Value $DSMInstallationParamDefinition.Tag
+							add-member -inputobject $Raw -MemberType NoteProperty -name Value -Value $ValueValue
+							add-member -inputobject $Raw -MemberType NoteProperty -name Type -Value $DSMInstallationParamDefinition.InstallationParamType
+							$SwInstallationParameters[$($DSMInstallationParamDefinition.ID)]=$Raw
+						}
 					}
-					$Policy.ActivationStartDate = $StartDate
-					$PolicyTarget = New-Object $DSM7Types["MdsPolicyTarget"]
-					$PolicyTarget.TargetObjectID = $TargetObject.ID
-					$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
+				}
+				if ($SwSetComponentPolicyIDs) {
+					$SwSetComponentInstallationParameters = @{}
+					$i = 0
+					foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
+						$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID 
+						if ($SwSetComponentPolicy.SwInstallationParameters) {
+							$SwSetComponentInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
+						}
+					}
 
-					$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget
-					$result = Convert-DSM7PolicytoPSObject ($result) -resolvedName
-					if ($result) {
-						Write-Log 0 "Neue Policy ($($result.ID)) mit Ziel ($($TargetObject.Name)) erstellt." $MyInvocation.MyCommand
+				}
+
+				if ($TargetID -eq 0) {
+					$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath)
+				}
+				if ($Target) {
+					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+						$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
 					}
 					else {
-						Write-Log 1 "Keine neue Policy ($($result.ID)) mit Ziel ($($TargetObject.Name)) erstellt!!!" $MyInvocation.MyCommand
+						$TargetID = $Target.ID 
 					}
-					return $result
+				}
+				if ($TargetID -gt 0) {
+					$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
+					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+						$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+					}
+					else {
+						$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+					}
+
+				} 
+				if ($ActivationStartDate) {
+					$StartDate = $(Get-Date($ActivationStartDate)) 
+
+				}
+				else {
+					$StartDate = $(Get-Date) 
+				}
+				$StartDate = $StartDate + [System.TimeZoneInfo]::Local.BaseUtcOffset
+				if ([System.TimeZoneInfo]::Local.IsDaylightSavingTime($StartDate)) {
+					$StartDate = $StartDate + 36000000000
+				}
+				if ($AssignedObject -and $TargetObject) {
+					switch ($AssignedObject.Schematag) {
+						"MSWUV6Package" {$SchemaTag = "PatchPolicy"}
+						"LPRPatchPackage" {$SchemaTag = "PatchPolicy"}
+						"PnpPackage" {$SchemaTag = "PnpPolicy"}
+						default {$SchemaTag = "SwPolicy"}
+					}
+					switch ($AssignedObject."Software.ReleaseStatus") {
+						0 {$StagingMode = "InstallationTest"}
+						1 {$StagingMode = "Standard"}
+						2 {$NoPolicy = $true}
+						default {$StagingMode = "Standard"}
+					}
+					if ($JobPolicy) {
+						$SchemaTag = "JobPolicy"
+					}
+					if ($NoPolicy) {
+						Write-Log 1 "Es kann keine Policy erstellt werden Paket ist zurueckgezogen!!!" $MyInvocation.MyCommand
+					}
+					else {
+						Write-Log 0 "($($AssignedObject.Name)) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
+						$Policy = New-Object $DSM7Types["MdsPolicy"]
+						$Policy.SchemaTag = $SchemaTag
+						$Policy.AssignedObjectID = $AssignedObject.ID
+						$Policy.Name = ""
+						$Policy.Description = ""
+						$Policy.IsActive = $IsActiv
+						if ($DSM7Version -gt "7.3.2") {
+							$Policy.TargetSelectionMode = 0
+							if ($IsUserPolicyCurrentComputer -or $IsUserPolicy) {
+								$Policy.TargetSelectionMode = 1
+							}
+							if ($IsUserPolicyAllassociatedComputer) {
+								$Policy.TargetSelectionMode = 2
+							}
+						}
+						else {
+							$Policy.IsUserPolicy = $IsUserPolicy
+						}
+						$Policy.ActivationStartDate = $StartDate
+						$PolicyTarget = New-Object $DSM7Types["MdsPolicyTarget"]
+						$PolicyTarget.TargetObjectID = $TargetObject.ID
+						$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
+
+						$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -SwInstallationParam $SwInstallationParameters -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters
+						if ($result) {
+							$result = Convert-DSM7PolicytoPSObject ($result) -resolvedName
+							if ($result) {
+								Write-Log 0 "Neue Policy ($($result.ID)) mit Ziel ($($TargetObject.Name)) erstellt." $MyInvocation.MyCommand
+							}
+							else {
+								Write-Log 1 "Keine neue Policy mit Ziel ($($TargetObject.Name)) erstellt!!!" $MyInvocation.MyCommand
+							}
+							return $result
+						}
+						else {
+							Write-Log 2 "Keine neue Policy mit Ziel ($($TargetObject.Name)) erstellt!!!" $MyInvocation.MyCommand
+
+						}
+					}
+				}
+				else {
+					Write-Log 1 "Ziel ($TargetName$TargetID) nicht gefunden." $MyInvocation.MyCommand
+					return $false 
 				}
 			}
+
 			else {
-				Write-Log 1 "($SwName$SwUniqueID) und/oder ($TargetName) nicht gefunden." $MyInvocation.MyCommand
+				Write-Log 1 "($SwName$SwUniqueID$SwID) nicht gefunden." $MyInvocation.MyCommand
 				return $false 
-			}
+
+			} 
 		}
 		catch [system.exception] 
 		{
@@ -5130,7 +5375,7 @@ function New-DSM7Policy {
 			return $false 
 		} 
 	}
-}
+} 
 Export-ModuleMember -Function New-DSM7Policy
 
 function Copy-DSM7Policy {
@@ -5202,8 +5447,15 @@ function Copy-DSM7Policy {
 				$Targetid = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
 			} 
 			if ($TargetID -gt 0) {
-				$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-			}
+				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
+				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+				}
+				else {
+					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				}
+
+			} 
 			if ($ActivationStartDate) {
 				$StartDate = $(Get-Date($ActivationStartDate)) 
 
@@ -5216,45 +5468,52 @@ function Copy-DSM7Policy {
 				$StartDate = $StartDate + 36000000000
 			}
 			if ($TargetObject) {
-				if ($SwSetComponentPolicyIDs) {
-					$SwInstallationParameters = @{}
-					$i = 0
-					foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
-						$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID 
-						$SwInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
-
-					}
-
-				}
 				$Policy = Get-DSM7PolicyObject -ID $ID
-				$Policy.IsActive = $IsActiv
-				if ($DSM7Version -gt "7.3.2") {
-					$Policy.TargetSelectionMode = 0
-					if ($IsUserPolicyCurrentComputer) {
-						$Policy.TargetSelectionMode = 1
+				if ($Policy.SchemaTag -ne "SwSetComponentPolicy") {
+					if ($SwSetComponentPolicyIDs) {
+						$SwSetComponentInstallationParameters = @{}
+						$i = 0
+						foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
+							$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID 
+							if ($SwSetComponentPolicy.SwInstallationParameters) {
+								$SwSetComponentInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
+							}
+						}
+
 					}
-					if ($IsUserPolicyAllassociatedComputer) {
-						$Policy.TargetSelectionMode = 2
+					$Policy.IsActive = $IsActiv
+					if ($DSM7Version -gt "7.3.2") {
+						$Policy.TargetSelectionMode = 0
+						if ($IsUserPolicyCurrentComputer) {
+							$Policy.TargetSelectionMode = 1
+						}
+						if ($IsUserPolicyAllassociatedComputer) {
+							$Policy.TargetSelectionMode = 2
+						}
+					}
+					else {
+						$Policy.IsUserPolicy = $IsUserPolicy
+					}
+					$Policy.ActivationStartDate = $StartDate
+					$PolicyTarget = New-Object $DSM7Types["MdsPolicyTarget"]
+					$PolicyTarget.TargetObjectID = $TargetObject.ID
+					$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
+
+					$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters
+					if ($result) {
+						$result = Convert-DSM7PolicytoPSObject ($result)
+						Write-Log 0 "Neue Policy ($($result.ID)) mit Ziel ($($TargetObject.Name)) erstellt." $MyInvocation.MyCommand
+
+						return $result
+					}
+					else {
+						Write-Log 1 "Keine neue Policy erstellt!!!" $MyInvocation.MyCommand
+						return $false
 					}
 				}
 				else {
-					$Policy.IsUserPolicy = $IsUserPolicy
-				}
-				$Policy.ActivationStartDate = $StartDate
-				$PolicyTarget = New-Object $DSM7Types["MdsPolicyTarget"]
-				$PolicyTarget.TargetObjectID = $TargetObject.ID
-				$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
-
-				$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -InstallationParametersOfSwSetComponents $SwInstallationParameters
-				if ($result) {
-					$result = Convert-DSM7PolicytoPSObject ($result)
-					Write-Log 0 "Neue Policy ($($result.ID)) mit Ziel ($($TargetObject.Name)) erstellt." $MyInvocation.MyCommand
-
-					return $result
-				}
-				else {
-					Write-Log 1 "Keine neue Policy erstellt!!!" $MyInvocation.MyCommand
-					return $false
+					Write-Log 1 "Keine neue Policy erstellt, Policy ist Komponente!" $MyInvocation.MyCommand
+					return $true
 				}
 			}
 			else {
@@ -5277,6 +5536,7 @@ function New-DSM7PolicyObject {
 	param (
 		$NewPolicy,
 		$PolicyTarget,
+		$SwInstallationParam,
 		$InstallationParametersOfSwSetComponents
 	)
 	try {
@@ -5285,6 +5545,19 @@ function New-DSM7PolicyObject {
 			$Webrequest.PolicyToCreate = New-Object $DSM7Types["PolicyToManage"]
 			$Webrequest.PolicyToCreate.Policy = $NewPolicy
 			$Webrequest.PolicyToCreate.Policy.TargetObjectList = $PolicyTarget
+			if ($SWInstallationParam) {
+				$i = 0
+				foreach ($key in $SwInstallationParam.Keys) {
+
+					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters+= New-Object $DSM7Types["MdsSWInstallationParam"]
+					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters[$i].Tag = $SwInstallationParam[$key].Tag
+					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters[$i].SwInstallationParamDefID = $key
+					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters[$i].Type = "SwInstallationConfiguration"
+					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters[$i].Value = $SwInstallationParam[$key].Value
+					$i++
+				}
+
+			}
 			if ($InstallationParametersOfSwSetComponents) {
 				$i = 0
 				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
@@ -5414,7 +5687,14 @@ function Remove-DSM7Policy {
 				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
 			}
 			if ($TargetID -gt 0) {
-				$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
+				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+				}
+				else {
+					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
+				}
+
 			} 
 			if (($TargetObject -and $AssignedObject) -or $ID) {
 				if (!$ID) {
@@ -5610,11 +5890,24 @@ function Get-DSM7PolicyListByTarget {
 	if (Confirm-Connect) {
 		try {
 			if ($Name -or $ID -gt 0) {
+				if ($ID -gt 0) {
+					$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$ID)$DSM7Targets)")
+					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+						$Object = Get-DSM7OrgTreeContainer -ID $Target.ID 
+					}
+					else {
+						$Object = Get-DSM7ObjectObject -ID $ID
+					}
+
+				} 
 				if ($ID -le 1) {
-					$Object = Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)$DSM7Targets)" -LDAPPath $LDAPPath
-				}
-				else {
-					$Object = Get-DSM7ObjectObject -ID $ID
+					$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)$DSM7Targets)" -LDAPPath $LDAPPath)
+					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+						$Object = Get-DSM7OrgTreeContainer -ID $Target.ID 
+					}
+					else {
+						$Object = Get-DSM7ObjectObject -ID $Target.ID
+					}
 				}
 				if ($Object -and $Object.count -lt 2) {
 					$result = Get-DSM7PolicyListByTargetObject -ID $Object.ID
@@ -5745,7 +6038,8 @@ function Copy-DSM7PolicyListNewTarget {
 						Write-Log 0 "($($TargetObject.Name)) -> erfolgreich ermittelt." $MyInvocation.MyCommand
 						$PolicylistTarget = Get-DSM7PolicyListByTarget -ID $TargetObject.ID
 						$I = 0
-						$K = $SourcePolicy.Count
+						$J = 0
+						$K = $SourcePolicy.Count - ($SourcePolicy|where {$_.SchemaTag -eq "SwSetComponentPolicy"}).Count
 						if ($ExtentionID -or $ExtentionName) {
 							if ($ExtentionID -le 1) {
 								$PolicylistExtention = Get-DSM7PolicyListByTarget -Name $ExtentionName -LDAPPath $ExtentionLDAPPath
@@ -5755,36 +6049,34 @@ function Copy-DSM7PolicyListNewTarget {
 							}
 						}
 						foreach ($Policy in $SourcePolicy) {
+							$SWSetIDs = @()
+							if ($Policy.AssignedObjectSchemaTag -like "*Set") {
+								$SWSetIDs = $SourcePolicy|where {$_.'SwSetComponentPolicy.ParentPolicyId' -eq $Policy.ID}|select -ExpandProperty ID
+							}
 							$PolicyTarget = New-Object $DSM7Types["MdsPolicyTarget"]
 							$PolicyTarget.TargetObjectID = $TargetObject.ID
 							$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
-							if ($Policy.SchemaTag -eq "SwSetComponentPolicy" -and $Policy.SchemaTag -ne "JobPolicy") {
-								$K--
-							}
-							else {
-								$IDTarget = $($PolicylistTarget|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
-								if ($IDTarget -gt 0) {
-									Write-Log 0 "Paket ($($Policy.AssignedObjectName)) ist schon zugewiesen." $MyInvocation.MyCommand
-									$K--
+							$IDTarget = $($PolicylistTarget|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
+							if ($IDTarget -gt 0 -and $Policy.SchemaTag -ne "SwSetComponentPolicy") {
+								Write-Log 0 "Paket ($($Policy.AssignedObjectName)) ist schon zugewiesen." $MyInvocation.MyCommand
+								$J++						}
+							elseif ($Policy.SchemaTag -ne "SwSetComponentPolicy") {
+								$ID = $($PolicylistExtention|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
+								if ($ID -gt 0) {
+									$result = Add-DSM7PolicyToTarget -ID $ID -TargetName $NewName 
+
 								}
 								else {
-									$ID = $($PolicylistExtention|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
-									if ($ID -gt 0) {
-										$result = Add-DSM7PolicyToTarget -ID $ID -TargetName $NewName 
-
-									}
-									else {
-										$result = Copy-DSM7Policy -ID $Policy.ID -TargetName $NewName -IsActiv:$Policy.IsActive
-									}
-									if (!$result) {
-										Write-Log 1 "Fehler beim Paket ($($Policy.AssignedObjectName))!" $MyInvocation.MyCommand
-									} 
-									else {
-										$I++
-										Write-Log 0 "Paket ($($Policy.AssignedObjectName)) erfolgreich zugewiesen." $MyInvocation.MyCommand
-									}
-
+									$result = Copy-DSM7Policy -ID $Policy.ID -TargetName $NewName -IsActiv:$Policy.IsActive -SwSetComponentPolicyIDs $SWSetIDs
 								}
+								if (!$result) {
+									Write-Log 1 "Fehler beim Paket ($($Policy.AssignedObjectName))!" $MyInvocation.MyCommand
+								} 
+								else {
+									$I++
+									Write-Log 0 "Paket ($($Policy.AssignedObjectName)) erfolgreich zugewiesen." $MyInvocation.MyCommand
+								}
+
 							}
 						}
 						if ($I -eq $K) {
@@ -5792,7 +6084,7 @@ function Copy-DSM7PolicyListNewTarget {
 							return $true
 						}
 						else {
-							Write-Log 1 "Nicht alle Policys erstellt! $I von $($SourcePolicy.Count) erstellt." $MyInvocation.MyCommand
+							Write-Log 1 "Nicht alle Policys erstellt! $I von $K erstellt, $J waren schon vorhahen." $MyInvocation.MyCommand
 							return $false
 						}
 					}
@@ -7569,12 +7861,10 @@ function Get-DSM7SwInstallationParamDefinitionsObject {
 	[CmdletBinding()] 
 	param ( 
 		[Parameter(Position=0, Mandatory=$true)]
-		$UniqueID
+		$ID
 	)
 	try {
-		$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastRevision=1)(BasePropGroupTag=Software))"
-		$SoftwareListID = $SoftwareList.ID
-		$Software = Get-DSM7ObjectObject -ID $SoftwareListID
+		$Software = Get-DSM7ObjectObject -ID $ID
 		$Webrequest = Get-DSM7RequestHeader -action "GetSwInstallationParamDefinitions"
 		$Webrequest.ObjectToQuery = $Software
 		$Webresult = $DSM7WebService.GetSwInstallationParamDefinitions($Webrequest).InstallationParameterDefinitions
@@ -8297,8 +8587,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUWbEJaYvuMgjX8UqyY6BiEXxx
-# u0igggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7Ii4uCD48Ic9/mRnQLVVkUsy
+# D/KgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
 # MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
@@ -8313,9 +8603,35 @@ Export-ModuleMember -Function Get-DSM7User
 # gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
 # c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRs
-# k0p3Ml7uYaiFD9FyYHDNq5HanDANBgkqhkiG9w0BAQEFAASBgGIZn3US2nqXBn7x
-# xTlcHA7vJNPk9BeOzhD9oAJROW7y0juqIWafsgPPCsG/NnQ82o4Wv2qcmHvq0CWl
-# 2nndWNLtVfCjx1b/IG7rwNSIOhv6pyFIc3Y+omzToqP/nJzWWyK9ckPzdmSLg8u6
-# n1xIxJqyfB5XTBCpZ10k5Z69ZcOk
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQ8
+# 04+BB1gcUrsR9NyER4v/P09BsTANBgkqhkiG9w0BAQEFAASBgDND4BiTbvm76QRJ
+# 2cMIlEgFASkjRD9zvGg55TNQ738bvDerIMzjsCvfKMy944omjhj4at7PLHg0E6de
+# 2XPhBpT3TXMqilhXeE7nW2e2TzFkLzHv19jNGfSlSfrwxTDGPDqKi4KuIPzrT14T
+# I+Ko6UPmnPa0otjtOc1OvZWnXszu
+# SIG # End signature block
+
+# SIG # Begin signature block
+# MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUuRizgmTdfotu+wLrsBxvzP4a
+# X2igggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
+# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
+# MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
+# IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
+# v0Lx3FIBWwSSu8g2pB3ye4VcqWWjFj3kGaUQZ7JNJcH/uy74jhtfmQgE2NnEbh1X
+# HM3gbSGyPBHsqSFLpTIqM0VTyOVJk3yB1qfIFxUguEZz87C2yZFFagXbwJHamXR7
+# LtB+yjARIrbMUf69c5FFMLS93aRg9cLsGJ3dy4fEVQIDAQABo3EwbzATBgNVHSUE
+# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBBp+xZ1jGKZkXWWdUjyNz19oSkwJzEl
+# MCMGA1UEAxMcVXdlIEZyYW5rZSAobXNnIHNlcnZpY2VzIEFHKYIQUW95fLQCIbVO
+# uAnpDDc4ZTAJBgUrDgMCHQUAA4GBAGclar+QSH1mKf1gt1oNurpTiXBZbM58Pw2Z
+# GRRgVc5TaPodd11hJOVYD0GE9MCVu5lA6q2I4aYfN5DWcu5LgmCqfTC1UwTlG9bG
+# fx+tTVJlbejYRJ/6ETxZ5ZYSnWB8C31hT2g+0wGW16rB7ddnd4enVCEzNW6d1GDQ
+# gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
+# c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
+# BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT1
+# Km8Pg+bhoOmE5yajERP/PwDd3jANBgkqhkiG9w0BAQEFAASBgDbtj20I4DnqlA4M
+# vksRCwXntjhShIU700hK/Wq+tWFWzGe0zuHHiFLFa46iNb74+yS6nK6s7phG7Y8D
+# kF71bCoD3i7TXkvuUZ674jH4hiYxrSd0Pk77BMbeWceY3mdDhHeCm5JrSirHjP6v
+# M7ZD4JsNob5AvCRx5GMFmxR1S37m
 # SIG # End signature block

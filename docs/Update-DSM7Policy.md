@@ -14,9 +14,9 @@ schema: 2.0.0
 
 ```
 Update-DSM7Policy [[-ID] <Int32>] [[-SwName] <String>] [[-SwUniqueID] <String>] [[-SwLDAPPath] <String>]
- [[-TargetName] <String>] [[-TargetLDAPPath] <String>] [[-ActivationStartDate] <String>] [-IsActiv]
- [-IsUserPolicy] [[-Parameter] <String>] [[-PolicyRestrictionType] <String>] [[-PolicyRestrictionList] <Array>]
- [<CommonParameters>]
+ [[-SwInstallationParams] <Array>] [[-TargetId] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
+ [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy] [[-Parameter] <String>]
+ [[-PolicyRestrictionType] <String>] [[-PolicyRestrictionList] <Array>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,6 +37,11 @@ Update-DSM7Policy -SwUniqueID "{A42DB21A-D859-4789-BD1C-FC5B5C61EA27}" -IsActiv 
 ### BEISPIEL 3
 ```
 Update-DSM7Policy -SwName "Software" -IsActiv -ActivationStartDate "22:00 01.01.1970" -TargetName "Ziel"
+```
+
+### BEISPIEL 4
+```
+Update-DSM7Policy -SwName "Software" -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
 ```
 
 ## PARAMETERS
@@ -97,6 +102,36 @@ Aliases:
 Required: False
 Position: 3
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SwInstallationParams
+{{Fill SwInstallationParams Description}}
+
+```yaml
+Type: Array
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TargetId
+{{Fill TargetId Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -222,7 +257,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

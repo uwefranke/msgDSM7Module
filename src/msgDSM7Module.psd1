@@ -1,9 +1,9 @@
 #
-# Modulmanifest für das Modul "PSGet_msgDSM7Module"
+# Modulmanifest für das Modul "msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 24.07.2018
+# Generiert am: 27.07.2018
 #
 
 @{
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.6'
+ModuleVersion = '1.0.1.7'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -127,7 +127,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = 'DSM','ivanti','heat','frontrange','enteo','SOAP','BLS','automation'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/uwefranke/msgDSM7Module/blob/master/LICENSE'

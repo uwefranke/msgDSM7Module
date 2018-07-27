@@ -4,9 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.1.7] - 2018-07-27
+
 ### Changed
 
-* function New-DSM7Policy
+* function New-DSM7Policy (new with SwInstallationParams)
+* function Update-DSM7Policy (new with SwInstallationParams)
+
+### Fixed
+
+* function Copy-DSM7Policy
+* function Copy-DSM7PolicyListNewTarget
 
 ## [1.0.1.6] - 2018-07-24
 
