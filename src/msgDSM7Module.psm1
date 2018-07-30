@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.7
+	Version		: 1.0.1.8
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -759,7 +759,7 @@ function Convert-DSM7PolicytoPSObject {
 			}
 			$SwInstallationParameterList += $SwInstallationParameterPSObject
 		}
-		add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameter" -Value $SwInstallationParameterList
+		add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameters" -Value $SwInstallationParameterList
 
 	}
 

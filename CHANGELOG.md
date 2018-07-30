@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.1.8] - 2018-07-30
+
+### Fixed
+
+* function Convert-DSM7PolicytoPSObject (SwInstallationParameter -> SwInstallationParameters)
+
+### Changed
+
 ## [1.0.1.7] - 2018-07-27
 
 ### Changed

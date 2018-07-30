@@ -1,9 +1,9 @@
 #
-# Modulmanifest für das Modul "msgDSM7Module"
+# Modulmanifest für das Modul "PSGet_msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 27.07.2018
+# Generiert am: 30.07.2018
 #
 
 @{
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.7'
+ModuleVersion = '1.0.1.8'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
