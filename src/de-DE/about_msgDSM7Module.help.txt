@@ -124,6 +124,8 @@ functions in msgDSM7Module
     *
     Get-DSM7Software
     *
+    Move-DSM7Software
+    *
     Update-DSM7Software
     *
     Get-DSM7SoftwareCategoryList

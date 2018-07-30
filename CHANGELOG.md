@@ -4,11 +4,31 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Fixed
+
+## [1.0.1.9] - 2018-08-01
+
+### Added
+
+* Find-DSM7Target new internal function
+
+### Changed
+
+* function Get-DSM7Software (parameter -IsLastReleasedRev)
+* function Copy-DSM7PolicyListNewTarget
+* function Copy-DSM7Policy
+* function New-DSM7Policy (new parameters)
+* function Update-DSM7Policy (new parameters and options)
+
 ## [1.0.1.8] - 2018-07-30
 
 ### Fixed
 
-* function Convert-DSM7PolicytoPSObject (SwInstallationParameter -> SwInstallationParameters)
+* internal function Convert-DSM7PolicytoPSObject (SwInstallationParameter -> SwInstallationParameters)
 
 ### Changed
 

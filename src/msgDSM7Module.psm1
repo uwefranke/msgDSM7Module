@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.8
+	Version		: 1.0.1.9
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -463,6 +463,40 @@ function Confirm-Connect {
 	}
 	else {
 		return $true
+	}
+}
+function Find-DSM7Target {
+	[CmdletBinding()] 
+	param (
+		[System.int32]$ID,
+		[System.String]$Name,
+		[System.String]$LDAPPath,
+		[System.int32]$ParentContID
+	)
+	if ($ID) {
+		$Target = (Get-DSM7ObjectList -Filter "(&(ObjectId=$ID)$DSM7Targets)")
+	}
+	else { 
+		if ($ParentContID) {
+			$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)$DSM7Targets)" -ParentContID $ParentContID)
+		}
+		else {
+			$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)$DSM7Targets)" -LDAPPath $LDAPPath)
+		}
+	}
+	if ($Target) {
+		if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
+			$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
+		}
+		else {
+			$TargetObject = Get-DSM7ObjectObject -ID $Target.ID
+		}
+		write-log 0 "TragetObject mit ID($($TargetObject.ID)) gefunden." $MyInvocation.MyCommand
+		return $TargetObject
+	}
+	else {
+		write-log 1 "TragetObject mit nicht gefunden!" $MyInvocation.MyCommand
+		return $false
 	}
 }
 ###############################################################################
@@ -4466,7 +4500,8 @@ function Update-DSM7PolicyObject {
 	[CmdletBinding()] 
 	param (
 		$Policy,
-		$InstallationParametersOfSwSetComponents
+		$InstallationParametersOfSwSetComponents,
+		$Options
 	)
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "UpdatePolicy"
@@ -4481,7 +4516,10 @@ function Update-DSM7PolicyObject {
 					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
 					$i++
 				} 
-			} 
+			}
+			if ($Options) {
+				$Webrequest.Options = $Options
+			}
 		}
 		else {
 			$Webrequest.PolicyToUpdate = $Policy
@@ -4563,6 +4601,8 @@ function Update-DSM7Policy {
 		[system.string]$TargetName,
 		[Parameter(Position=4, Mandatory=$false)]
 		[system.string]$TargetLDAPPath,
+		[Parameter(Position=4, Mandatory=$false)]
+		[system.int32]$TargetParentContID,
 		[Parameter(Position=5, Mandatory=$false)]
 		[system.string]$ActivationStartDate,
 		[Parameter(Position=6, Mandatory=$false)]
@@ -4575,7 +4615,21 @@ function Update-DSM7Policy {
 		[Parameter(Position=9, Mandatory=$false)]
 		[system.string]$PolicyRestrictionType,
 		[Parameter(Position=10, Mandatory=$false)]
-		[system.array]$PolicyRestrictionList
+		[system.array]$PolicyRestrictionList,
+		[Parameter(Position=11, Mandatory=$false)]
+		[switch]$UpdatePackage,
+		[Parameter(Position=12, Mandatory=$false)]
+		[switch]$CriticalUpdate,
+		[Parameter(Position=13, Mandatory=$false)]
+		[switch]$DeactivateUpdatedInstances,
+		[Parameter(Position=14, Mandatory=$false)]
+		[switch]$RemoveInstanceInstallationParameters,
+		[Parameter(Position=15, Mandatory=$false)]
+		[ValidateSet("CreateActive","CreateInactive")]
+		[System.String]$InstanceActivationOnCreate = 0,
+		[Parameter(Position=16, Mandatory=$false)]
+		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
+		[system.string]$InstanceActivationMode = "DontAutoactivate"
 	)
 	if (Confirm-Connect) {
 		try {
@@ -4587,19 +4641,7 @@ function Update-DSM7Policy {
 				if ($SwUniqueID) {
 					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
 				}
-				if ($TargetID -eq 0) {
-					$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath)
-				}
-				if ($TargetID -gt 0) {
-					$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
-					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-						$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-					}
-					else {
-						$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-					}
-
-				} 
+				$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 				if ($TargetObject -and $AssignedObject) {
 					Write-Log 0 "($($AssignedObject.Name)) und ($TargetName) gefunden." $MyInvocation.MyCommand
 					$Policys = Convert-DSM7PolicyListtoPSObject(Get-DSM7PolicyListByAssignedSoftwareObject -ID $AssignedObject.ID)|Select-Object ID -ExpandProperty TargetObjectList|where {$_.TargetObjectID -eq $TargetObject.ID}
@@ -4691,10 +4733,31 @@ function Update-DSM7Policy {
 							$PolicyListObject = Update-DSM7PolicyObject -Policy $PolicyListObject
 						}
 					}
-					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters
+					if ($UpdatePackage) {
+						if ($AssignedObject.'Software.IsLastReleasedRev') {
+							Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) ist schon letzte Revision." $MyInvocation.MyCommand
+						}
+						else {
+							$newAssignedObject = Get-DSM7Software -UniqueID $AssignedObject.UniqueID -IsLastReleasedRev
+							$Policy.AssignedObjectID = $newAssignedObject.ID
+							$PolicyOptions = New-Object $DSM7Types["PolicyUpdateOptions"]
+							if ($CriticalUpdate) {
+								$PolicyOptions.Criticality = "CriticalUpdate"
+							}
+							else {
+								$PolicyOptions.Criticality = "NonCriticalUpdate"
+							}
+							$PolicyOptions.DeactivateUpdatedInstances = $DeactivateUpdatedInstances
+							$PolicyOptions.RemoveInstanceInstallationParameters = $RemoveInstanceInstallationParameters
+						}
+					}
+					$Policy.InstanceActivationMode = $InstanceActivationMode
+					$Policy.InstanceActivationOnCreate = $InstanceActivationOnCreate
+					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters -Options $PolicyOptions
 					if ($Policy) {
+						$Policy = Convert-DSM7PolicytoPSObject ($Policy) -resolvedName
 						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich geändert." $MyInvocation.MyCommand
-						return $true
+						return $Policy
 					}
 					else {
 						return $false
@@ -4870,24 +4933,14 @@ function Move-DSM7PolicyToTarget {
 		[system.string]$TargetName,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$TargetLDAPPath,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.int32]$TargetParentContID,
 		[switch]$ForceRemove = $false
 
 	)
 	if (Confirm-Connect) {
 		try {
-			if ($TargetID -eq 0) {
-				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
-			}
-			if ($TargetID -gt 0) {
-				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
-				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-				}
-				else {
-					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-				}
-
-			} 
+			$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 			if ($TargetObject) {
 				Write-Log 0 "($($AssignedObject.Name)) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
 				$Policy = Get-DSM7PolicyObject -ID $ID
@@ -4973,24 +5026,14 @@ function Remove-DSM7PolicyFromTarget {
 		[system.string]$TargetName,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$TargetLDAPPath,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.int32]$TargetParentContID,
 		[switch]$ForceRemove = $false
 
 	)
 	if (Confirm-Connect) {
 		try {
-			if ($TargetID -eq 0) {
-				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
-			}
-			if ($TargetID -gt 0) {
-				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
-				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-				}
-				else {
-					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-				}
-
-			} 
+			$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 			if ($TargetObject) {
 				Write-Log 0 "($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
 				$Policy = Get-DSM7PolicyObject -ID $ID
@@ -5070,24 +5113,14 @@ function Add-DSM7PolicyToTarget {
 		[Parameter(Position=1, Mandatory=$false)]
 		[system.string]$TargetName,
 		[Parameter(Position=2, Mandatory=$false)]
-		[system.string]$TargetLDAPPath
+		[system.string]$TargetLDAPPath,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.string]$TargetParentContID
 
 	)
 	if (Confirm-Connect) {
 		try {
-			if ($TargetID -eq 0) {
-				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
-			}
-			if ($TargetID -gt 0) {
-				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
-				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-				}
-				else {
-					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-				}
-
-			} 
+			$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 			if ($TargetObject) {
 				$Policy = Get-DSM7PolicyObject -ID $ID
 				Write-Log 0 "($ID) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
@@ -5169,6 +5202,8 @@ function New-DSM7Policy {
 		[system.string]$TargetName,
 		[Parameter(Position=4, Mandatory=$false)]
 		[system.string]$TargetLDAPPath,
+		[Parameter(Position=4, Mandatory=$false)]
+		[system.int32]$TargetParentContID,
 		[Parameter(Position=5, Mandatory=$false)]
 		[system.string]$ActivationStartDate,
 		[Parameter(Position=6, Mandatory=$false)]
@@ -5180,7 +5215,13 @@ function New-DSM7Policy {
 		[Parameter(Position=9, Mandatory=$false)]
 		[switch]$IsUserPolicyAllassociatedComputer = $false,
 		[Parameter(Position=10, Mandatory=$false)]
-		[switch]$JobPolicy = $false
+		[switch]$JobPolicy = $false,
+		[Parameter(Position=11, Mandatory=$false)]
+		[ValidateSet("CreateActive","CreateInactive")]
+		[System.String]$InstanceActivationOnCreate = 0,
+		[Parameter(Position=12, Mandatory=$false)]
+		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
+		[system.string]$InstanceActivationMode = "DontAutoactivate"
 
 	)
 	if (Confirm-Connect) {
@@ -5263,28 +5304,7 @@ function New-DSM7Policy {
 					}
 
 				}
-
-				if ($TargetID -eq 0) {
-					$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath)
-				}
-				if ($Target) {
-					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-						$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-					}
-					else {
-						$TargetID = $Target.ID 
-					}
-				}
-				if ($TargetID -gt 0) {
-					$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
-					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-						$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-					}
-					else {
-						$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-					}
-
-				} 
+				$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 				if ($ActivationStartDate) {
 					$StartDate = $(Get-Date($ActivationStartDate)) 
 
@@ -5339,6 +5359,8 @@ function New-DSM7Policy {
 						$PolicyTarget = New-Object $DSM7Types["MdsPolicyTarget"]
 						$PolicyTarget.TargetObjectID = $TargetObject.ID
 						$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
+						$Policy.InstanceActivationMode = $InstanceActivationMode
+						$Policy.InstanceActivationOnCreate = $InstanceActivationOnCreate
 
 						$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -SwInstallationParam $SwInstallationParameters -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters
 						if ($result) {
@@ -5353,7 +5375,7 @@ function New-DSM7Policy {
 						}
 						else {
 							Write-Log 2 "Keine neue Policy mit Ziel ($($TargetObject.Name)) erstellt!!!" $MyInvocation.MyCommand
-
+							return $false 
 						}
 					}
 				}
@@ -5424,6 +5446,8 @@ function Copy-DSM7Policy {
 		[system.string]$TargetName,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$TargetLDAPPath,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.string]$TargetParentContID,
 		[Parameter(Position=3, Mandatory=$false)]
 		[system.string]$ActivationStartDate,
 		[Parameter(Position=4, Mandatory=$false)]
@@ -5443,19 +5467,7 @@ function Copy-DSM7Policy {
 	if (Confirm-Connect) {
 		try {
 			$NoPolicy = $false
-			if ($TargetID -eq 0) {
-				$Targetid = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
-			} 
-			if ($TargetID -gt 0) {
-				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
-				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-				}
-				else {
-					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-				}
-
-			} 
+			$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 			if ($ActivationStartDate) {
 				$StartDate = $(Get-Date($ActivationStartDate)) 
 
@@ -5683,19 +5695,7 @@ function Remove-DSM7Policy {
 			if ($SwUniqueID) {
 				$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
 			}
-			if ($TargetID -eq 0) {
-				$TargetID = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$TargetName)$DSM7Targets)" -LDAPPath $TargetLDAPPath).ID
-			}
-			if ($TargetID -gt 0) {
-				$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$TargetID)$DSM7Targets)")
-				if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-					$TargetObject = Get-DSM7OrgTreeContainer -ID $Target.ID 
-				}
-				else {
-					$TargetObject = Get-DSM7ObjectObject -ID $TargetID
-				}
-
-			} 
+			$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 			if (($TargetObject -and $AssignedObject) -or $ID) {
 				if (!$ID) {
 					$Policys = Convert-DSM7PolicyListtoPSObject(Get-DSM7PolicyListByAssignedSoftwareObject -ID $AssignedObject.ID)|Select-Object ID -ExpandProperty TargetObjectList|where {$_.TargetObjectID -eq $TargetObject.ID}
@@ -5890,25 +5890,7 @@ function Get-DSM7PolicyListByTarget {
 	if (Confirm-Connect) {
 		try {
 			if ($Name -or $ID -gt 0) {
-				if ($ID -gt 0) {
-					$Target = (Get-DSM7ObjectList -Filter "(&(ObjectID=$ID)$DSM7Targets)")
-					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-						$Object = Get-DSM7OrgTreeContainer -ID $Target.ID 
-					}
-					else {
-						$Object = Get-DSM7ObjectObject -ID $ID
-					}
-
-				} 
-				if ($ID -le 1) {
-					$Target = (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)$DSM7Targets)" -LDAPPath $LDAPPath)
-					if ($Target.BasePropGroupTag -eq "OrgTreeContainer") {
-						$Object = Get-DSM7OrgTreeContainer -ID $Target.ID 
-					}
-					else {
-						$Object = Get-DSM7ObjectObject -ID $Target.ID
-					}
-				}
+				$Object = Find-DSM7Target -ID $ID -Name $Name -LDAPPath $LDAPPath -ParentContID $ParentContID
 				if ($Object -and $Object.count -lt 2) {
 					$result = Get-DSM7PolicyListByTargetObject -ID $Object.ID
 					if ($result) {
@@ -5944,13 +5926,13 @@ function Copy-DSM7PolicyListNewTarget {
 	.DESCRIPTION
 		Kopiert die Policys eines Ziels und/oder erweiter eine Referens Ziel zu einer neuen Ziel.
 	.EXAMPLE
-		Copy-DSM7PolicyListNewTarget -Name "Name" -LDAPPath "Managed Users & Computers/OU1" -NewName "Name" -NewLDAPPath "Managed Users & Computers/OU1"
+		Copy-DSM7PolicyListNewTarget -Name "Name" -LDAPPath "Managed Users & Computers/OU1" -TargetName "Name" -TargetLDAPPath "Managed Users & Computers/OU1"
 	.EXAMPLE
-		Copy-DSM7PolicyListNewTarget -Name "Name" -LDAPPath "Managed Users & Computers/OU1" -NewName "Name" -NewLDAPPath "Managed Users & Computers/OU1" -ExtentionName "Name" -ExtentionLDAPPath "Managed Users & Computers/OU1"
+		Copy-DSM7PolicyListNewTarget -Name "Name" -LDAPPath "Managed Users & Computers/OU1" -TargetName "Name" -TargetLDAPPath "Managed Users & Computers/OU1" -ExtentionName "Name" -ExtentionLDAPPath "Managed Users & Computers/OU1"
 	.EXAMPLE
-		Copy-DSM7PolicyListNewTarget -ID 1234 -NewID 1234
+		Copy-DSM7PolicyListNewTarget -ID 1234 -TargetID 1235
 	.EXAMPLE
-		Copy-DSM7PolicyListNewTarget -ID 1234 -NewID 1234 -ExtentionID 1234
+		Copy-DSM7PolicyListNewTarget -ID 1234 -TargetID 1235 -ExtentionID 1236
 	.NOTES
 	.LINK
 		Get-DSM7PolicyList
@@ -5986,11 +5968,13 @@ function Copy-DSM7PolicyListNewTarget {
 		[Parameter(Position=1, Mandatory=$false)]
 		[system.string]$LDAPPath,
 		[Parameter(Position=2, Mandatory=$false)]
-		[system.string]$NewID,
+		[system.string]$TargetID,
 		[Parameter(Position=2, Mandatory=$false)]
-		[system.string]$NewName,
+		[system.string]$TargetName,
 		[Parameter(Position=3, Mandatory=$false)]
-		[system.string]$NewLDAPPath,
+		[system.string]$TargetLDAPPath,
+		[Parameter(Position=3, Mandatory=$false)]
+		[system.int32]$TargetParentContID,
 		[Parameter(Position=4, Mandatory=$false)]
 		[system.string]$ExtentionID,
 		[Parameter(Position=4, Mandatory=$false)]
@@ -6000,12 +5984,8 @@ function Copy-DSM7PolicyListNewTarget {
 	)
 	if (Confirm-Connect) {
 		try {
-			if ($ID -le 1) {
-				$SourceObject = Get-DSM7ObjectObject -ID (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)$DSM7Targets)" -LDAPPath $LDAPPath).ID
-			}
-			else {
-				$SourceObject = Get-DSM7ObjectObject -ID $ID
-			}
+			$SourceObject = Find-DSM7Target -ID $ID -Name $Name -LDAPPath $LDAPPath -ParentContID $ParentContID
+
 			if ($SourceObject.count -gt 1) {
 				Write-Log 1 "($Name) -> ($LDAPPath) nicht eindeutig." $MyInvocation.MyCommand
 				return $false
@@ -6014,24 +5994,19 @@ function Copy-DSM7PolicyListNewTarget {
 				[Array]$SourcePolicy = Get-DSM7PolicyListByTarget -ID $SourceObject.ID
 				if ($SourcePolicy) {
 					Write-Log 0 "($Name) -> ($LDAPPath) erfolgreich." $MyInvocation.MyCommand
-					if ($NewLDAPPath) {
-						$ParentContID = Get-DSM7LDAPPathID -LDAPPath $NewLDAPPath
+					if ($TargetLDAPPath) {
+						$ParentContID = Get-DSM7LDAPPathID -LDAPPath $TargetLDAPPath
 					}
 					else {
 						$ParentContID = $SourceObject.ParentContID
 					}
-					if ($NewID -le 1) {
-						$TargetObject = Get-DSM7ObjectObject -ID (Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$NewName)$DSM7Targets)" -LDAPPath $NewLDAPPath).ID
-						if (!$TargetObject) {
-							$TargetObject = New-DSM7Object -Name $NewName -ParentContID $ParentContID -SchemaTag $SourceObject.SchemaTag -GroupType $SourceObject.GroupType -PropGroupList $SourceObject.PropGroupList
-							Write-Log 0 "($NewName) -> ($LDAPPath) erfolgreich erstellt." $MyInvocation.MyCommand
-						}
-					} 
-					else {
-						$TargetObject = Get-DSM7ObjectObject -ID $NewID
+					$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
+					if (!$TargetObject) {
+						$TargetObject = New-DSM7Object -Name $TargetName -ParentContID $ParentContID -SchemaTag $SourceObject.SchemaTag -GroupType $SourceObject.GroupType -PropGroupList $SourceObject.PropGroupList
+						Write-Log 0 "($TargetName) -> ($LDAPPath) erfolgreich erstellt." $MyInvocation.MyCommand
 					}
 					if ($TargetObject.count -gt 1) {
-						Write-Log 1 "Ziel $NewName nicht erstellt/oder nicht eindeutig!" $MyInvocation.MyCommand
+						Write-Log 1 "Ziel $TargetName nicht erstellt/oder nicht eindeutig!" $MyInvocation.MyCommand
 						return $false
 					}
 					else {
@@ -6059,15 +6034,15 @@ function Copy-DSM7PolicyListNewTarget {
 							$IDTarget = $($PolicylistTarget|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
 							if ($IDTarget -gt 0 -and $Policy.SchemaTag -ne "SwSetComponentPolicy") {
 								Write-Log 0 "Paket ($($Policy.AssignedObjectName)) ist schon zugewiesen." $MyInvocation.MyCommand
-								$J++						}
+								$J++ }
 							elseif ($Policy.SchemaTag -ne "SwSetComponentPolicy") {
 								$ID = $($PolicylistExtention|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
 								if ($ID -gt 0) {
-									$result = Add-DSM7PolicyToTarget -ID $ID -TargetName $NewName 
+									$result = Add-DSM7PolicyToTarget -ID $ID -TargetID $TargetObject.ID
 
 								}
 								else {
-									$result = Copy-DSM7Policy -ID $Policy.ID -TargetName $NewName -IsActiv:$Policy.IsActive -SwSetComponentPolicyIDs $SWSetIDs
+									$result = Copy-DSM7Policy -ID $Policy.ID -TargetID $TargetObject.ID -IsActiv:$Policy.IsActive -SwSetComponentPolicyIDs $SWSetIDs
 								}
 								if (!$result) {
 									Write-Log 1 "Fehler beim Paket ($($Policy.AssignedObjectName))!" $MyInvocation.MyCommand
@@ -6084,7 +6059,7 @@ function Copy-DSM7PolicyListNewTarget {
 							return $true
 						}
 						else {
-							Write-Log 1 "Nicht alle Policys erstellt! $I von $K erstellt, $J waren schon vorhahen." $MyInvocation.MyCommand
+							Write-Log 1 "Nicht alle Policys neu erstellt! $I von $K erstellt, $J waren schon vorhahen." $MyInvocation.MyCommand
 							return $false
 						}
 					}
@@ -6810,17 +6785,28 @@ function Get-DSM7Software {
 		[system.string]$Name,
 		[system.string]$ID,
 		[system.string]$UniqueID,
-		[system.string]$LDAPPath
+		[system.string]$LDAPPath,
+		[switch]$IsLastReleasedRev
 	)
 	if (Confirm-Connect) {
 		try {
 			if ($Name) {
 				$Name = Convert-StringtoLDAPString($Name)
-				$SoftwareList = Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)(Software.IsLastRevision=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+				if ($IsLastReleasedRev) {
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)(Software.IsLastReleasedRev=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+				}
+				else {
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)(Software.IsLastRevision=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+				}
 				$SoftwareListID = $SoftwareList.ID
 			}
 			if ($UniqueID) {
-				$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastRevision=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+				if ($IsLastReleasedRev) {
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastReleasedRev=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+				}
+				else {
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastRevision=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+				}
 				$SoftwareListID = $SoftwareList.ID
 			}
 			if ($ID) {

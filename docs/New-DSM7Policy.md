@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgDSM7Module
+Module Name: msgdsm7module
 online version:
 schema: 2.0.0
 ---
@@ -15,8 +15,8 @@ Erstellt eine neue Policy.
 ```
 New-DSM7Policy [[-SwName] <String>] [[-SwID] <Int32>] [[-SwUniqueID] <String>] [[-SwLDAPPath] <String>]
  [[-SwInstallationParams] <Array>] [[-TargetID] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
- [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy] [-IsUserPolicyCurrentComputer]
- [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [<CommonParameters>]
+ [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy]
+ [-IsUserPolicyCurrentComputer] [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -152,6 +152,21 @@ Aliases:
 Required: False
 Position: 5
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TargetParentContID
+{{Fill TargetParentContID Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

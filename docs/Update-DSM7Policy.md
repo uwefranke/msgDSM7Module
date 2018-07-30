@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgDSM7Module
+Module Name: msgdsm7module
 online version:
 schema: 2.0.0
 ---
@@ -15,8 +15,10 @@ schema: 2.0.0
 ```
 Update-DSM7Policy [[-ID] <Int32>] [[-SwName] <String>] [[-SwUniqueID] <String>] [[-SwLDAPPath] <String>]
  [[-SwInstallationParams] <Array>] [[-TargetId] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
- [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy] [[-Parameter] <String>]
- [[-PolicyRestrictionType] <String>] [[-PolicyRestrictionList] <Array>] [<CommonParameters>]
+ [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy]
+ [[-Parameter] <String>] [[-PolicyRestrictionType] <String>] [[-PolicyRestrictionList] <Array>]
+ [-UpdatePackage] [-CriticalUpdate] [-DeactivateUpdatedInstances] [-RemoveInstanceInstallationParameters]
+ [[-InstanceActivationOnCreate] <String>] [[-InstanceActivationMode] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -166,6 +168,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -TargetParentContID
+{{Fill TargetParentContID Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 5
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ActivationStartDate
 {{Fill ActivationStartDate Description}}
 
@@ -252,6 +269,96 @@ Aliases:
 Required: False
 Position: 11
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UpdatePackage
+{{Fill UpdatePackage Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 12
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CriticalUpdate
+{{Fill CriticalUpdate Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 13
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DeactivateUpdatedInstances
+{{Fill DeactivateUpdatedInstances Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 14
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -RemoveInstanceInstallationParameters
+{{Fill RemoveInstanceInstallationParameters Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 15
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -InstanceActivationOnCreate
+{{Fill InstanceActivationOnCreate Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 16
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -InstanceActivationMode
+{{Fill InstanceActivationMode Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 17
+Default value: DontAutoactivate
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
