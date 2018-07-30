@@ -15,7 +15,8 @@ Kopiert die Policys eines Ziels und/oder erweiter eine Referens Ziel zu einer ne
 ```
 Copy-DSM7PolicyListNewTarget [[-ID] <String>] [[-Name] <String>] [[-LDAPPath] <String>] [[-TargetID] <String>]
  [[-TargetName] <String>] [[-TargetLDAPPath] <String>] [[-TargetParentContID] <Int32>]
- [[-ExtentionID] <String>] [[-ExtentionName] <String>] [[-ExtentionLDAPPath] <String>] [<CommonParameters>]
+ [[-ExtentionID] <String>] [[-ExtentionName] <String>] [[-ExtentionLDAPPath] <String>] [-Stats]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -191,6 +192,21 @@ Aliases:
 Required: False
 Position: 6
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Stats
+{{Fill Stats Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 18
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

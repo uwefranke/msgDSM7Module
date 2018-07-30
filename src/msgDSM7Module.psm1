@@ -28,7 +28,6 @@ $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(Schem
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7StructureComputer = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup))"
 $DSM7StructureSoftware = "(|(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
-$global:DSM7GenTypeData = "ModifiedBy,CreatedBy,Modified,Created"
 ###############################################################################
 # Allgemeine interne Funktionen
 function Get-PSCredential {
@@ -4501,7 +4500,8 @@ function Update-DSM7PolicyObject {
 	param (
 		$Policy,
 		$InstallationParametersOfSwSetComponents,
-		$Options
+		$Options,
+		[switch]$Stats
 	)
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "UpdatePolicy"
@@ -4533,8 +4533,14 @@ function Update-DSM7PolicyObject {
 				} 
 			} 
 		}
-		$Webresult = $DSM7WebService.UpdatePolicy($Webrequest).UpdatedPolicy
-		return $Webresult
+		$Webresult = $DSM7WebService.UpdatePolicy($Webrequest)
+		if ($Stats) {
+			write-log 0 "Anzahl betroffener Instanzen: $($Webresult.NumberOfInstancesAffected)." $MyInvocation.MyCommand 
+			write-log 0 "Anzahl geupdateter Instanzen: $($Webresult.NumberOfInstancesUpdated)." $MyInvocation.MyCommand 
+		}
+		$global:DSM7AsynchronousExecution = $Webresult.AsynchronousExecution
+		$global:DSM7InfrastructureTaskGuid = $Webresult.InfrastructureTaskGuid
+		return $Webresult.UpdatedPolicy 
 	}
 	catch [system.exception] 
 	{
@@ -4557,6 +4563,10 @@ function Update-DSM7Policy {
 		Update-DSM7Policy -SwName "Software" -IsActiv -ActivationStartDate "22:00 01.01.1970" -TargetName "Ziel"
 	.EXAMPLE
 		Update-DSM7Policy -SwName "Software" -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
+	.EXAMPLE
+		Update-DSM7Policy -SwName "Software" -IsActiv -InstanceActivationMode AutoActivateOnce  -InstanceActivationOnCreate CreateInactive
+	.EXAMPLE
+		Update-DSM7Policy -SwName "Software" -IsActiv -UpdatePackage -CriticalUpdate -DeactivateUpdatedInstances -RemoveInstanceInstallationParameters
 	.NOTES
 	.LINK
 		Get-DSM7PolicyList
@@ -4629,7 +4639,9 @@ function Update-DSM7Policy {
 		[System.String]$InstanceActivationOnCreate = 0,
 		[Parameter(Position=16, Mandatory=$false)]
 		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
-		[system.string]$InstanceActivationMode = "DontAutoactivate"
+		[system.string]$InstanceActivationMode = "DontAutoactivate",
+		[Parameter(Position=17, Mandatory=$false)]
+		[switch]$Stats
 	)
 	if (Confirm-Connect) {
 		try {
@@ -4753,7 +4765,7 @@ function Update-DSM7Policy {
 					}
 					$Policy.InstanceActivationMode = $InstanceActivationMode
 					$Policy.InstanceActivationOnCreate = $InstanceActivationOnCreate
-					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters -Options $PolicyOptions
+					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters -Options $PolicyOptions -Stats:$Stats
 					if ($Policy) {
 						$Policy = Convert-DSM7PolicytoPSObject ($Policy) -resolvedName
 						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich geändert." $MyInvocation.MyCommand
@@ -5221,7 +5233,9 @@ function New-DSM7Policy {
 		[System.String]$InstanceActivationOnCreate = 0,
 		[Parameter(Position=12, Mandatory=$false)]
 		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
-		[system.string]$InstanceActivationMode = "DontAutoactivate"
+		[system.string]$InstanceActivationMode = "DontAutoactivate",
+		[Parameter(Position=13, Mandatory=$false)]
+		[switch]$Stats
 
 	)
 	if (Confirm-Connect) {
@@ -5362,7 +5376,7 @@ function New-DSM7Policy {
 						$Policy.InstanceActivationMode = $InstanceActivationMode
 						$Policy.InstanceActivationOnCreate = $InstanceActivationOnCreate
 
-						$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -SwInstallationParam $SwInstallationParameters -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters
+						$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -SwInstallationParam $SwInstallationParameters -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters -Stats:$Stats
 						if ($result) {
 							$result = Convert-DSM7PolicytoPSObject ($result) -resolvedName
 							if ($result) {
@@ -5403,9 +5417,9 @@ Export-ModuleMember -Function New-DSM7Policy
 function Copy-DSM7Policy {
 	<#
 	.SYNOPSIS
-		Ändert ein Policy Object aus.
+		Kopiert ein Policy zu einem neuem Ziel.
 	.DESCRIPTION
-		Ändert ein Policy Object aus.
+		Kopiert ein Policy zu einem neuem Ziel.
 	.EXAMPLE
 		Copy-DSM7Policy -ID 1234 -TargetID 1234
 	.EXAMPLE
@@ -5461,7 +5475,10 @@ function Copy-DSM7Policy {
 		[Parameter(Position=8, Mandatory=$false)]
 		[switch]$IsUserPolicyAllassociatedComputer = $false,
 		[Parameter(Position=9, Mandatory=$false)]
-		[switch]$JobPolicy = $false
+		[switch]$JobPolicy = $false,
+		[Parameter(Position=10, Mandatory=$false)]
+		[switch]$Stats
+
 
 	)
 	if (Confirm-Connect) {
@@ -5511,7 +5528,7 @@ function Copy-DSM7Policy {
 					$PolicyTarget.TargetObjectID = $TargetObject.ID
 					$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
 
-					$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters
+					$result = New-DSM7PolicyObject -NewPolicy $Policy -PolicyTarget $PolicyTarget -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters -Stats:$Stats
 					if ($result) {
 						$result = Convert-DSM7PolicytoPSObject ($result)
 						Write-Log 0 "Neue Policy ($($result.ID)) mit Ziel ($($TargetObject.Name)) erstellt." $MyInvocation.MyCommand
@@ -5549,7 +5566,8 @@ function New-DSM7PolicyObject {
 		$NewPolicy,
 		$PolicyTarget,
 		$SwInstallationParam,
-		$InstallationParametersOfSwSetComponents
+		$InstallationParametersOfSwSetComponents,
+		[switch]$Stats
 	)
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "CreatePolicy"
@@ -5591,8 +5609,16 @@ function New-DSM7PolicyObject {
 			$Webrequest.NewPolicy.TargetObjectList = $PolicyTarget
 			$Webrequest.InstallationParametersOfSwSetComponents = $InstallationParametersOfSwSetComponents
 		}
-		$Webresult = $DSM7WebService.CreatePolicy($Webrequest).CreatedPolicy
-		return $Webresult
+		$Webresult = $DSM7WebService.CreatePolicy($Webrequest)
+		if ($Stats) {
+			write-log 0 "Anzahl erstellter Instanzen: $($Webresult.NumberOfInstancesCreated)." $MyInvocation.MyCommand 
+			write-log 0 "Anzahl Instanzen mit nicht gültigen Voraussetzungen: $($Webresult.NumberOfInstancesFailingPrerequisite)." $MyInvocation.MyCommand 
+			write-log 0 "Anzahl ungültiger Instanzen: $($Webresult.NumberOfInvalidInstances)." $MyInvocation.MyCommand 
+		}
+		$global:DSM7AsynchronousExecution = $Webresult.AsynchronousExecution
+		$global:DSM7InfrastructureTaskGuid = $Webresult.InfrastructureTaskGuid
+
+		return $Webresult.CreatedPolicy
 	}
 	catch [system.exception] 
 	{
@@ -5980,7 +6006,10 @@ function Copy-DSM7PolicyListNewTarget {
 		[Parameter(Position=4, Mandatory=$false)]
 		[system.string]$ExtentionName,
 		[Parameter(Position=5, Mandatory=$false)]
-		[system.string]$ExtentionLDAPPath
+		[system.string]$ExtentionLDAPPath,
+		[Parameter(Position=17, Mandatory=$false)]
+		[switch]$Stats
+
 	)
 	if (Confirm-Connect) {
 		try {
@@ -6042,7 +6071,7 @@ function Copy-DSM7PolicyListNewTarget {
 
 								}
 								else {
-									$result = Copy-DSM7Policy -ID $Policy.ID -TargetID $TargetObject.ID -IsActiv:$Policy.IsActive -SwSetComponentPolicyIDs $SWSetIDs
+									$result = Copy-DSM7Policy -ID $Policy.ID -TargetID $TargetObject.ID -IsActiv:$Policy.IsActive -SwSetComponentPolicyIDs $SWSetIDs -Stats:$Stats
 								}
 								if (!$result) {
 									Write-Log 1 "Fehler beim Paket ($($Policy.AssignedObjectName))!" $MyInvocation.MyCommand
@@ -6060,7 +6089,7 @@ function Copy-DSM7PolicyListNewTarget {
 						}
 						else {
 							Write-Log 1 "Nicht alle Policys neu erstellt! $I von $K erstellt, $J waren schon vorhahen." $MyInvocation.MyCommand
-							return $false
+							return $true
 						}
 					}
 				}

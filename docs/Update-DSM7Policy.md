@@ -18,7 +18,7 @@ Update-DSM7Policy [[-ID] <Int32>] [[-SwName] <String>] [[-SwUniqueID] <String>] 
  [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy]
  [[-Parameter] <String>] [[-PolicyRestrictionType] <String>] [[-PolicyRestrictionList] <Array>]
  [-UpdatePackage] [-CriticalUpdate] [-DeactivateUpdatedInstances] [-RemoveInstanceInstallationParameters]
- [[-InstanceActivationOnCreate] <String>] [[-InstanceActivationMode] <String>] [<CommonParameters>]
+ [[-InstanceActivationOnCreate] <String>] [[-InstanceActivationMode] <String>] [-Stats] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -44,6 +44,16 @@ Update-DSM7Policy -SwName "Software" -IsActiv -ActivationStartDate "22:00 01.01.
 ### BEISPIEL 4
 ```
 Update-DSM7Policy -SwName "Software" -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
+```
+
+### BEISPIEL 5
+```
+Update-DSM7Policy -SwName "Software" -IsActiv -InstanceActivationMode AutoActivateOnce  -InstanceActivationOnCreate CreateInactive
+```
+
+### BEISPIEL 6
+```
+Update-DSM7Policy -SwName "Software" -IsActiv -UpdatePackage -CriticalUpdate -DeactivateUpdatedInstances -RemoveInstanceInstallationParameters
 ```
 
 ## PARAMETERS
@@ -359,6 +369,21 @@ Aliases:
 Required: False
 Position: 17
 Default value: DontAutoactivate
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Stats
+{{Fill Stats Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 18
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

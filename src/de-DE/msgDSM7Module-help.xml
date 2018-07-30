@@ -1179,11 +1179,11 @@
       <command:verb>Copy</command:verb>
       <command:noun>DSM7Policy</command:noun>
       <maml:description>
-        <maml:para>Ändert ein Policy Object aus.</maml:para>
+        <maml:para>Kopiert ein Policy zu einem neuem Ziel.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Ändert ein Policy Object aus.</maml:para>
+      <maml:para>Kopiert ein Policy zu einem neuem Ziel.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -1204,6 +1204,17 @@
           <maml:name>JobPolicy</maml:name>
           <maml:Description>
             <maml:para>{{Fill JobPolicy Description}}</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
+          <maml:name>Stats</maml:name>
+          <maml:Description>
+            <maml:para>{{Fill Stats Description}}</maml:para>
           </maml:Description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -1474,6 +1485,18 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="11" aliases="none">
+        <maml:name>Stats</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill Stats Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes />
     <command:returnValues />
@@ -1587,6 +1610,17 @@
             <maml:uri />
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="18" aliases="none">
+          <maml:name>Stats</maml:name>
+          <maml:Description>
+            <maml:para>{{Fill Stats Description}}</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>LDAPPath</maml:name>
@@ -1806,6 +1840,18 @@
           <maml:uri />
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="18" aliases="none">
+        <maml:name>Stats</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill Stats Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
     </command:parameters>
     <command:inputTypes />
@@ -9442,6 +9488,41 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="12" aliases="none">
+          <maml:name>InstanceActivationOnCreate</maml:name>
+          <maml:Description>
+            <maml:para>{{Fill InstanceActivationOnCreate Description}}</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>0</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="none">
+          <maml:name>InstanceActivationMode</maml:name>
+          <maml:Description>
+            <maml:para>{{Fill InstanceActivationMode Description}}</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>DontAutoactivate</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="none">
+          <maml:name>Stats</maml:name>
+          <maml:Description>
+            <maml:para>{{Fill Stats Description}}</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>SwUniqueID</maml:name>
           <maml:Description>
@@ -9746,6 +9827,42 @@
         <maml:name>JobPolicy</maml:name>
         <maml:Description>
           <maml:para>{{Fill JobPolicy Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="12" aliases="none">
+        <maml:name>InstanceActivationOnCreate</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill InstanceActivationOnCreate Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>0</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="13" aliases="none">
+        <maml:name>InstanceActivationMode</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill InstanceActivationMode Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>DontAutoactivate</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="14" aliases="none">
+        <maml:name>Stats</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill Stats Description}}</maml:para>
         </maml:Description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -13626,6 +13743,17 @@
           </dev:type>
           <dev:defaultValue>DontAutoactivate</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="18" aliases="none">
+          <maml:name>Stats</maml:name>
+          <maml:Description>
+            <maml:para>{{Fill Stats Description}}</maml:para>
+          </maml:Description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
         <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>SwUniqueID</maml:name>
           <maml:Description>
@@ -14011,6 +14139,18 @@
         </dev:type>
         <dev:defaultValue>DontAutoactivate</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="18" aliases="none">
+        <maml:name>Stats</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill Stats Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes />
     <command:returnValues />
@@ -14044,6 +14184,20 @@
       <command:example>
         <maml:title>-------------------------- BEISPIEL 4 --------------------------</maml:title>
         <dev:code>Update-DSM7Policy -SwName "Software" -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- BEISPIEL 5 --------------------------</maml:title>
+        <dev:code>Update-DSM7Policy -SwName "Software" -IsActiv -InstanceActivationMode AutoActivateOnce  -InstanceActivationOnCreate CreateInactive</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- BEISPIEL 6 --------------------------</maml:title>
+        <dev:code>Update-DSM7Policy -SwName "Software" -IsActiv -UpdatePackage -CriticalUpdate -DeactivateUpdatedInstances -RemoveInstanceInstallationParameters</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
         </dev:remarks>

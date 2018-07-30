@@ -16,7 +16,8 @@ Erstellt eine neue Policy.
 New-DSM7Policy [[-SwName] <String>] [[-SwID] <Int32>] [[-SwUniqueID] <String>] [[-SwLDAPPath] <String>]
  [[-SwInstallationParams] <Array>] [[-TargetID] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
  [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy]
- [-IsUserPolicyCurrentComputer] [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [<CommonParameters>]
+ [-IsUserPolicyCurrentComputer] [-IsUserPolicyAllassociatedComputer] [-JobPolicy]
+ [[-InstanceActivationOnCreate] <String>] [[-InstanceActivationMode] <String>] [-Stats] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -256,6 +257,51 @@ Aliases:
 
 Required: False
 Position: 11
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -InstanceActivationOnCreate
+{{Fill InstanceActivationOnCreate Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 12
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -InstanceActivationMode
+{{Fill InstanceActivationMode Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 13
+Default value: DontAutoactivate
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Stats
+{{Fill Stats Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 14
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False

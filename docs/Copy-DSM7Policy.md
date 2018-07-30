@@ -8,7 +8,7 @@ schema: 2.0.0
 # Copy-DSM7Policy
 
 ## SYNOPSIS
-Ändert ein Policy Object aus.
+Kopiert ein Policy zu einem neuem Ziel.
 
 ## SYNTAX
 
@@ -16,11 +16,11 @@ schema: 2.0.0
 Copy-DSM7Policy [-ID] <Int32> [[-TargetID] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
  [[-TargetParentContID] <String>] [[-ActivationStartDate] <String>] [[-SwSetComponentPolicyIDs] <Array>]
  [-IsActiv] [-IsUserPolicy] [-IsUserPolicyCurrentComputer] [-IsUserPolicyAllassociatedComputer] [-JobPolicy]
- [<CommonParameters>]
+ [-Stats] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Ändert ein Policy Object aus.
+Kopiert ein Policy zu einem neuem Ziel.
 
 ## EXAMPLES
 
@@ -211,6 +211,21 @@ Aliases:
 
 Required: False
 Position: 10
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Stats
+{{Fill Stats Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 11
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
