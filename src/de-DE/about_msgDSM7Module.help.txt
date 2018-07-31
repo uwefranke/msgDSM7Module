@@ -92,17 +92,19 @@ functions in msgDSM7Module
     *
     New-DSM7Policy
     *
+    Update-DSM7Policy
+    *
+    Copy-DSM7Policy
+    *
+    Copy-DSM7PolicyListNewTarget
+    *
     Add-DSM7PolicyToTarget
     *
     Move-DSM7PolicyToTarget
     *
-    Update-DSM7Policy
-    *
     Get-DSM7PolicyListByTarget
     *
     Get-DSM7PolicyListByAssignedSoftware
-    *
-    Copy-DSM7PolicyListNewTarget
     *
     Get-DSM7PolicyStatisticsByTarget
     *

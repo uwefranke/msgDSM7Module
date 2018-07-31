@@ -6807,10 +6807,15 @@ function Get-DSM7Software {
 #>
 	[CmdletBinding()] 
 	param ( 
+		[Parameter(Position=0, Mandatory=$false)]
+		[system.int32]$ID,
+		[Parameter(Position=1, Mandatory=$false)]
 		[system.string]$Name,
-		[system.string]$ID,
+		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$UniqueID,
+		[Parameter(Position=3, Mandatory=$false)]
 		[system.string]$LDAPPath,
+		[Parameter(Position=4, Mandatory=$false)]
 		[switch]$IsLastReleasedRev
 	)
 	if (Confirm-Connect) {

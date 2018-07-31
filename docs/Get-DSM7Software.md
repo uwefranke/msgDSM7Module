@@ -14,7 +14,7 @@ Gibt ein Software Objekt zurück.
 
 ```
 Get-DSM7Software [[-Name] <String>] [[-ID] <String>] [[-UniqueID] <String>] [[-LDAPPath] <String>]
- [-IsLastReleasedRev] [-IsLastRevision] [<CommonParameters>]
+ [-IsLastReleasedRev] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -100,21 +100,6 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -IsLastRevision
-{{Fill IsLastRevision Description}}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: True
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
