@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-## [1.0.1.9] - 2018-08-01
+## [1.0.1.9] - 2018-31-07
 
 ### Added
 
@@ -23,6 +23,10 @@ All notable changes to this project will be documented in this file.
 * function Copy-DSM7Policy
 * function New-DSM7Policy (new parameters)
 * function Update-DSM7Policy (new parameters and options)
+
+### Fixed
+
+* internal function Convert-DSM7PolicytoPSObject (Null elements)
 
 ## [1.0.1.8] - 2018-07-30
 

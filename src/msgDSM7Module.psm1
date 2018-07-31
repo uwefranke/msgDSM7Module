@@ -756,9 +756,7 @@ function Convert-DSM7PolicytoPSObject {
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
-	if ($DSM7Object.PolicyRestrictionList) {
-		add-member -inputobject $Raw -MemberType NoteProperty -name "PolicyRestrictionList" -Value $DSM7Object.PolicyRestrictionList
-	}
+	add-member -inputobject $Raw -MemberType NoteProperty -name "PolicyRestrictionList" -Value $DSM7Object.PolicyRestrictionList
 
 	if ($resolvedName) {
 		if ($AssignedObjectName -ne $AssignedObjectNameOld) {
@@ -792,11 +790,9 @@ function Convert-DSM7PolicytoPSObject {
 			}
 			$SwInstallationParameterList += $SwInstallationParameterPSObject
 		}
-		add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameters" -Value $SwInstallationParameterList
 
 	}
-
-
+	add-member -inputobject $Raw -MemberType NoteProperty -name "SwInstallationParameters" -Value $SwInstallationParameterList
 	if ($DSM7Object.PropGroupList) {
 		foreach ($PropGroup in $DSM7Object.PropGroupList) {
 			$Groupname = $PropGroup.Tag
