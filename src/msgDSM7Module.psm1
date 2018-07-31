@@ -23,7 +23,7 @@
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benötigte DSM Version 7.0 oder größer
 $DSM7testedVersion = "7.4.1.4" # höchste getestet DSM Version mit diesem Modul
-$DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup))"
+$DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=ExternalGroup)(SchemaTag=DynamicGroup))"
 $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7StructureComputer = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup))"
@@ -490,11 +490,11 @@ function Find-DSM7Target {
 		else {
 			$TargetObject = Get-DSM7ObjectObject -ID $Target.ID
 		}
-		write-log 0 "TragetObject mit ID($($TargetObject.ID)) gefunden." $MyInvocation.MyCommand
+		write-log 0 "TargetObject mit ID($($TargetObject.ID)) gefunden." $MyInvocation.MyCommand
 		return $TargetObject
 	}
 	else {
-		write-log 1 "TragetObject mit nicht gefunden!" $MyInvocation.MyCommand
+		write-log 1 "TargetObject nicht gefunden!" $MyInvocation.MyCommand
 		return $false
 	}
 }
