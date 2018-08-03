@@ -6,11 +6,21 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+* function  Get-DSM7SwInstallationParamDefinitions
+
 ### Changed
+
+* New-DSM7Policy (create ShopPolicy)
 
 ### Fixed
 
-## [1.0.1.9] - 2018-31-07
+## [1.0.1.10] - 2018-08-03
+
+### Changed
+
+* New-DSM7Policy (create DenyPolicy and JobPolicy)
+
+## [1.0.1.9] - 2018-07-31
 
 ### Added
 

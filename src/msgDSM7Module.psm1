@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.9
+	Version		: 1.0.1.10
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -5214,6 +5214,16 @@ function New-DSM7Policy {
 		[system.int32]$TargetParentContID,
 		[Parameter(Position=5, Mandatory=$false)]
 		[system.string]$ActivationStartDate,
+		[Parameter(Position=5, Mandatory=$false)]
+		[system.int32]$Priority = 1000,
+		[Parameter(Position=5, Mandatory=$false)]
+		[system.int32]$MaintenanceBehavior = 2,
+		[Parameter(Position=5, Mandatory=$false)]
+		[system.int32]$WakeUpTimeSpan = 240,
+		[Parameter(Position=5, Mandatory=$false)]
+		[system.int32]$MaxPreStagingTime = 365,
+		[Parameter(Position=5, Mandatory=$false)]
+		[system.int32]$MinPreStagingTime = 365,
 		[Parameter(Position=6, Mandatory=$false)]
 		[switch]$IsActiv = $false,
 		[Parameter(Position=7, Mandatory=$false)]
@@ -5224,6 +5234,10 @@ function New-DSM7Policy {
 		[switch]$IsUserPolicyAllassociatedComputer = $false,
 		[Parameter(Position=10, Mandatory=$false)]
 		[switch]$JobPolicy = $false,
+		[Parameter(Position=10, Mandatory=$false)]
+		[system.int32]$JobPolicyTrigger = 0,
+		[Parameter(Position=10, Mandatory=$false)]
+		[switch]$DenyPolicy = $false,
 		[Parameter(Position=11, Mandatory=$false)]
 		[ValidateSet("CreateActive","CreateInactive")]
 		[System.String]$InstanceActivationOnCreate = 0,
@@ -5339,9 +5353,6 @@ function New-DSM7Policy {
 						2 {$NoPolicy = $true}
 						default {$StagingMode = "Standard"}
 					}
-					if ($JobPolicy) {
-						$SchemaTag = "JobPolicy"
-					}
 					if ($NoPolicy) {
 						Write-Log 1 "Es kann keine Policy erstellt werden Paket ist zurueckgezogen!!!" $MyInvocation.MyCommand
 					}
@@ -5349,6 +5360,33 @@ function New-DSM7Policy {
 						Write-Log 0 "($($AssignedObject.Name)) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
 						$Policy = New-Object $DSM7Types["MdsPolicy"]
 						$Policy.SchemaTag = $SchemaTag
+						$Policy.Priority = $Priority
+						$Policy.WakeUpTimeSpan = $WakeUpTimeSpan
+						$Policy.MaxPreStagingTime = $MaxPreStagingTime
+						$Policy.MinPreStagingTime = $MinPreStagingTime
+						$Policy.MaintenanceBehavior = $MaintenanceBehavior
+					if ($JobPolicy) {
+						$Policy.SchemaTag = "JobPolicy"
+						$PropertyList = @()
+						$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
+						$PropertyListObject.Tag = "JobTrigger"
+						$PropertyListObject.Type = "Option"
+						$PropertyListObject.TypedValue = $JobPolicyTrigger
+						$PropertyList += $PropertyListObject
+						$PropGroupListObject = New-Object $DSM7Types["MdsPropGroup"]
+						$PropGroupListObject.Tag = "JobPolicy"
+						$PropGroupListObject.PropertyList = $PropertyList
+						$PropGroupList += $PropGroupListObject
+						$Policy.PropGroupList = $PropGroupList
+						$Policy.InstallationOrder = $AssignedObject.'Software.InstallationOrder'
+					}
+					if ($DenyPolicy) {
+						$Policy.SchemaTag = "DenyPolicy"
+						$Policy.WakeUpTimeSpan = 240
+						$Policy.MaxPreStagingTime = 365
+						$Policy.MinPreStagingTime = 365
+						$Policy.Priority = -2147483648
+					}
 						$Policy.AssignedObjectID = $AssignedObject.ID
 						$Policy.Name = ""
 						$Policy.Description = ""
@@ -7892,6 +7930,7 @@ function Get-DSM7SwInstallationParamDefinitionsObject {
 		return $false 
 	} 
 }
+
 function Add-DSM7SwInstallationParamDefinitionsObject {
 	[CmdletBinding()] 
 	param ( 
