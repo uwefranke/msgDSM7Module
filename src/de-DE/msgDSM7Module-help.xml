@@ -10038,6 +10038,20 @@
           <maml:para></maml:para>
         </dev:remarks>
       </command:example>
+      <command:example>
+        <maml:title>-------------------------- BEISPIEL 3 --------------------------</maml:title>
+        <dev:code>New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{4F3BB3DB-F1F3-4ACA-A7B6-F8CA57FD20F1}" -JobPolicy -JobPolicyTrigger 10</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- BEISPIEL 4 --------------------------</maml:title>
+        <dev:code>New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{D4128974-088B-4395-B326-5A9DBBCE9DFD}" -DenyPolicy</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
