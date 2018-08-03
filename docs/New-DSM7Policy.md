@@ -15,8 +15,10 @@ Erstellt eine neue Policy.
 ```
 New-DSM7Policy [[-SwName] <String>] [[-SwID] <Int32>] [[-SwUniqueID] <String>] [[-SwLDAPPath] <String>]
  [[-SwInstallationParams] <Array>] [[-TargetID] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
- [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>] [-IsActiv] [-IsUserPolicy]
- [-IsUserPolicyCurrentComputer] [-IsUserPolicyAllassociatedComputer] [-JobPolicy]
+ [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>] [[-Priority] <Int32>]
+ [[-MaintenanceBehavior] <Int32>] [[-WakeUpTimeSpan] <Int32>] [[-MaxPreStagingTime] <Int32>]
+ [[-MinPreStagingTime] <Int32>] [-IsActiv] [-IsUserPolicy] [-IsUserPolicyCurrentComputer]
+ [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [[-JobPolicyTrigger] <Int32>] [-DenyPolicy]
  [[-InstanceActivationOnCreate] <String>] [[-InstanceActivationMode] <String>] [-Stats] [<CommonParameters>]
 ```
 
@@ -187,6 +189,81 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Priority
+{{Fill Priority Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: 1000
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MaintenanceBehavior
+{{Fill MaintenanceBehavior Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: 2
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WakeUpTimeSpan
+{{Fill WakeUpTimeSpan Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: 240
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MaxPreStagingTime
+{{Fill MaxPreStagingTime Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: 365
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -MinPreStagingTime
+{{Fill MinPreStagingTime Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 6
+Default value: 365
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -IsActiv
 {{Fill IsActiv Description}}
 
@@ -249,6 +326,36 @@ Accept wildcard characters: False
 
 ### -JobPolicy
 {{Fill JobPolicy Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 11
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -JobPolicyTrigger
+{{Fill JobPolicyTrigger Description}}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 11
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DenyPolicy
+{{Fill DenyPolicy Description}}
 
 ```yaml
 Type: SwitchParameter

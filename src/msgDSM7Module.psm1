@@ -5166,6 +5166,10 @@ function New-DSM7Policy {
 		New-DSM7Policy -SwName "Microsoft Windows Update Agent (x64)" -TargetName "Ziel" -IsActiv
 	.EXAMPLE
 		New-DSM7Policy -swid 12345 -TargetID 54321 -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
+	.EXAMPLE
+		New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{4F3BB3DB-F1F3-4ACA-A7B6-F8CA57FD20F1}" -JobPolicy -JobPolicyTrigger 10
+	.EXAMPLE
+		New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{D4128974-088B-4395-B326-5A9DBBCE9DFD}" -DenyPolicy
 	.NOTES
 	.LINK
 		Get-DSM7PolicyList
