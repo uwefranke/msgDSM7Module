@@ -19,6 +19,7 @@
 .LINK  
 		https://www.ivanti.com
 #>
+
 ###############################################################################
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benötigte DSM Version 7.0 oder größer

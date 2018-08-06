@@ -5,7 +5,6 @@
 #
 # Generiert am: 06.08.2018
 #
-
 @{
 
 # Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
