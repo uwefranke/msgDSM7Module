@@ -28,6 +28,7 @@ $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(Schem
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7StructureComputer = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup))"
 $DSM7StructureSoftware = "(|(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
+$global:DSM7GenTypeData = "ModifiedBy,CreatedBy,Modified,Created"
 ###############################################################################
 # Allgemeine interne Funktionen
 function Get-PSCredential {

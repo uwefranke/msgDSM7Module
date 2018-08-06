@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-## [1.0.1.10] - 2018-08-03
+## [1.0.1.10] - 2018-08-06
 
 ### Changed
 
