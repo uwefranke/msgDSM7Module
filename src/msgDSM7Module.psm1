@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.10
+	Version		: 1.0.1.11
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -19,7 +19,6 @@
 .LINK  
 		https://www.ivanti.com
 #>
-
 ###############################################################################
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benötigte DSM Version 7.0 oder größer
@@ -561,7 +560,7 @@ function Convert-DSM7ObjecttoPSObject {
 	}
 	$Raw = New-Object PSObject
 	foreach ($DSM7ObjectMember in $DSM7ObjectMembers) {
-		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "SwInstallationParameters" -and $DSM7ObjectMember -ne "PropGroupList") {
+		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "PropGroupList") {
 			if ($DSM7ObjectMember -like "*List") {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
 				if ($DSM7ObjectMemberLists.Count -gt 0){
@@ -1013,6 +1012,83 @@ function Convert-DSM7VariabletoPSObjects {
 	}
 	return $DSM7ObjectList
 }
+function Convert-DSM7SwInstallationParamDefinitionstoPSObject {
+	[CmdletBinding()] 
+	param (
+		$DSM7Object,
+		$DSM7ObjectMembers
+	)
+	$Raw = New-Object PSObject
+	foreach ($DSM7ObjectMember in $DSM7ObjectMembers) {
+		if ($DSM7ObjectMember -ne "GenTypeData") {
+			if ($DSM7ObjectMember -like "*List" -or $DSM7ObjectMember -like "*Category" ) {
+				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
+				$RawListArray =@()
+				foreach ($DSM7ObjectMemberList in $DSM7ObjectMemberLists) {
+					$DSM7ObjectMemberListMembers = ($DSM7ObjectMemberList|Get-Member -MemberType Properties).Name
+
+					$RawList = New-Object PSObject
+					$RawListArrayListArray =@()
+					foreach ($DSM7ObjectMemberListMember in $DSM7ObjectMemberListMembers){
+						$value = $DSM7ObjectMemberList.$DSM7ObjectMemberListMember
+						if ($DSM7ObjectMemberListMember -like "*List") {
+							$DSM7ObjectMemberListMemberLists = $DSM7ObjectMemberList.$DSM7ObjectMemberListMember
+							foreach ($DSM7ObjectMemberListMemberList in $DSM7ObjectMemberListMemberLists) {
+								$RawListList = New-Object PSObject
+								$DSM7ObjectMemberListMemberListMembers = ($DSM7ObjectMemberListMemberList|Get-Member -MemberType Properties).Name
+								foreach ($DSM7ObjectMemberListMemberListMember in $DSM7ObjectMemberListMemberListMembers) {
+									if ($DSM7ObjectMemberListMemberListMember -eq "GenTypeData") {
+										foreach ($GenTypeData in $($DSM7ObjectMemberListMemberList.GenTypeData|get-member -membertype properties)) { 
+											add-member -inputobject $RawListList -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7ObjectMemberListMemberList.GenTypeData.$($GenTypeData.Name)
+										}
+									} 
+									else {
+										add-member -inputobject $RawListList -MemberType NoteProperty -name "$DSM7ObjectMemberListMemberListMember" -Value $DSM7ObjectMemberListMemberList.$DSM7ObjectMemberListMemberListMember
+									}
+								}
+								$RawListArrayListArray += $RawListList
+							}
+							$value = $RawListArrayListArray
+						}
+						if ($DSM7ObjectMemberListMember -eq "GenTypeData") {
+							foreach ($GenTypeData in $($DSM7ObjectMemberList.GenTypeData|get-member -membertype properties)) { 
+								add-member -inputobject $RawList -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7ObjectMemberList.GenTypeData.$($GenTypeData.Name)
+							}
+						} 
+						else {
+							add-member -inputobject $RawList -MemberType NoteProperty -name "$DSM7ObjectMemberListMember" -Value $value
+						}
+					}
+					$RawListArray += $RawList
+				}
+				add-member -inputobject $Raw -MemberType NoteProperty -name $DSM7ObjectMember -Value $RawListArray
+			}
+			else {
+				add-member -inputobject $Raw -MemberType NoteProperty -name $DSM7ObjectMember -Value $DSM7Object.$DSM7ObjectMember
+			}
+		} 
+	}
+	if ($DSM7Object.GenTypeData) {
+		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
+			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
+		}
+	}
+	return $Raw
+}
+
+function Convert-DSM7SwInstallationParamDefinitionstoPSObjects {
+	[CmdletBinding()] 
+	param (
+		$DSM7Objects
+	)
+	$DSM7ObjectMembers = ($DSM7Objects[0]|Get-Member -MemberType Properties).Name
+	foreach ($DSM7Object in $DSM7Objects) {
+		$DSM7Object = Convert-DSM7SwInstallationParamDefinitionstoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers
+		$DSM7ObjectList += @($DSM7Object)
+	}
+	return $DSM7ObjectList
+}
+
 function Convert-DSM7AssociationSchemaListtoPSObject {
 	[CmdletBinding()] 
 	param ( 
@@ -5272,7 +5348,8 @@ function New-DSM7Policy {
 					Write-Log 0 "Software ist ein Set." $MyInvocation.MyCommand
 					$DSMInstallationParamDefinitions = @{}
 					foreach ($DSMSwSetId in $DSMSwSetIds) {
-						$DSMInstallationParamDefinitions[$DSMSwSetId] = Get-DSM7SwInstallationParamDefinitionsObject $DSMSwSetId
+						$DSMSoftware = Get-DSM7ObjectObject -ID $DSMSwSetId
+						$DSMInstallationParamDefinitions[$DSMSwSetId] = Get-DSM7SwInstallationParamDefinitionsObject $DSMSoftware
 						$DSMTestnoValue =$DSMInstallationParamDefinitions[$DSMSwSetId]|where {$_.IsMandatory -and !$_.DefaultValue}
 						if ($DSMTestnoValue -and !$SwInstallationParams -and !$SwSetComponentPolicyIDs) {
 							Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
@@ -5300,7 +5377,7 @@ function New-DSM7Policy {
 						}
 					}
 				}
-				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject $AssignedObject.ID
+				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject $AssignedObject
 				$DSMTestnoValue =$DSMInstallationParamDefinitions|where {$_.IsMandatory -and !$_.DefaultValue}
 				if ($DSMTestnoValue -and !$SwInstallationParams) {
 					Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
@@ -5371,28 +5448,28 @@ function New-DSM7Policy {
 						$Policy.MaxPreStagingTime = $MaxPreStagingTime
 						$Policy.MinPreStagingTime = $MinPreStagingTime
 						$Policy.MaintenanceBehavior = $MaintenanceBehavior
-					if ($JobPolicy) {
-						$Policy.SchemaTag = "JobPolicy"
-						$PropertyList = @()
-						$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
-						$PropertyListObject.Tag = "JobTrigger"
-						$PropertyListObject.Type = "Option"
-						$PropertyListObject.TypedValue = $JobPolicyTrigger
-						$PropertyList += $PropertyListObject
-						$PropGroupListObject = New-Object $DSM7Types["MdsPropGroup"]
-						$PropGroupListObject.Tag = "JobPolicy"
-						$PropGroupListObject.PropertyList = $PropertyList
-						$PropGroupList += $PropGroupListObject
-						$Policy.PropGroupList = $PropGroupList
-						$Policy.InstallationOrder = $AssignedObject.'Software.InstallationOrder'
-					}
-					if ($DenyPolicy) {
-						$Policy.SchemaTag = "DenyPolicy"
-						$Policy.WakeUpTimeSpan = 240
-						$Policy.MaxPreStagingTime = 365
-						$Policy.MinPreStagingTime = 365
-						$Policy.Priority = -2147483648
-					}
+						if ($JobPolicy) {
+							$Policy.SchemaTag = "JobPolicy"
+							$PropertyList = @()
+							$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
+							$PropertyListObject.Tag = "JobTrigger"
+							$PropertyListObject.Type = "Option"
+							$PropertyListObject.TypedValue = $JobPolicyTrigger
+							$PropertyList += $PropertyListObject
+							$PropGroupListObject = New-Object $DSM7Types["MdsPropGroup"]
+							$PropGroupListObject.Tag = "JobPolicy"
+							$PropGroupListObject.PropertyList = $PropertyList
+							$PropGroupList += $PropGroupListObject
+							$Policy.PropGroupList = $PropGroupList
+							$Policy.InstallationOrder = $AssignedObject.'Software.InstallationOrder'
+						}
+						if ($DenyPolicy) {
+							$Policy.SchemaTag = "DenyPolicy"
+							$Policy.WakeUpTimeSpan = 240
+							$Policy.MaxPreStagingTime = 365
+							$Policy.MinPreStagingTime = 365
+							$Policy.Priority = -2147483648
+						}
 						$Policy.AssignedObjectID = $AssignedObject.ID
 						$Policy.Name = ""
 						$Policy.Description = ""
@@ -6063,15 +6140,17 @@ function Copy-DSM7PolicyListNewTarget {
 				[Array]$SourcePolicy = Get-DSM7PolicyListByTarget -ID $SourceObject.ID
 				if ($SourcePolicy) {
 					Write-Log 0 "($Name) -> ($LDAPPath) erfolgreich." $MyInvocation.MyCommand
-					if ($TargetLDAPPath) {
-						$ParentContID = Get-DSM7LDAPPathID -LDAPPath $TargetLDAPPath
+					if ($TargetLDAPPath -or $TargetParentContID) {
+						if (!$TargetParentContID) {
+							$TargetParentContID = Get-DSM7LDAPPathID -LDAPPath $TargetLDAPPath
+						}
 					}
 					else {
-						$ParentContID = $SourceObject.ParentContID
+						$TargetParentContID = $SourceObject.ParentContID
 					}
 					$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 					if (!$TargetObject) {
-						$TargetObject = New-DSM7Object -Name $TargetName -ParentContID $ParentContID -SchemaTag $SourceObject.SchemaTag -GroupType $SourceObject.GroupType -PropGroupList $SourceObject.PropGroupList
+						$TargetObject = New-DSM7Object -Name $TargetName -ParentContID $TargetParentContID -SchemaTag $SourceObject.SchemaTag -GroupType $SourceObject.GroupType -PropGroupList $SourceObject.PropGroupList
 						Write-Log 0 "($TargetName) -> ($LDAPPath) erfolgreich erstellt." $MyInvocation.MyCommand
 					}
 					if ($TargetObject.count -gt 1) {
@@ -7867,7 +7946,7 @@ function Remove-DSM7SoftwareCategory {
 		[Parameter(Position=0, Mandatory=$false)]
 		[system.string]$Name,
 		[Parameter(Position=1, Mandatory=$false)]
-		[int]$ID,
+		[System.Int32]$ID,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$LDAPPath,
 		[Parameter(Position=3, Mandatory=$false)]
@@ -7917,16 +7996,110 @@ function Remove-DSM7SoftwareCategory {
 } 
 Export-ModuleMember -Function Remove-DSM7SoftwareCategory
 
+function Get-DSM7SwInstallationParamDefinitions {
+	<#
+	.SYNOPSIS
+		Gibt von einem Softwarepaket die Parameter Definition zurück.
+	.DESCRIPTION
+		Gibt von einem Softwarepaket die Parameter Definition zurück.
+	.EXAMPLE
+		Get-DSM7SwInstallationParamDefinitions -ID 1234
+	.EXAMPLE
+		Get-DSM7SwInstallationParamDefinitions -Name "Softwarekategorie" -LDAPPath "Global Software Library/Application Library"
+	.NOTES
+	.LINK
+		Get-DSM7SoftwareList
+	.LINK
+		Get-DSM7SoftwareIDs
+	.LINK
+		Get-DSM7Software
+	.LINK
+		Update-DSM7Software
+	.LINK
+		Move-DSM7Software
+	.LINK
+		Get-DSM7SwInstallationParamDefinitions
+	.LINK
+		Get-DSM7SoftwareCategoryList
+	.LINK
+		Get-DSM7SoftwareCategory
+	.LINK
+		New-DSM7SoftwareCategory
+	.LINK
+		Update-DSM7SoftwareCategory
+	.LINK
+		Remove-DSM7SoftwareCategory
+	.LINK
+		Get-DSM7GroupMembers
+	.LINK
+		Get-DSM7ListOfMemberships
+	.LINK
+		Update-DSM7MembershipInGroups
+	.LINK
+		Update-DSM7MemberListOfGroup
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[system.string]$Name,
+		[system.string]$UniqueID,
+		[int]$ID,
+		[system.string]$LDAPPath,
+		[string[]]$Values,
+		[switch]$LDAP = $false
+	) 
+	if (Confirm-Connect) {
+		try {
+			if ($Name -or $ID -gt 0 -or $UniqueID) {
+				if ($ID -eq 0 -and !$UniqueID) {
+					$search = Get-DSM7Software -Name $Name -LDAPPath $LDAPPath
+					if ($search) {
+						$ID = $search.ID
+					}
+					else {
+						Write-Log 1 "Nicht gefunden!" $MyInvocation.MyCommand 
+						return $false
+					}
+				}
+				if ($UniqueID) {
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastRevision=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+					$ID = $SoftwareList.ID
+				}
+				if ($ID -gt 0) {
+					$Software = Get-DSM7ObjectObject -ID $ID 
+					$SoftwareParamDef = Get-DSM7SwInstallationParamDefinitionsObject $Software 
+					if ($SoftwareParamDef) {
+						$SoftwareParamDef = Convert-DSM7SwInstallationParamDefinitionstoPSObjects -DSM7Objects $SoftwareParamDef
+						return $SoftwareParamDef
+					}
+					else {
+						Write-Log 1 "Nicht gefunden!" $MyInvocation.MyCommand 
+						return $false
+					}
+				}
+			}
+			else {
+				Write-Log 1 "Name oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
+				return $false
+			}
+		}
+		catch [system.exception] 
+		{
+			Write-Log 2 $_ $MyInvocation.MyCommand 
+			return $false 
+		} 
+	}
+} 
+Export-ModuleMember -Function Get-DSM7SwInstallationParamDefinitions
+
 function Get-DSM7SwInstallationParamDefinitionsObject {
 	[CmdletBinding()] 
 	param ( 
 		[Parameter(Position=0, Mandatory=$true)]
-		$ID
+		$Object
 	)
 	try {
-		$Software = Get-DSM7ObjectObject -ID $ID
 		$Webrequest = Get-DSM7RequestHeader -action "GetSwInstallationParamDefinitions"
-		$Webrequest.ObjectToQuery = $Software
+		$Webrequest.ObjectToQuery = $Object
 		$Webresult = $DSM7WebService.GetSwInstallationParamDefinitions($Webrequest).InstallationParameterDefinitions
 		return $Webresult
 	}

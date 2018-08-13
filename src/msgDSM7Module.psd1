@@ -1,17 +1,18 @@
 #
-# Modulmanifest für das Modul "msgDSM7Module"
+# Modulmanifest für das Modul "PSGet_msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 06.08.2018
+# Generiert am: 14.08.2018
 #
+
 @{
 
 # Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.10'
+ModuleVersion = '1.0.1.11'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -91,6 +92,7 @@ FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-C
                'Get-DSM7PolicyStatisticsByPolicies', 
                'Get-DSM7ComputerMissingPatch', 
                'Get-DSM7PolicyInstanceCountByPolicy', 
+			   'Get-DSM7SwInstallationParamDefinitions',
                'Get-DSM7PolicyInstanceListByNode', 'Update-DSM7PolicyInstances', 
                'Remove-DSM7PolicyInstance', 
                'Get-DSM7SwInstallationConfigurationsObject', 'Get-DSM7SoftwareIDs', 

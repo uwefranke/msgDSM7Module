@@ -2,18 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
-
 ## [Unreleased]
 
 ### Added
-
-* function  Get-DSM7SwInstallationParamDefinitions
 
 ### Changed
 
 * New-DSM7Policy (create ShopPolicy)
 
 ### Fixed
+
+## [1.0.1.11] - 2018-08-14
+
+### Added
+
+* function  Get-DSM7SwInstallationParamDefinitions
+
+### Fixed
+
+* Copy-DSM7PolicyListNewTarget (New Group) 
 
 ## [1.0.1.10] - 2018-08-06
 
