@@ -1016,7 +1016,8 @@ function Convert-DSM7SwInstallationParamDefinitionstoPSObject {
 	[CmdletBinding()] 
 	param (
 		$DSM7Object,
-		$DSM7ObjectMembers
+		$DSM7ObjectMembers,
+		[switch]$resolvedName = $false
 	)
 	$Raw = New-Object PSObject
 	foreach ($DSM7ObjectMember in $DSM7ObjectMembers) {
@@ -1073,17 +1074,25 @@ function Convert-DSM7SwInstallationParamDefinitionstoPSObject {
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
+	if ($resolvedName -and $DSM7Object.InstallationParamType -eq "ObjectLink") {
+		$filter = ($($DSM7Object.FrontEndData) -split "ObjectFilter>")[1].trimend("</")
+		if ($DSM7Object.DefaultValue) {
+			$DefaultValueName = (Get-DSM7Object -ID $DSM7Object.DefaultValue).Name
+		}
+		add-member -inputobject $Raw -MemberType NoteProperty -name "DefaultValueName" -Value $DefaultValueName
+	}
 	return $Raw
 }
 
 function Convert-DSM7SwInstallationParamDefinitionstoPSObjects {
 	[CmdletBinding()] 
 	param (
-		$DSM7Objects
+		$DSM7Objects,
+		[switch]$resolvedName = $false
 	)
 	$DSM7ObjectMembers = ($DSM7Objects[0]|Get-Member -MemberType Properties).Name
 	foreach ($DSM7Object in $DSM7Objects) {
-		$DSM7Object = Convert-DSM7SwInstallationParamDefinitionstoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers
+		$DSM7Object = Convert-DSM7SwInstallationParamDefinitionstoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -resolvedName:$resolvedName
 		$DSM7ObjectList += @($DSM7Object)
 	}
 	return $DSM7ObjectList
@@ -8045,6 +8054,7 @@ function Get-DSM7SwInstallationParamDefinitions {
 		[int]$ID,
 		[system.string]$LDAPPath,
 		[string[]]$Values,
+		[switch]$resolvedName,
 		[switch]$LDAP = $false
 	) 
 	if (Confirm-Connect) {
@@ -8068,7 +8078,8 @@ function Get-DSM7SwInstallationParamDefinitions {
 					$Software = Get-DSM7ObjectObject -ID $ID 
 					$SoftwareParamDef = Get-DSM7SwInstallationParamDefinitionsObject $Software 
 					if ($SoftwareParamDef) {
-						$SoftwareParamDef = Convert-DSM7SwInstallationParamDefinitionstoPSObjects -DSM7Objects $SoftwareParamDef
+						$SoftwareParamDef = Convert-DSM7SwInstallationParamDefinitionstoPSObjects -DSM7Objects $SoftwareParamDef -resolvedName:$resolvedName
+						Write-Log 0 "Parameter zu Software ($($Software.Name)) gefunden." $MyInvocation.MyCommand 
 						return $SoftwareParamDef
 					}
 					else {
