@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.1.12] - 2018-08-20
+
+### Fixed
+
+* New-DSM7Policy (create DenyPolicy, default parameter changed)
+
 ## [1.0.1.11] - 2018-08-14
 
 ### Added

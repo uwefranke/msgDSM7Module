@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.11
+	Version		: 1.0.1.12
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -5329,9 +5329,11 @@ function New-DSM7Policy {
 		[system.int32]$JobPolicyTrigger = 0,
 		[Parameter(Position=10, Mandatory=$false)]
 		[switch]$DenyPolicy = $false,
+		[Parameter(Position=10, Mandatory=$false)]
+		[switch]$Pilot = $false,
 		[Parameter(Position=11, Mandatory=$false)]
 		[ValidateSet("CreateActive","CreateInactive")]
-		[System.String]$InstanceActivationOnCreate = 0,
+		[System.String]$InstanceActivationOnCreate = "CreateActive",
 		[Parameter(Position=12, Mandatory=$false)]
 		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
 		[system.string]$InstanceActivationMode = "DontAutoactivate",
@@ -5343,10 +5345,20 @@ function New-DSM7Policy {
 		try {
 			$NoPolicy = $false
 			if ($SwName) {
-				$AssignedObject = Get-DSM7Software -Name $SwName -LDAPPath $SwLDAPPath
+				if ($Pilot) {
+					$AssignedObject = Get-DSM7Software -Name $SwName -LDAPPath $SwLDAPPath
+				}
+				else {
+					$AssignedObject = Get-DSM7Software -Name $SwName -LDAPPath $SwLDAPPath -IsLastReleasedRev
+				}
 			}
 			if ($SwUniqueID) {
-				$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
+				if ($Pilot) {
+					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
+				}
+				else {
+					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath -IsLastReleasedRev
+				}
 			}
 			if ($SwID) {
 				$AssignedObject = Get-DSM7Software -ID $SwID
@@ -5386,9 +5398,9 @@ function New-DSM7Policy {
 						}
 					}
 				}
-				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject $AssignedObject
+				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject (Get-DSM7ObjectObject -ID $AssignedObject.ID)
 				$DSMTestnoValue =$DSMInstallationParamDefinitions|where {$_.IsMandatory -and !$_.DefaultValue}
-				if ($DSMTestnoValue -and !$SwInstallationParams) {
+				if ($DSMTestnoValue -and !$SwInstallationParams -and !$DenyPolicy) {
 					Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
 					return $false 
 				}
@@ -5474,6 +5486,8 @@ function New-DSM7Policy {
 						}
 						if ($DenyPolicy) {
 							$Policy.SchemaTag = "DenyPolicy"
+							$Policy.ShopForAllUsers = $true
+							$Policy.MaintenanceBehavior = 0
 							$Policy.WakeUpTimeSpan = 240
 							$Policy.MaxPreStagingTime = 365
 							$Policy.MinPreStagingTime = 365
@@ -8829,54 +8843,29 @@ function Get-DSM7User {
 Export-ModuleMember -Function Get-DSM7User
 
 
-# SIG # Begin signature block
-# MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7Ii4uCD48Ic9/mRnQLVVkUsy
-# D/KgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
-# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
-# MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
-# IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
-# v0Lx3FIBWwSSu8g2pB3ye4VcqWWjFj3kGaUQZ7JNJcH/uy74jhtfmQgE2NnEbh1X
-# HM3gbSGyPBHsqSFLpTIqM0VTyOVJk3yB1qfIFxUguEZz87C2yZFFagXbwJHamXR7
-# LtB+yjARIrbMUf69c5FFMLS93aRg9cLsGJ3dy4fEVQIDAQABo3EwbzATBgNVHSUE
-# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBBp+xZ1jGKZkXWWdUjyNz19oSkwJzEl
-# MCMGA1UEAxMcVXdlIEZyYW5rZSAobXNnIHNlcnZpY2VzIEFHKYIQUW95fLQCIbVO
-# uAnpDDc4ZTAJBgUrDgMCHQUAA4GBAGclar+QSH1mKf1gt1oNurpTiXBZbM58Pw2Z
-# GRRgVc5TaPodd11hJOVYD0GE9MCVu5lA6q2I4aYfN5DWcu5LgmCqfTC1UwTlG9bG
-# fx+tTVJlbejYRJ/6ETxZ5ZYSnWB8C31hT2g+0wGW16rB7ddnd4enVCEzNW6d1GDQ
-# gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
-# c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
-# BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQ8
-# 04+BB1gcUrsR9NyER4v/P09BsTANBgkqhkiG9w0BAQEFAASBgDND4BiTbvm76QRJ
-# 2cMIlEgFASkjRD9zvGg55TNQ738bvDerIMzjsCvfKMy944omjhj4at7PLHg0E6de
-# 2XPhBpT3TXMqilhXeE7nW2e2TzFkLzHv19jNGfSlSfrwxTDGPDqKi4KuIPzrT14T
-# I+Ko6UPmnPa0otjtOc1OvZWnXszu
-# SIG # End signature block
 
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUuRizgmTdfotu+wLrsBxvzP4a
-# X2igggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
-# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
-# MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
-# IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
-# v0Lx3FIBWwSSu8g2pB3ye4VcqWWjFj3kGaUQZ7JNJcH/uy74jhtfmQgE2NnEbh1X
-# HM3gbSGyPBHsqSFLpTIqM0VTyOVJk3yB1qfIFxUguEZz87C2yZFFagXbwJHamXR7
-# LtB+yjARIrbMUf69c5FFMLS93aRg9cLsGJ3dy4fEVQIDAQABo3EwbzATBgNVHSUE
-# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBBp+xZ1jGKZkXWWdUjyNz19oSkwJzEl
-# MCMGA1UEAxMcVXdlIEZyYW5rZSAobXNnIHNlcnZpY2VzIEFHKYIQUW95fLQCIbVO
-# uAnpDDc4ZTAJBgUrDgMCHQUAA4GBAGclar+QSH1mKf1gt1oNurpTiXBZbM58Pw2Z
-# GRRgVc5TaPodd11hJOVYD0GE9MCVu5lA6q2I4aYfN5DWcu5LgmCqfTC1UwTlG9bG
-# fx+tTVJlbejYRJ/6ETxZ5ZYSnWB8C31hT2g+0wGW16rB7ddnd4enVCEzNW6d1GDQ
-# gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
-# c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU87aRXg+vAsxevFhzf8gjJZ1J
+# n7GgggJAMIICPDCCAamgAwIBAgIQbG2/DC9RTY1HuzJJHSF6MzAJBgUrDgMCHQUA
+# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgLSBtc2cgc2VydmljZXMgQUcwHhcNMTgw
+# ODIwMTUwNjU0WhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
+# IC0gbXNnIHNlcnZpY2VzIEFHMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCu
+# YJknNfNkBA51iP/WekBqOyiPQt1K/Qbm01/VNpPf25JyT9mmzkP5YXYGpoZtBu9E
+# TMFM7rXm1Bf/M+m/MKR32hXjbPR0iROtd43boNBftUNNFp0fE9t3h8lytO7kTXBD
+# pcph/cAklc1iVU7coK2rp7+81kQE6CEKNwDgr59ejQIDAQABo3EwbzATBgNVHSUE
+# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBAvfE+EAn0rMq9Mzmo/LzbSoSkwJzEl
+# MCMGA1UEAxMcVXdlIEZyYW5rZSAtIG1zZyBzZXJ2aWNlcyBBR4IQbG2/DC9RTY1H
+# uzJJHSF6MzAJBgUrDgMCHQUAA4GBAADxcZUiWtCXRkKXJfoaaMDciRWIMEJhSlYa
+# /4JlIT+xbQKwbfhFu9uEWKJmt4dHuGg5tXrKHqT+DAWxUYAwchNwIkDjh1A3C264
+# OPySpczeZ5F+4Ls2pnlMMc+EkzHMm6D4HcgYuQmpytXL8ggUOmWHgOHTiV38msEL
+# ks4Dm2zKMYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIC0gbXNn
+# IHNlcnZpY2VzIEFHAhBsbb8ML1FNjUe7MkkdIXozMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT1
-# Km8Pg+bhoOmE5yajERP/PwDd3jANBgkqhkiG9w0BAQEFAASBgDbtj20I4DnqlA4M
-# vksRCwXntjhShIU700hK/Wq+tWFWzGe0zuHHiFLFa46iNb74+yS6nK6s7phG7Y8D
-# kF71bCoD3i7TXkvuUZ674jH4hiYxrSd0Pk77BMbeWceY3mdDhHeCm5JrSirHjP6v
-# M7ZD4JsNob5AvCRx5GMFmxR1S37m
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQV
+# ptS0JrXzYOq+hDLIpRc6qXCVYzANBgkqhkiG9w0BAQEFAASBgJZvzEpqaI9JOKa1
+# pqYYT0tiAKdJeFqlz73k6QYFozO7xd+tlORdF3MdpUMlzCSnPCikIYqoo3Jkt+hG
+# ZKNAnT86OiSlM1AReQjb8mUKRGm0etxpnKcFiF9h+me6htbb92IWzepSQpNsDjHJ
+# yD9qv/GViLkGjp+3V//JVorDM8rQ
 # SIG # End signature block
