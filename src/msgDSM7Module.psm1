@@ -1,12 +1,12 @@
 <#  
 .SYNOPSIS  
-    msg powershell Module für die SOAP Schnittstelle für Ivanti DSM (Version 7.0 - 2018.1)  
+    msg powershell Module fï¿½r die SOAP Schnittstelle fï¿½r Ivanti DSM (Version 7.0 - 2018.1)  
 .DESCRIPTION
- 	msg powershell Module für die SOAP Schnittstelle für Ivanti DSM (Version 7.0 - 2018.1)  
+ 	msg powershell Module fï¿½r die SOAP Schnittstelle fï¿½r Ivanti DSM (Version 7.0 - 2018.1)  
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.11
+	Version		: 1.0.1.12
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -21,8 +21,8 @@
 #>
 ###############################################################################
 # Allgemeine Variablen
-$DSM7requiredVersion = "7.0" # benötigte DSM Version 7.0 oder größer
-$DSM7testedVersion = "7.4.1.4" # höchste getestet DSM Version mit diesem Modul
+$DSM7requiredVersion = "7.0" # benï¿½tigte DSM Version 7.0 oder grï¿½ï¿½er
+$DSM7testedVersion = "7.4.1.4" # hï¿½chste getestet DSM Version mit diesem Modul
 $DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=ExternalGroup)(SchemaTag=DynamicGroup))"
 $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
@@ -155,9 +155,9 @@ Export-ModuleMember -Function Convert-ArrayToHash
 function Confirm-Creds {
 	<#
 	.SYNOPSIS
-		Überprüft die Benutzerinformationen und ggf. Passwortabfrage
+		ï¿½berprï¿½ft die Benutzerinformationen und ggf. Passwortabfrage
 	.DESCRIPTION
-		Überprüft die Benutzerinformationen und ggf. Passwortabfrage
+		ï¿½berprï¿½ft die Benutzerinformationen und ggf. Passwortabfrage
 	.EXAMPLE
 		Confirm-Creds -User Benutzer -Password *******
 	.NOTES
@@ -196,7 +196,7 @@ function Confirm-Creds {
 		}
 	} 
 	if (!$Password) {
-		$Password = Read-Host "Bitte Passwort für ($Domain\$User) eingeben" -AsSecureString 
+		$Password = Read-Host "Bitte Passwort fï¿½r ($Domain\$User) eingeben" -AsSecureString 
 	}
 	else {
 		$Password = convertto-securestring -asplaintext -string $Password -force
@@ -217,7 +217,7 @@ function Connect-DSM7Web {
 	.EXAMPLE
 		Connect-DSM7Web -WebServer "DSM7 BLS" -UseDefaultCredential
 	.EXAMPLE
-		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domäne\Benutzer" -UserPW "******"
+		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domï¿½ne\Benutzer" -UserPW "******"
 	.EXAMPLE
 		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -Credential PSCredential
 	.NOTES
@@ -275,11 +275,11 @@ function Connect-DSM7Web {
 				Write-Log 0 "CmdbVersionString = $DSM7Version" $MyInvocation.MyCommand 
 				Write-Log 0 "MetaModelVersion = $($DSM7ServerInfo.MetaModelVersion)" $MyInvocation.MyCommand 
 				if ($DSM7Version -lt $DSM7requiredVersion) {
-					Write-Log 2 "DSM Version wird nicht unterstützt!!!" $MyInvocation.MyCommand 
+					Write-Log 2 "DSM Version wird nicht unterstï¿½tzt!!!" $MyInvocation.MyCommand 
 					return $false
 				}
 				if ($DSM7Version -gt $DSM7testedVersion) {
-					Write-Log 1 "DSM Version ($DSM7Version) nicht getestet!!! Einige Funktionen könnten nicht mehr richtige Ergebnisse liefern oder gar nicht mehr funktionieren!!!" $MyInvocation.MyCommand 
+					Write-Log 1 "DSM Version ($DSM7Version) nicht getestet!!! Einige Funktionen kï¿½nnten nicht mehr richtige Ergebnisse liefern oder gar nicht mehr funktionieren!!!" $MyInvocation.MyCommand 
 				}
 				if ($DSM7Version -gt "7.4.0") {
 					$global:DSM7GenTypeData = "$DSM7GenTypeData,CreationSource"
@@ -310,13 +310,13 @@ Export-ModuleMember -Function Connect-DSM7Web -Variable DSM7WebService,DSM7Types
 function Connect-DSM7WebRandom {
 	<#
 	.SYNOPSIS
-		Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufällig ausgewählt wird.
+		Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufï¿½llig ausgewï¿½hlt wird.
 	.DESCRIPTION
-		Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufällig ausgewählt wird.
+		Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufï¿½llig ausgewï¿½hlt wird.
 	.EXAMPLE
 		Connect-DSM7WebRandom -WebServer "DSM7 BLS" -UseDefaultCredential
 	.EXAMPLE
-		Connect-DSM7WebRandom -WebServer "DSM7 BLS" -Port 8080 -User "Domäne\Benutzer" -UserPW "******"
+		Connect-DSM7WebRandom -WebServer "DSM7 BLS" -Port 8080 -User "Domï¿½ne\Benutzer" -UserPW "******"
 	.EXAMPLE
 		Connect-DSM7WebRandom -WebServer "DSM7 BLS" -Port 8080 -Credential PSCredential
 	.NOTES
@@ -458,7 +458,7 @@ function Get-DSM7IdentifiedUser {
 }
 function Confirm-Connect {
 	if (!$DSM7WebService) {
-		Write-Log 1 "Keine Verbindung zum Webserver (SOAP)!!!`n`t`t`t`tBitte die Funktion `"Connect-DSM7Web`" für die Verbindung benutzen,`n`t`t`t`toder es ist ein Fehler beim verbinden aufgetreten." $MyInvocation.MyCommand
+		Write-Log 1 "Keine Verbindung zum Webserver (SOAP)!!!`n`t`t`t`tBitte die Funktion `"Connect-DSM7Web`" fï¿½r die Verbindung benutzen,`n`t`t`t`toder es ist ein Fehler beim verbinden aufgetreten." $MyInvocation.MyCommand
 		return $false
 	}
 	else {
@@ -1174,9 +1174,9 @@ function Convert-DSM7AssociationSchemaListtoPSObjects {
 function Get-DSM7ObjectList {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Objekten zurück. 
+		Gibt eine Liste von Objekten zurï¿½ck. 
 	.DESCRIPTION
-		Gibt eine Liste von Objekten zurück. 
+		Gibt eine Liste von Objekten zurï¿½ck. 
 	.EXAMPLE
 		Get-DSM7ObjectList -LDAPPath "Managed Users & Computers/OU1/OU2" -recursive
 	.EXAMPLE
@@ -1334,9 +1334,9 @@ function Get-DSM7ObjectsObject {
 function Get-DSM7Objects {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Objekten zurück. 
+		Gibt eine Liste von Objekten zurï¿½ck. 
 	.DESCRIPTION
-		Gibt eine Liste von Objekten zurück. Nur benutzen wenn man die Objektstruktur genau kennt!!!
+		Gibt eine Liste von Objekten zurï¿½ck. Nur benutzen wenn man die Objektstruktur genau kennt!!!
 	.EXAMPLE
 		Get-DSM7Objects -IDs (1,2,3)
 	.NOTES
@@ -1408,7 +1408,7 @@ function Update-DSM7Object {
 				else {
 					$Value = $groupkey.$groupname.$Valuename
 				}
-				Write-Log 0 "Ändere $Groupname.$Valuename = $Value" $MyInvocation.MyCommand
+				Write-Log 0 "ï¿½ndere $Groupname.$Valuename = $Value" $MyInvocation.MyCommand
 				$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
 				$PropertyListObject.Tag = $Valuename
 				$PropertyListObject.Type = ($DSM7PropGroupDefList.$groupname.PropertyDefList|where Tag -EQ $Valuename).propertytype
@@ -1446,9 +1446,9 @@ function Update-DSM7Object {
 function Get-DSM7LDAPPath {
 	<#
 	.SYNOPSIS
-		Gibt ein den LDAP Path zurück. 
+		Gibt ein den LDAP Path zurï¿½ck. 
 	.DESCRIPTION
-		Gibt ein den LDAP Path zurück. 
+		Gibt ein den LDAP Path zurï¿½ck. 
 	.EXAMPLE
 		Get-DSM7LDAPPath -ParentContID 1234
 	.NOTES
@@ -1565,7 +1565,7 @@ function Remove-DSM7Object {
 		$Webrequest = Get-DSM7RequestHeader -action "DeleteObject"
 		$Webrequest.ObjectToDelete = $Object
 		$Webresult = $DSM7WebService.DeleteObject($Webrequest).DeleteObjectResult 
-		Write-Log 0 "Löschen Objekt $($Object.Name) ($($Object.ID)) erfolgreich." $MyInvocation.MyCommand
+		Write-Log 0 "Lï¿½schen Objekt $($Object.Name) ($($Object.ID)) erfolgreich." $MyInvocation.MyCommand
 		return $true
 	}
 	catch [system.exception] 
@@ -1640,9 +1640,9 @@ function Get-DSM7AssociationListObject {
 function Get-DSM7AssociationList {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Association zurück.
+		Gibt eine Liste von Association zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Liste von Association zurück.
+		Gibt eine Liste von Association zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7AssociationList -SchemaTag "ComputerAssociatedUser"
 	.NOTES
@@ -1700,9 +1700,9 @@ function Get-DSM7AssociationschemaListObject {
 function Get-DSM7AssociationschemaList {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Association Schemas zurück.
+		Gibt eine Liste von Association Schemas zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Liste von Association Schemas zurück.
+		Gibt eine Liste von Association Schemas zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7AssociationList 
 	.NOTES
@@ -1919,9 +1919,9 @@ function Get-DSM7DisplayNameListsObject {
 function Get-DSM7DisplayNameLists {
 	<#
 	.SYNOPSIS
-		Gibt DisplayNameList zurück.
+		Gibt DisplayNameList zurï¿½ck.
 	.DESCRIPTION
-		Gibt DisplayNameList zurück.
+		Gibt DisplayNameList zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7GetDisplayNameLists -IDs 1,2,3,4,5 
 	.NOTES
@@ -1958,9 +1958,9 @@ Export-ModuleMember -Function Get-DSM7DisplayNameLists
 function Get-DSM7ComputerList {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Computern zurück.
+		Gibt eine Liste von Computern zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Liste von Computern zurück.
+		Gibt eine Liste von Computern zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7ComputerList -LDAPPath "Managed Users & Computers/OU1/OU2" -recursive
 	.NOTES
@@ -2032,9 +2032,9 @@ Export-ModuleMember -Function Get-DSM7ComputerList
 function Get-DSM7Computer {
 	<#
 	.SYNOPSIS
-		Gibt das Computerobjekt zurück.
+		Gibt das Computerobjekt zurï¿½ck.
 	.DESCRIPTION
-		Gibt das Computerobjekt zurück.
+		Gibt das Computerobjekt zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7Computer -Name "%Computername%" 
 		Get-DSM7Computer -ID 1234
@@ -2107,9 +2107,9 @@ Export-ModuleMember -Function Get-DSM7Computer
 function Update-DSM7Computer {
 	<#
 	.SYNOPSIS
-		Ändert das Computerobjekt.
+		ï¿½ndert das Computerobjekt.
 	.DESCRIPTION
-		Ändert das Computerobjekt.
+		ï¿½ndert das Computerobjekt.
 	.EXAMPLE
 		Update-DSM7Computer -Name "%Computername%" -Values @("Computer.AssetTag=Test")
 	.NOTES
@@ -2145,7 +2145,7 @@ function Update-DSM7Computer {
 						$ID = $search.ID
 					}
 					else {
-						Write-Log 1 "Änderung kann nicht erfolgen!" $MyInvocation.MyCommand 
+						Write-Log 1 "ï¿½nderung kann nicht erfolgen!" $MyInvocation.MyCommand 
 						return $false
 					}
 				}
@@ -2378,9 +2378,9 @@ Export-ModuleMember -Function New-DSM7Computer
 function Remove-DSM7Computer {
 	<#
 	.SYNOPSIS
-		Löscht ein Computerobjekt.
+		Lï¿½scht ein Computerobjekt.
 	.DESCRIPTION
-		Löscht ein Computerobjekt.
+		Lï¿½scht ein Computerobjekt.
 	.EXAMPLE
 		 Remove-DSM7Computer -Name "%Computername%"
 	.EXAMPLE
@@ -2417,14 +2417,14 @@ function Remove-DSM7Computer {
 						$ID = $search.ID
 					}
 					else {
-						Write-Log 1 "Löschen kann nicht erfolgen! Bitte LDAPPath benutzen." $MyInvocation.MyCommand 
+						Write-Log 1 "Lï¿½schen kann nicht erfolgen! Bitte LDAPPath benutzen." $MyInvocation.MyCommand 
 						return $false
 					}
 				}
 				if ($ID -gt 0) {
 					$Computer = Get-DSM7ObjectObject -ID $ID
 					$result = Remove-DSM7Object -Object $Computer 
-					Write-Log 0 "Computer ($($Computer.Name)) gelöscht." $MyInvocation.MyCommand
+					Write-Log 0 "Computer ($($Computer.Name)) gelï¿½scht." $MyInvocation.MyCommand
 					return $true
 				}
 				else {
@@ -2562,9 +2562,9 @@ function Get-DSM7OrgTreeContainerObject {
 function Get-DSM7OrgTreeContainer {
 	<#
 	.SYNOPSIS
-		Gibt ein Containerobjekt zurück.
+		Gibt ein Containerobjekt zurï¿½ck.
 	.DESCRIPTION
-		Gibt ein Containerobjekt zurück.
+		Gibt ein Containerobjekt zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7OrgTreeContainer -LDAPPATH "Global Software Library"
 	.NOTES
@@ -2629,9 +2629,9 @@ function Get-DSM7OrgTreeContainersObject {
 function Get-DSM7OrgTreeContainers {
 	<#
 	.SYNOPSIS
-		Gibt ein Containerobjekt zurück.
+		Gibt ein Containerobjekt zurï¿½ck.
 	.DESCRIPTION
-		Gibt ein Containerobjekt zurück.
+		Gibt ein Containerobjekt zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7OrgTreeContainers -IDs (xxx,yyy)
 	.NOTES
@@ -2840,7 +2840,7 @@ function Move-DSM7OrgTreeContainer {
 								return $result
 							}
 							else {
-								Write-Log 1 "($($Object.Name)) ($toLDAPPath) konnte nicht ausgeführt werden." $MyInvocation.MyCommand
+								Write-Log 1 "($($Object.Name)) ($toLDAPPath) konnte nicht ausgefï¿½hrt werden." $MyInvocation.MyCommand
 								return $false
 							}
 						}
@@ -2887,9 +2887,9 @@ function Update-DSM7OrgTreeContainerObject {
 function Update-DSM7OrgTreeContainer {
 	<#
 	.SYNOPSIS
-		Ändert ein Containerobjekt.
+		ï¿½ndert ein Containerobjekt.
 	.DESCRIPTION
-		Ändert ein Containerobjekt.
+		ï¿½ndert ein Containerobjekt.
 	.EXAMPLE
 		Update-DSM7OrgTreeContainer -Name "OU2"  -Description "OU" -LDAPPath "Managed Users & Computers/OU1"
 	.NOTES
@@ -2924,7 +2924,7 @@ function Update-DSM7OrgTreeContainer {
 						$ID = $search.ID
 					}
 					else {
-						Write-Log 1 "Container nicht gefunden, kann nicht geändert werden!" $MyInvocation.MyCommand 
+						Write-Log 1 "Container nicht gefunden, kann nicht geï¿½ndert werden!" $MyInvocation.MyCommand 
 						return $false
 					}
 				}
@@ -2936,12 +2936,12 @@ function Update-DSM7OrgTreeContainer {
 						}
 						$result = Update-DSM7OrgTreeContainerObject -Object $Object 
 						if ($result) {
-							Write-Log 0 "($($Object.Name)) ($LDAPPath) erfolgreich geändert." $MyInvocation.MyCommand
+							Write-Log 0 "($($Object.Name)) ($LDAPPath) erfolgreich geï¿½ndert." $MyInvocation.MyCommand
 							$result = Convert-DSM7ObjecttoPSObject($result) -LDAP
 							return $result
 						}
 						else {
-							Write-Log 1 "($($Object.Name)) ($LDAPPath) konnte nicht ausgeführt werden." $MyInvocation.MyCommand
+							Write-Log 1 "($($Object.Name)) ($LDAPPath) konnte nicht ausgefï¿½hrt werden." $MyInvocation.MyCommand
 							return $false
 						}
 					}
@@ -2983,9 +2983,9 @@ function Remove-DSM7OrgTreeContainerObject {
 function Remove-DSM7OrgTreeContainer {
 	<#
 	.SYNOPSIS
-		Löscht ein Containerobjekt.
+		Lï¿½scht ein Containerobjekt.
 	.DESCRIPTION
-		Löscht ein Containerobjekt.
+		Lï¿½scht ein Containerobjekt.
 	.EXAMPLE
 		Remove-DSM7OrgTreeContainer -Name "OU2" -LDAPPath "Managed Users & Computers/OU1"
 	.NOTES
@@ -3018,7 +3018,7 @@ function Remove-DSM7OrgTreeContainer {
 						$ID = $search.ID
 					}
 					else {
-						Write-Log 1 "Container nicht gefunden, kann nicht gelöscht werden!" $MyInvocation.MyCommand 
+						Write-Log 1 "Container nicht gefunden, kann nicht gelï¿½scht werden!" $MyInvocation.MyCommand 
 						return $false
 					}
 				}
@@ -3027,12 +3027,12 @@ function Remove-DSM7OrgTreeContainer {
 					if ($Object) {
 						$result = Remove-DSM7OrgTreeContainerObject -Object $Object
 						if ($result) {
-							Write-Log 0 "($Name) ($LDAPPath) erfolgreich gelöscht." $MyInvocation.MyCommand
+							Write-Log 0 "($Name) ($LDAPPath) erfolgreich gelï¿½scht." $MyInvocation.MyCommand
 							$result = Convert-DSM7ObjecttoPSObject($result) -LDAP
 							return $result
 						}
 						else {
-							Write-Log 1 "($Name) ($LDAPPath) konnte nicht ausgeführt werden." $MyInvocation.MyCommand
+							Write-Log 1 "($Name) ($LDAPPath) konnte nicht ausgefï¿½hrt werden." $MyInvocation.MyCommand
 							return $false
 						}
 					}
@@ -3056,9 +3056,9 @@ Export-ModuleMember -Function Remove-DSM7OrgTreeContainer
 function Get-DSM7Group {
 	<#
 	.SYNOPSIS
-		Gibt ein Gruppenobjekt zurück.
+		Gibt ein Gruppenobjekt zurï¿½ck.
 	.DESCRIPTION
-		Gibt ein Gruppenobjekt zurück.
+		Gibt ein Gruppenobjekt zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7Group -Name "Gruppe" -LDAPPath "Managed Users & Computers/OU1"
 	.EXAMPLE
@@ -3252,7 +3252,7 @@ function New-DSM7Group {
 								}
 								else {
 									$CreateGroup = $false
-									Write-Log 2 "Übergeordnete Gruppe nicht eindeutig, bitte ID benutzen!!!" $MyInvocation.MyCommand 
+									Write-Log 2 "ï¿½bergeordnete Gruppe nicht eindeutig, bitte ID benutzen!!!" $MyInvocation.MyCommand 
 								}
 							}
 							if ($ParentDynGroupID -gt 0) {
@@ -3319,9 +3319,9 @@ Export-ModuleMember -Function New-DSM7Group
 function Update-DSM7Group {
 	<#
 	.SYNOPSIS
-		Ändert ein Gruppenobjekt.
+		ï¿½ndert ein Gruppenobjekt.
 	.DESCRIPTION
-		Ändert ein Gruppenobjekt.
+		ï¿½ndert ein Gruppenobjekt.
 	.EXAMPLE
 		Update-DSM7Group -Name "Gruppe" -LDAPPath "Managed Users & Computers/OU1" -DynamicGroupFilter "(Name=Test)"
 	.NOTES
@@ -3406,12 +3406,12 @@ function Update-DSM7Group {
 					}
 					$Object = Update-DSM7Object -Object $Group -Values $Values
 					if ($Object) {
-						Write-Log 0 "Gruppe ($($Object.Name)) wurde geändert." $MyInvocation.MyCommand 
+						Write-Log 0 "Gruppe ($($Object.Name)) wurde geï¿½ndert." $MyInvocation.MyCommand 
 						$Object = Convert-DSM7ObjectListtoPSObject($Object)
 						return $Object
 					}
 					else {
-						Write-Log 1 "Gruppe konnte nicht geändert werden!!!" $MyInvocation.MyCommand 
+						Write-Log 1 "Gruppe konnte nicht geï¿½ndert werden!!!" $MyInvocation.MyCommand 
 						return $false
 					}
 				}
@@ -3538,9 +3538,9 @@ Export-ModuleMember -Function Move-DSM7Group
 function Remove-DSM7Group {
 	<#
 	.SYNOPSIS
-		Löscht ein Gruppenobjekt.
+		Lï¿½scht ein Gruppenobjekt.
 	.DESCRIPTION
-		Löscht ein Gruppenobjekt.
+		Lï¿½scht ein Gruppenobjekt.
 	.EXAMPLE
 		Remove-DSM7Group -Name "Gruppe" -LDAPPath "Managed Users & Computers/OU1"
 	.EXAMPLE
@@ -3619,7 +3619,7 @@ function Remove-DSM7Group {
 					$Object = Get-DSM7ObjectObject -ID $ID
 					if ($Object) {
 						$result = Remove-DSM7Object -Object $Object
-						Write-Log 0 "($($Object.Name)) erfolgreich gelöscht." $MyInvocation.MyCommand
+						Write-Log 0 "($($Object.Name)) erfolgreich gelï¿½scht." $MyInvocation.MyCommand
 						return $result
 					}
 					else {
@@ -4062,7 +4062,7 @@ function Get-DSM7ListOfMemberships {
 					return $result
 				}
 				else {
-					retrun $false
+					return $false
 				}
 			}
 			else {
@@ -4092,7 +4092,7 @@ function Update-DSM7MembershipInGroupsObject {
 		$Webrequest.GroupsToAddMemberTo = $AddGroupobjects
 		$Webrequest.GroupsToRemoveMemberFrom = $RemoveGroupobjects
 		$Webresult = $DSM7WebService.ChangeMembershipInGroups($Webrequest)
-		Write-Log 0 "Objektmitgliedschaften erfolgreich geändert." $MyInvocation.MyCommand
+		Write-Log 0 "Objektmitgliedschaften erfolgreich geï¿½ndert." $MyInvocation.MyCommand
 		return $true
 	}
 	catch [system.exception] 
@@ -4105,9 +4105,9 @@ function Update-DSM7MembershipInGroupsObject {
 function Update-DSM7MembershipInGroups {
 	<#
 	.SYNOPSIS
-		Ändert eine oder mehrere Gruppen eines Objektes.
+		ï¿½ndert eine oder mehrere Gruppen eines Objektes.
 	.DESCRIPTION
-		Ändert eine oder mehrere Gruppen eines Objektes.
+		ï¿½ndert eine oder mehrere Gruppen eines Objektes.
 	.EXAMPLE
 		Update-DSM7MembershipInGroups -Name "Objektes" -AddObjectNames "Gruppe1,Gruppe2" -RemoveObjectNames "Gruppe1,Gruppe2" -LDAPPath "Managed Users & Computers/OU1"
 	.NOTES
@@ -4191,7 +4191,7 @@ function Update-DSM7MembershipInGroups {
 							if ($result) {
 								$AddGroupNames = $AddGroupobjects| select -ExpandProperty Name
 								$RemoveGroupNames = $RemoveGroupobjects| select -ExpandProperty Name
-								Write-Log 0 "Objekt: $($Object.Name) - Gruppe(n) hinzugefügt: ($AddGroupNames) und Gruppe(n) entfernt: ($RemoveGroupNames)" $MyInvocation.MyCommand
+								Write-Log 0 "Objekt: $($Object.Name) - Gruppe(n) hinzugefï¿½gt: ($AddGroupNames) und Gruppe(n) entfernt: ($RemoveGroupNames)" $MyInvocation.MyCommand
 								return $true
 							}
 							else {
@@ -4207,7 +4207,7 @@ function Update-DSM7MembershipInGroups {
 
 					}
 					else {
-						Write-Log 1 "Diese Funktion benötigt 7.2.2 oder höher!!!" $MyInvocation.MyCommand
+						Write-Log 1 "Diese Funktion benï¿½tigt 7.2.2 oder hï¿½her!!!" $MyInvocation.MyCommand
 						return $false
 					}
 					Write-Log 0 "($($Object.Name)) ($LDAPPath) erfolgreich." $MyInvocation.MyCommand
@@ -4222,10 +4222,10 @@ function Update-DSM7MembershipInGroups {
 		else {
 			Write-Log 1 "Keine Gruppe angegeben!!!" $MyInvocation.MyCommand 
 		}
-		else {
-			Write-Log 1 "Name($Name) oder ID($ID) nicht angegeben!!!" $MyInvocation.MyCommand 
-			return $false
-		}
+	}	
+	else {
+		Write-Log 1 "Name($Name) oder ID($ID) nicht angegeben!!!" $MyInvocation.MyCommand 
+		return $false
 	}
 }
 Export-ModuleMember -Function Update-DSM7MembershipInGroups
@@ -4244,7 +4244,7 @@ function Update-DSM7MemberListOfGroupObject {
 		$Webrequest.MembersToAdd = $AddObjectobjects
 		$Webrequest.MembersToRemove = $RemoveObjectobjects
 		$Webresult = $DSM7WebService.ChangeMemberListOfGroup($Webrequest)
-		Write-Log 0 "Gruppenmitgliedschaften erfolgreich geändert." $MyInvocation.MyCommand
+		Write-Log 0 "Gruppenmitgliedschaften erfolgreich geï¿½ndert." $MyInvocation.MyCommand
 		return $true
 	}
 	catch [system.exception] 
@@ -4257,9 +4257,9 @@ function Update-DSM7MemberListOfGroupObject {
 function Update-DSM7MemberListOfGroup {
 	<#
 	.SYNOPSIS
-		Ändert eine oder mehrere Objekte zu einer Gruppe.
+		ï¿½ndert eine oder mehrere Objekte zu einer Gruppe.
 	.DESCRIPTION
-		Ändert eine oder mehrere Objekte zu einer Gruppe.
+		ï¿½ndert eine oder mehrere Objekte zu einer Gruppe.
 	.EXAMPLE
 		Update-DSM7MembershipInGroups -Name "Gruppe" -AddObjectNames "Computername1,Computername2" -RemoveObjectNames "Computername1,Computername2" -LDAPPath "Managed Users & Computers/OU1"
 	.NOTES
@@ -4340,11 +4340,11 @@ function Update-DSM7MemberListOfGroup {
 							if ($result) {
 								$AddObjectNames = $AddObjectobjects| select -ExpandProperty Name
 								$RemoveObjectNames = $RemoveObjectobjects| select -ExpandProperty Name
-								Write-Log 0 "Gruppe: $($Object.Name) Objekt(e) hinzugefügt: ($AddObjectNames) und Objekt(e) entfernt: ($RemoveObjectNames)" $MyInvocation.MyCommand
+								Write-Log 0 "Gruppe: $($Object.Name) Objekt(e) hinzugefï¿½gt: ($AddObjectNames) und Objekt(e) entfernt: ($RemoveObjectNames)" $MyInvocation.MyCommand
 								return $true
 							}
 							else {
-								Write-Log 1 "Gruppe: $($Object.Name) Objekt(e) nicht hinzugefügt: ($AddObjectNames) und Objekt(e) ($RemoveObjectNames)!!!" $MyInvocation.MyCommand
+								Write-Log 1 "Gruppe: $($Object.Name) Objekt(e) nicht hinzugefï¿½gt: ($AddObjectNames) und Objekt(e) ($RemoveObjectNames)!!!" $MyInvocation.MyCommand
 								return $false
 							}
 
@@ -4356,7 +4356,7 @@ function Update-DSM7MemberListOfGroup {
 
 					}
 					else {
-						Write-Log 1 "Diese Funktion benötigt 7.2.3 oder höher!!!" $MyInvocation.MyCommand
+						Write-Log 1 "Diese Funktion benï¿½tigt 7.2.3 oder hï¿½her!!!" $MyInvocation.MyCommand
 						return $false
 					}
 					Write-Log 0 "($($Object.Name)) ($LDAPPath) erfolgreich." $MyInvocation.MyCommand
@@ -4405,7 +4405,7 @@ function Add-DSM7ComputerToGroup {
 				$result = New-DSM7Association -SchemaTag "GroupMembers" -SourceObjectID $Group.ID -TargetObjectID $Computer.ID -TargetSchemaTag $Computer.SchemaTag
 			}
 			if ($result) {
-				Write-Log 0 "($Name) zu Gruppe ($GroupName) erfolgreich hinzugefügt." $MyInvocation.MyCommand
+				Write-Log 0 "($Name) zu Gruppe ($GroupName) erfolgreich hinzugefï¿½gt." $MyInvocation.MyCommand
 				$result = Convert-DSM7AssociationtoPSObject($result)
 				return $result
 			}
@@ -4415,7 +4415,7 @@ function Add-DSM7ComputerToGroup {
 			}
 		}
 		else {
-			Write-Log 1 "($Name) nicht zu ($GroupName) hinzugefügt." $MyInvocation.MyCommand
+			Write-Log 1 "($Name) nicht zu ($GroupName) hinzugefï¿½gt." $MyInvocation.MyCommand
 			return $false
 		}
 	}
@@ -4635,9 +4635,9 @@ function Update-DSM7PolicyObject {
 function Update-DSM7Policy {
 	<#
 	.SYNOPSIS
-		Ändert ein Policy Object aus.
+		ï¿½ndert ein Policy Object aus.
 	.DESCRIPTION
-		Ändert ein Policy Object aus.
+		ï¿½ndert ein Policy Object aus.
 	.EXAMPLE
 		Update-DSM7Policy -ID xxx -PolicyRestrictionList (yyy,zzz) -PolicyRestrictionType Include -IsActiv
 	.EXAMPLE
@@ -4770,7 +4770,7 @@ function Update-DSM7Policy {
 									if ($policyparam) {
 										$policyparam.Value = $ValueValue
 										$SwSetComponentInstallationParameters[$PolicyListObject.ID]+= $policyparam
-										Write-Log 0 "Parameter ($ValueName=$ValueValue) geändert." $MyInvocation.MyCommand
+										Write-Log 0 "Parameter ($ValueName=$ValueValue) geï¿½ndert." $MyInvocation.MyCommand
 										$i++
 									}
 								}
@@ -4782,7 +4782,7 @@ function Update-DSM7Policy {
 								$ValueValue = $SwInstallationParam.split("=",2)[1]
 								$policyparam = $policy.swinstallationparameters|where {$_.Tag -eq $ValueName}
 								$policyparam.Value = $ValueValue
-								Write-Log 0 "Parameter ($ValueName=$ValueValue) geändert." $MyInvocation.MyCommand
+								Write-Log 0 "Parameter ($ValueName=$ValueValue) geï¿½ndert." $MyInvocation.MyCommand
 
 							}
 						}
@@ -4851,7 +4851,7 @@ function Update-DSM7Policy {
 					$Policy = Update-DSM7PolicyObject -Policy $Policy -InstallationParametersOfSwSetComponents $SwSetComponentInstallationParameters -Options $PolicyOptions -Stats:$Stats
 					if ($Policy) {
 						$Policy = Convert-DSM7PolicytoPSObject ($Policy) -resolvedName
-						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich geändert." $MyInvocation.MyCommand
+						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich geï¿½ndert." $MyInvocation.MyCommand
 						return $Policy
 					}
 					else {
@@ -4884,7 +4884,7 @@ function Add-DSM7TargetToPolicyObject {
 		$Webrequest.Policy = $Policy
 		$Webrequest.TargetToAdd = $PolicyTarget
 		$Webresult = $DSM7WebService.AddTargetToPolicy($Webrequest).UpdatedPolicy
-		Write-Log 0 "$($PolicyTarget.ID) erfolgreich hinzugefügt." $MyInvocation.MyCommand
+		Write-Log 0 "$($PolicyTarget.ID) erfolgreich hinzugefï¿½gt." $MyInvocation.MyCommand
 		return $Webresult
 	}
 	catch [system.exception] 
@@ -4987,9 +4987,9 @@ Export-ModuleMember -Function Get-DSM7PolicyList
 function Move-DSM7PolicyToTarget {
 	<#
 	.SYNOPSIS
-		Ändert ein Policy Object aus.
+		ï¿½ndert ein Policy Object aus.
 	.DESCRIPTION
-		Ändert ein Policy Object aus.
+		ï¿½ndert ein Policy Object aus.
 	.EXAMPLE
 		Move-DSM7PolicyToTarget -ID xxx -TargetName "Ziel"
 	.NOTES
@@ -5078,9 +5078,9 @@ Export-ModuleMember -Function Move-DSM7PolicyToTarget
 function Remove-DSM7PolicyFromTarget {
 	<#
 	.SYNOPSIS
-		Ändert ein Policy Object aus.
+		ï¿½ndert ein Policy Object aus.
 	.DESCRIPTION
-		Ändert ein Policy Object aus.
+		ï¿½ndert ein Policy Object aus.
 	.EXAMPLE
 		Remove-DSM7PolicyFromTarget -ID xxx -TargetName "Ziel"
 	.NOTES
@@ -5166,9 +5166,9 @@ Export-ModuleMember -Function Remove-DSM7PolicyFromTarget
 function Add-DSM7PolicyToTarget {
 	<#
 	.SYNOPSIS
-		Fügt eine Policy einem Object zu.
+		Fï¿½gt eine Policy einem Object zu.
 	.DESCRIPTION
-		Fügt eine Policy einem Object zu.
+		Fï¿½gt eine Policy einem Object zu.
 	.EXAMPLE
 		Add-DSM7PolicyToTarget -ID 1234 -TargetName "Ziel" -TargetLDAPPath "Managed Users & Computers/OU1"
 	.EXAMPLE
@@ -5221,7 +5221,7 @@ function Add-DSM7PolicyToTarget {
 				Write-Log 0 "($ID) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
 				$result = Add-DSM7TargetToPolicyObject -Policy $Policy -PolicyTarget $TargetObject 
 				if ($result){
-					Write-Log 0 "Policy Ziel ($TargetName) hinzugefügt." $MyInvocation.MyCommand
+					Write-Log 0 "Policy Ziel ($TargetName) hinzugefï¿½gt." $MyInvocation.MyCommand
 					return $true
 				}
 				else {
@@ -5329,9 +5329,11 @@ function New-DSM7Policy {
 		[system.int32]$JobPolicyTrigger = 0,
 		[Parameter(Position=10, Mandatory=$false)]
 		[switch]$DenyPolicy = $false,
+		[Parameter(Position=10, Mandatory=$false)]
+		[switch]$Pilot = $false,
 		[Parameter(Position=11, Mandatory=$false)]
 		[ValidateSet("CreateActive","CreateInactive")]
-		[System.String]$InstanceActivationOnCreate = 0,
+		[System.String]$InstanceActivationOnCreate = "CreateActive",
 		[Parameter(Position=12, Mandatory=$false)]
 		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
 		[system.string]$InstanceActivationMode = "DontAutoactivate",
@@ -5343,10 +5345,20 @@ function New-DSM7Policy {
 		try {
 			$NoPolicy = $false
 			if ($SwName) {
-				$AssignedObject = Get-DSM7Software -Name $SwName -LDAPPath $SwLDAPPath
+				if ($Pilot) {
+					$AssignedObject = Get-DSM7Software -Name $SwName -LDAPPath $SwLDAPPath
+				}
+				else {
+					$AssignedObject = Get-DSM7Software -Name $SwName -LDAPPath $SwLDAPPath -IsLastReleasedRev
+				}
 			}
 			if ($SwUniqueID) {
-				$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
+				if ($Pilot) {
+					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
+				}
+				else {
+					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath -IsLastReleasedRev
+				}
 			}
 			if ($SwID) {
 				$AssignedObject = Get-DSM7Software -ID $SwID
@@ -5386,9 +5398,9 @@ function New-DSM7Policy {
 						}
 					}
 				}
-				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject $AssignedObject
+				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject (Get-DSM7ObjectObject -ID $AssignedObject.ID)
 				$DSMTestnoValue =$DSMInstallationParamDefinitions|where {$_.IsMandatory -and !$_.DefaultValue}
-				if ($DSMTestnoValue -and !$SwInstallationParams) {
+				if ($DSMTestnoValue -and !$SwInstallationParams -and !$DenyPolicy) {
 					Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
 					return $false 
 				}
@@ -5474,6 +5486,8 @@ function New-DSM7Policy {
 						}
 						if ($DenyPolicy) {
 							$Policy.SchemaTag = "DenyPolicy"
+							$Policy.ShopForAllUsers = $true
+							$Policy.MaintenanceBehavior = 0
 							$Policy.WakeUpTimeSpan = 240
 							$Policy.MaxPreStagingTime = 365
 							$Policy.MinPreStagingTime = 365
@@ -5738,8 +5752,8 @@ function New-DSM7PolicyObject {
 		$Webresult = $DSM7WebService.CreatePolicy($Webrequest)
 		if ($Stats) {
 			write-log 0 "Anzahl erstellter Instanzen: $($Webresult.NumberOfInstancesCreated)." $MyInvocation.MyCommand 
-			write-log 0 "Anzahl Instanzen mit nicht gültigen Voraussetzungen: $($Webresult.NumberOfInstancesFailingPrerequisite)." $MyInvocation.MyCommand 
-			write-log 0 "Anzahl ungültiger Instanzen: $($Webresult.NumberOfInvalidInstances)." $MyInvocation.MyCommand 
+			write-log 0 "Anzahl Instanzen mit nicht gï¿½ltigen Voraussetzungen: $($Webresult.NumberOfInstancesFailingPrerequisite)." $MyInvocation.MyCommand 
+			write-log 0 "Anzahl ungï¿½ltiger Instanzen: $($Webresult.NumberOfInvalidInstances)." $MyInvocation.MyCommand 
 		}
 		$global:DSM7AsynchronousExecution = $Webresult.AsynchronousExecution
 		$global:DSM7InfrastructureTaskGuid = $Webresult.InfrastructureTaskGuid
@@ -5785,9 +5799,9 @@ function Remove-DSM7PolicyObject {
 function Remove-DSM7Policy {
 	<#
 	.SYNOPSIS
-		Löscht die Policy.
+		Lï¿½scht die Policy.
 	.DESCRIPTION
-		Löscht die Policy.
+		Lï¿½scht die Policy.
 	.EXAMPLE
 		Remove-DSM7Policy -ID 12345
 	.EXAMPLE
@@ -5862,7 +5876,7 @@ function Remove-DSM7Policy {
 					$result = Get-DSM7PolicyObject -ID $ID
 					if ($result) {
 						$result = Remove-DSM7PolicyObject -Policy $result -ForceDelete:$ForceDelete -DeleteAssociatedPolicies:$DeleteAssociatedPolicies
-						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich gelöscht." $MyInvocation.MyCommand
+						Write-Log 0 "$($AssignedObject.Name) auf ($($TargetObject.Name)) erfolgreich gelï¿½scht." $MyInvocation.MyCommand
 						return $true
 					} 
 				}
@@ -6257,9 +6271,9 @@ function Get-DSM7PolicyStatisticsByTargetObject {
 function Get-DSM7PolicyStatisticsByTarget {
 	<#
 	.SYNOPSIS
-		Gibt eine Statistik von einer Software zurück.
+		Gibt eine Statistik von einer Software zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Statistik von einer Software zurück.
+		Gibt eine Statistik von einer Software zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7PolicyStatisticsByTarget -Name "Software" -LDAPPath "Global Software Library/SwFolder1/SwFolder2" 
 	.NOTES
@@ -6327,9 +6341,9 @@ function Get-DSM7PolicyStatisticsObject {
 function Get-DSM7PolicyStatistics {
 	<#
 	.SYNOPSIS
-		Gibt eine Statistik von einer Policy zurück.
+		Gibt eine Statistik von einer Policy zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Statistik von einer Policy zurück.
+		Gibt eine Statistik von einer Policy zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7PolicyStatistics -ID 123456
 	.NOTES
@@ -6392,9 +6406,9 @@ function Get-DSM7PolicyStatisticsByPoliciesObject {
 function Get-DSM7PolicyStatisticsByPolicies {
 	<#
 	.SYNOPSIS
-		Gibt eine Statistik von einer Software zurück.
+		Gibt eine Statistik von einer Software zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Statistik von einer Software zurück.
+		Gibt eine Statistik von einer Software zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7PolicyStatisticsByTarget -Name "Software" -LDAPPath "Global Software Library/SwFolder1/SwFolder2" 
 	.NOTES
@@ -6441,9 +6455,9 @@ Export-ModuleMember -Function Get-DSM7PolicyStatisticsByPolicies
 function Get-DSM7ComputerMissingPatch {
 	<#
 	.SYNOPSIS
-		Gibt die festgestellten Sicherheitslücken zurück.
+		Gibt die festgestellten Sicherheitslï¿½cken zurï¿½ck.
 	.DESCRIPTION
-		Gibt die festgestellten Sicherheitslücken zurück.
+		Gibt die festgestellten Sicherheitslï¿½cken zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7ComputerMissingPatch -Name "Computername"
 	.NOTES
@@ -6478,7 +6492,7 @@ function Get-DSM7ComputerMissingPatch {
 					return $result
 				}
 				else {
-					Write-Log 1 "($Name) keine Sicherheitslücken vorhanden!" $MyInvocation.MyCommand
+					Write-Log 1 "($Name) keine Sicherheitslï¿½cken vorhanden!" $MyInvocation.MyCommand
 					return $false
 				}
 			}
@@ -6520,9 +6534,9 @@ function Get-DSM7PolicyInstanceCountByPolicyObject {
 function Get-DSM7PolicyInstanceCountByPolicy {
 	<#
 	.SYNOPSIS
-		Gibt eine Statistik von einer Policy zurück.
+		Gibt eine Statistik von einer Policy zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Statistik von einer Policy zurück.
+		Gibt eine Statistik von einer Policy zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7PolicyInstanceCountByPolicy -Name "Policy" 
 	.NOTES
@@ -6568,9 +6582,9 @@ function Get-DSM7PolicyInstanceListByNodeObject {
 function Get-DSM7PolicyInstanceListByNode {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste PolicyInstances von Objekten zurück.
+		Gibt eine Liste PolicyInstances von Objekten zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Liste PolicyInstances von Objekten zurück.
+		Gibt eine Liste PolicyInstances von Objekten zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7PolicyInstanceListByNode -Name "%Computername%" 
 	.NOTES
@@ -6671,9 +6685,9 @@ function Remove-DSM7PolicyInstanceListObject {
 function Update-DSM7PolicyInstances {
 	<#
 	.SYNOPSIS
-		Ändert eine PolicyInstances.
+		ï¿½ndert eine PolicyInstances.
 	.DESCRIPTION
-		Ändert eine PolicyInstances.
+		ï¿½ndert eine PolicyInstances.
 	.EXAMPLE
 		Update-DSM7PolicyInstances -ID 123456,65141 -active 
 	.EXAMPLE
@@ -6737,9 +6751,9 @@ Export-ModuleMember -Function Update-DSM7PolicyInstances
 function Remove-DSM7PolicyInstance {
 	<#
 	.SYNOPSIS
-		Löscht eine PolicyInstance.
+		Lï¿½scht eine PolicyInstance.
 	.DESCRIPTION
-		Löscht eine PolicyInstance.
+		Lï¿½scht eine PolicyInstance.
 	.EXAMPLE
 		Remove-DSM7PolicyInstance -ID 123456
 	.NOTES
@@ -6763,11 +6777,11 @@ function Remove-DSM7PolicyInstance {
 
 		$result = Remove-DSM7PolicyInstanceListObject -Policy $Policy -PolicyInstance $PolicyInstance 
 		if ($result) {
-			Write-Log 0 "Alle Policyinstancen gelöscht." $MyInvocation.MyCommand
+			Write-Log 0 "Alle Policyinstancen gelï¿½scht." $MyInvocation.MyCommand
 			$result = $true
 		}
 		else {
-			Write-Log 1 "Fehler beim Policyinstancen gelöschen!" $MyInvocation.MyCommand
+			Write-Log 1 "Fehler beim Policyinstancen gelï¿½schen!" $MyInvocation.MyCommand
 			$result = $false
 		}
 		return $result
@@ -6838,9 +6852,9 @@ Export-ModuleMember -Function Get-DSM7SwInstallationConfigurationsObject
 function Get-DSM7SoftwareIDs {
 	<#
 	.SYNOPSIS
-		Gibt ein Software Objekte zurück.
+		Gibt ein Software Objekte zurï¿½ck.
 	.DESCRIPTION
-		Gibt ein Software Objekte zurück.
+		Gibt ein Software Objekte zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7SoftwareIDs -IDs 12345,123456
 	.NOTES
@@ -6902,9 +6916,9 @@ Export-ModuleMember -Function Get-DSM7SoftwareIDs -Alias Get-DSM7SoftwarebyIDs
 function Get-DSM7Software {
 	<#
 	.SYNOPSIS
-		Gibt ein Software Objekt zurück.
+		Gibt ein Software Objekt zurï¿½ck.
 	.DESCRIPTION
-		Gibt ein Software Objekt zurück.
+		Gibt ein Software Objekt zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7Software -Name "Software" -LDAPPath ""Global Software Library/SWF1"
 	.NOTES
@@ -7123,9 +7137,9 @@ Export-ModuleMember -Function Move-DSM7Software
 function Update-DSM7Software {
 	<#
 	.SYNOPSIS
-		Ändert das Softwareobjekt.
+		ï¿½ndert das Softwareobjekt.
 	.DESCRIPTION
-		Ändert das Softwareobjekt.
+		ï¿½ndert das Softwareobjekt.
 	.EXAMPLE
 		Update-DSM7Software -Name "Software" -Values @("Name=neuerName")
 	.NOTES
@@ -7176,7 +7190,7 @@ function Update-DSM7Software {
 						$ID = $search.ID
 					}
 					else {
-						Write-Log 1 "Änderung kann nicht erfolgen!" $MyInvocation.MyCommand 
+						Write-Log 1 "ï¿½nderung kann nicht erfolgen!" $MyInvocation.MyCommand 
 						return $false
 					}
 				}
@@ -7214,9 +7228,9 @@ Export-ModuleMember -Function Update-DSM7Software
 function Get-DSM7SoftwareList {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Software zurück.
+		Gibt eine Liste von Software zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Liste von Software zurück.
+		Gibt eine Liste von Software zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7SoftwareList -LDAPPath "Global Software Library/SwFolder1/SwFolder2" -recursive
 	.NOTES
@@ -7313,9 +7327,9 @@ Export-ModuleMember -Function Get-DSM7SoftwareList
 function Get-DSM7SoftwareCategoryList {
 	<#
 	.SYNOPSIS
-		Gibt Softwarekategorien zurück.
+		Gibt Softwarekategorien zurï¿½ck.
 	.DESCRIPTION
-		Gibt Softwarekategorien zurück.
+		Gibt Softwarekategorien zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7SoftwareCategoryList -LDAPPath "Global Software Library/Patch Library" -recursive
 	.NOTES
@@ -7413,9 +7427,9 @@ Export-ModuleMember -Function Get-DSM7SoftwareCategoryList
 function Get-DSM7SoftwareCategory {
 	<#
 	.SYNOPSIS
-		Gibt ein Softwarekategorie zurück.
+		Gibt ein Softwarekategorie zurï¿½ck.
 	.DESCRIPTION
-		Gibt ein Softwarekategorie zurück.
+		Gibt ein Softwarekategorie zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7SoftwareCategory -ID 1234
 	.EXAMPLE
@@ -7630,7 +7644,7 @@ function New-DSM7SoftwareCategory {
 									$Filter = $regex.Replace($Filter,$FilterName.ID,1)
 								}
 								else {
-									Write-Log 1 "Konnte Filter ($Filter) nicht auflösen!!!" $MyInvocation.MyCommand 
+									Write-Log 1 "Konnte Filter ($Filter) nicht auflï¿½sen!!!" $MyInvocation.MyCommand 
 									return $false
 								}
 							}
@@ -7755,9 +7769,9 @@ Export-ModuleMember -Function New-DSM7SoftwareCategory
 function Update-DSM7SoftwareCategory {
 	<#
 	.SYNOPSIS
-		Ändert eine Softwarekategorie.
+		ï¿½ndert eine Softwarekategorie.
 	.DESCRIPTION
-		Ändert eine Softwarekategorie.
+		ï¿½ndert eine Softwarekategorie.
 	.EXAMPLE
 		Update-DSM7SoftwareCategory -Name "Softwarekategorie" -LDAPPath "Global Software Library/Application Library" -Filter "(Name=Test)"
 	.NOTES
@@ -7849,7 +7863,7 @@ function Update-DSM7SoftwareCategory {
 										$Filter = $regex.Replace($Filter,$FilterName.ID,1) 
 									}
 									else {
-										Write-Log 1 "Konnte Filter ($Filter) nicht auflösen!!!" $MyInvocation.MyCommand 
+										Write-Log 1 "Konnte Filter ($Filter) nicht auflï¿½sen!!!" $MyInvocation.MyCommand 
 										return $false
 									}
 								}
@@ -7883,12 +7897,12 @@ function Update-DSM7SoftwareCategory {
 					}
 					$Object = Update-DSM7Object -Object $Category -Values $Values
 					if ($Object) {
-						Write-Log 0 "Softwarekategorie ($($Object.Name)) wurde geändert." $MyInvocation.MyCommand 
+						Write-Log 0 "Softwarekategorie ($($Object.Name)) wurde geï¿½ndert." $MyInvocation.MyCommand 
 						$Object = Convert-DSM7ObjectListtoPSObject($Object)
 						return $Object
 					}
 					else {
-						Write-Log 1 "Softwarekategorie konnte nicht geändert werden!!!" $MyInvocation.MyCommand 
+						Write-Log 1 "Softwarekategorie konnte nicht geï¿½ndert werden!!!" $MyInvocation.MyCommand 
 						return $false
 					}
 				}
@@ -7913,9 +7927,9 @@ Export-ModuleMember -Function Update-DSM7SoftwareCategory
 function Remove-DSM7SoftwareCategory {
 	<#
 	.SYNOPSIS
-		Löscht eine Softwarekategorie.
+		Lï¿½scht eine Softwarekategorie.
 	.DESCRIPTION
-		Löscht eine Softwarekategorie.
+		Lï¿½scht eine Softwarekategorie.
 	.EXAMPLE
 		Remove-DSM7SoftwareCategory -ID 1234
 	.EXAMPLE
@@ -7982,7 +7996,7 @@ function Remove-DSM7SoftwareCategory {
 					$Object = Get-DSM7ObjectObject -ID $ID
 					if ($Object) {
 						$result = Remove-DSM7Object -Object $Object
-						Write-Log 0 "($($Object.Name)) erfolgreich gelöscht." $MyInvocation.MyCommand
+						Write-Log 0 "($($Object.Name)) erfolgreich gelï¿½scht." $MyInvocation.MyCommand
 						return $result
 					}
 					else {
@@ -8008,9 +8022,9 @@ Export-ModuleMember -Function Remove-DSM7SoftwareCategory
 function Get-DSM7SwInstallationParamDefinitions {
 	<#
 	.SYNOPSIS
-		Gibt von einem Softwarepaket die Parameter Definition zurück.
+		Gibt von einem Softwarepaket die Parameter Definition zurï¿½ck.
 	.DESCRIPTION
-		Gibt von einem Softwarepaket die Parameter Definition zurück.
+		Gibt von einem Softwarepaket die Parameter Definition zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7SwInstallationParamDefinitions -ID 1234
 	.EXAMPLE
@@ -8221,9 +8235,9 @@ function Get-DSM7ResolveVariablesForTargetObject {
 function Get-DSM7ResolveVariablesForTarget {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Variablen eines Objektes zurück.
+		Gibt eine Liste von Variablen eines Objektes zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Liste von Variablen eines Objektes zurück.
+		Gibt eine Liste von Variablen eines Objektes zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7ResolveVariablesForTarget -TargetID 123
 		Get-DSM7ResolveVariablesForTarget -TargetName %Computer%
@@ -8258,7 +8272,7 @@ function Get-DSM7ResolveVariablesForTarget {
 			if ($TargetID) {
 				$Variables = Get-DSM7ResolveVariablesForTargetObject -ID $TargetID
 				$Variables = Convert-DSM7VariabletoPSObjects -DSM7Objects $Variables
-				Write-Log 0 "Variablen für Ziel ID ($TargetID) ermittelt." $MyInvocation.MyCommand
+				Write-Log 0 "Variablen fï¿½r Ziel ID ($TargetID) ermittelt." $MyInvocation.MyCommand
 				return $Variables
 			} 
 			else {
@@ -8295,9 +8309,9 @@ function Get-DSM7VariableGroupsObject {
 function Get-DSM7VariableGroups {
 	<#
 	.SYNOPSIS
-		Gibt eine Liste von Variablen Gruppen und deren Variablen zurück.
+		Gibt eine Liste von Variablen Gruppen und deren Variablen zurï¿½ck.
 	.DESCRIPTION
-		Gibt eine Liste von Variablen Gruppen und deren Variablen zurück.
+		Gibt eine Liste von Variablen Gruppen und deren Variablen zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7VariableGroups Groups
 	.NOTES
@@ -8458,9 +8472,9 @@ function Remove-DSM7VariablesOnTargetObject {
 function Remove-DSM7VariablesOnTarget {
 	<#
 	.SYNOPSIS
-		Lösche eine Liste von Variablen an einem Objektes.
+		Lï¿½sche eine Liste von Variablen an einem Objektes.
 	.DESCRIPTION
-		Lösche eine Liste von Variablen an eimem Objektes.
+		Lï¿½sche eine Liste von Variablen an eimem Objektes.
 	.EXAMPLE
 		Get-DSM7ResolveVariablesForTarget -TargetID 123
 		Get-DSM7ResolveVariablesForTarget -TargetName %Computer%
@@ -8652,7 +8666,7 @@ function Add-DSM7ComputerToUser {
 			if ($ID -and $UserID) {
 				$result = New-DSM7AssociationObject -SchemaTag "ComputerAssociatedUser" -SourceObjectID $ID -TargetObjectID $UserID -TargetSchemaTag "User"
 				if ($result) {
-					Write-Log 0 "Computer ($ID) zu Benutzer ($UserID) erfolgreich hinzugefügt." $MyInvocation.MyCommand
+					Write-Log 0 "Computer ($ID) zu Benutzer ($UserID) erfolgreich hinzugefï¿½gt." $MyInvocation.MyCommand
 					$result = Convert-DSM7AssociationtoPSObject($result)
 					return $result
 				}
@@ -8662,7 +8676,7 @@ function Add-DSM7ComputerToUser {
 				}
 			}
 			else {
-				Write-Log 1 "Computer ($ID) nicht zu Benutzer ($UserID) hinzugefügt." $MyInvocation.MyCommand
+				Write-Log 1 "Computer ($ID) nicht zu Benutzer ($UserID) hinzugefï¿½gt." $MyInvocation.MyCommand
 				return $false
 			}
 		}
@@ -8751,9 +8765,9 @@ Export-ModuleMember -Function Remove-DSM7ComputerToUser
 function Get-DSM7User {
 	<#
 	.SYNOPSIS
-		Gibt das Benutzerobjekt zurück.
+		Gibt das Benutzerobjekt zurï¿½ck.
 	.DESCRIPTION
-		Gibt das Benutzerobjekt zurück.
+		Gibt das Benutzerobjekt zurï¿½ck.
 	.EXAMPLE
 		Get-DSM7User -Name "%Benutzer%" 
 	.EXAMPLE
@@ -8761,7 +8775,7 @@ function Get-DSM7User {
 	.EXAMPLE
 		Get-DSM7User -UniqueID %SID%
 	.EXAMPLE
-		Get-DSM7User -Name "%Benutzer%" -LDAPPath "Managed Users & Computers/domäne/loc/Benutzer"
+		Get-DSM7User -Name "%Benutzer%" -LDAPPath "Managed Users & Computers/domï¿½ne/loc/Benutzer"
 	.NOTES
 	.LINK
 		Get-DSM7User
@@ -8829,54 +8843,29 @@ function Get-DSM7User {
 Export-ModuleMember -Function Get-DSM7User
 
 
-# SIG # Begin signature block
-# MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7Ii4uCD48Ic9/mRnQLVVkUsy
-# D/KgggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
-# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
-# MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
-# IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
-# v0Lx3FIBWwSSu8g2pB3ye4VcqWWjFj3kGaUQZ7JNJcH/uy74jhtfmQgE2NnEbh1X
-# HM3gbSGyPBHsqSFLpTIqM0VTyOVJk3yB1qfIFxUguEZz87C2yZFFagXbwJHamXR7
-# LtB+yjARIrbMUf69c5FFMLS93aRg9cLsGJ3dy4fEVQIDAQABo3EwbzATBgNVHSUE
-# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBBp+xZ1jGKZkXWWdUjyNz19oSkwJzEl
-# MCMGA1UEAxMcVXdlIEZyYW5rZSAobXNnIHNlcnZpY2VzIEFHKYIQUW95fLQCIbVO
-# uAnpDDc4ZTAJBgUrDgMCHQUAA4GBAGclar+QSH1mKf1gt1oNurpTiXBZbM58Pw2Z
-# GRRgVc5TaPodd11hJOVYD0GE9MCVu5lA6q2I4aYfN5DWcu5LgmCqfTC1UwTlG9bG
-# fx+tTVJlbejYRJ/6ETxZ5ZYSnWB8C31hT2g+0wGW16rB7ddnd4enVCEzNW6d1GDQ
-# gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
-# c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
-# BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQ8
-# 04+BB1gcUrsR9NyER4v/P09BsTANBgkqhkiG9w0BAQEFAASBgDND4BiTbvm76QRJ
-# 2cMIlEgFASkjRD9zvGg55TNQ738bvDerIMzjsCvfKMy944omjhj4at7PLHg0E6de
-# 2XPhBpT3TXMqilhXeE7nW2e2TzFkLzHv19jNGfSlSfrwxTDGPDqKi4KuIPzrT14T
-# I+Ko6UPmnPa0otjtOc1OvZWnXszu
-# SIG # End signature block
 
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUuRizgmTdfotu+wLrsBxvzP4a
-# X2igggJAMIICPDCCAamgAwIBAgIQUW95fLQCIbVOuAnpDDc4ZTAJBgUrDgMCHQUA
-# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgKG1zZyBzZXJ2aWNlcyBBRykwHhcNMTcw
-# MjAxMTQwNjQxWhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
-# IChtc2cgc2VydmljZXMgQUcpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC1
-# v0Lx3FIBWwSSu8g2pB3ye4VcqWWjFj3kGaUQZ7JNJcH/uy74jhtfmQgE2NnEbh1X
-# HM3gbSGyPBHsqSFLpTIqM0VTyOVJk3yB1qfIFxUguEZz87C2yZFFagXbwJHamXR7
-# LtB+yjARIrbMUf69c5FFMLS93aRg9cLsGJ3dy4fEVQIDAQABo3EwbzATBgNVHSUE
-# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBBp+xZ1jGKZkXWWdUjyNz19oSkwJzEl
-# MCMGA1UEAxMcVXdlIEZyYW5rZSAobXNnIHNlcnZpY2VzIEFHKYIQUW95fLQCIbVO
-# uAnpDDc4ZTAJBgUrDgMCHQUAA4GBAGclar+QSH1mKf1gt1oNurpTiXBZbM58Pw2Z
-# GRRgVc5TaPodd11hJOVYD0GE9MCVu5lA6q2I4aYfN5DWcu5LgmCqfTC1UwTlG9bG
-# fx+tTVJlbejYRJ/6ETxZ5ZYSnWB8C31hT2g+0wGW16rB7ddnd4enVCEzNW6d1GDQ
-# gItg/dZ0MYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIChtc2cg
-# c2VydmljZXMgQUcpAhBRb3l8tAIhtU64CekMNzhlMAkGBSsOAwIaBQCgeDAYBgor
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU87aRXg+vAsxevFhzf8gjJZ1J
+# n7GgggJAMIICPDCCAamgAwIBAgIQbG2/DC9RTY1HuzJJHSF6MzAJBgUrDgMCHQUA
+# MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgLSBtc2cgc2VydmljZXMgQUcwHhcNMTgw
+# ODIwMTUwNjU0WhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
+# IC0gbXNnIHNlcnZpY2VzIEFHMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCu
+# YJknNfNkBA51iP/WekBqOyiPQt1K/Qbm01/VNpPf25JyT9mmzkP5YXYGpoZtBu9E
+# TMFM7rXm1Bf/M+m/MKR32hXjbPR0iROtd43boNBftUNNFp0fE9t3h8lytO7kTXBD
+# pcph/cAklc1iVU7coK2rp7+81kQE6CEKNwDgr59ejQIDAQABo3EwbzATBgNVHSUE
+# DDAKBggrBgEFBQcDAzBYBgNVHQEEUTBPgBAvfE+EAn0rMq9Mzmo/LzbSoSkwJzEl
+# MCMGA1UEAxMcVXdlIEZyYW5rZSAtIG1zZyBzZXJ2aWNlcyBBR4IQbG2/DC9RTY1H
+# uzJJHSF6MzAJBgUrDgMCHQUAA4GBAADxcZUiWtCXRkKXJfoaaMDciRWIMEJhSlYa
+# /4JlIT+xbQKwbfhFu9uEWKJmt4dHuGg5tXrKHqT+DAWxUYAwchNwIkDjh1A3C264
+# OPySpczeZ5F+4Ls2pnlMMc+EkzHMm6D4HcgYuQmpytXL8ggUOmWHgOHTiV38msEL
+# ks4Dm2zKMYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIC0gbXNn
+# IHNlcnZpY2VzIEFHAhBsbb8ML1FNjUe7MkkdIXozMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBT1
-# Km8Pg+bhoOmE5yajERP/PwDd3jANBgkqhkiG9w0BAQEFAASBgDbtj20I4DnqlA4M
-# vksRCwXntjhShIU700hK/Wq+tWFWzGe0zuHHiFLFa46iNb74+yS6nK6s7phG7Y8D
-# kF71bCoD3i7TXkvuUZ674jH4hiYxrSd0Pk77BMbeWceY3mdDhHeCm5JrSirHjP6v
-# M7ZD4JsNob5AvCRx5GMFmxR1S37m
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQV
+# ptS0JrXzYOq+hDLIpRc6qXCVYzANBgkqhkiG9w0BAQEFAASBgJZvzEpqaI9JOKa1
+# pqYYT0tiAKdJeFqlz73k6QYFozO7xd+tlORdF3MdpUMlzCSnPCikIYqoo3Jkt+hG
+# ZKNAnT86OiSlM1AReQjb8mUKRGm0etxpnKcFiF9h+me6htbb92IWzepSQpNsDjHJ
+# yD9qv/GViLkGjp+3V//JVorDM8rQ
 # SIG # End signature block

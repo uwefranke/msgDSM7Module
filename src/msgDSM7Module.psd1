@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.11'
+ModuleVersion = '1.0.1.12'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
