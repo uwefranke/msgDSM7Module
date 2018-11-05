@@ -18,7 +18,6 @@ All notable changes to this project will be documented in this file.
 
 * function New-DSM7Policy (create DenyPolicy, default parameter changed)
 * function Convert-DSM7PolicytoPSObject
-* function New-DSM7Policy
 * function Get-DSM7ListOfMemberships
 * function Update-DSM7MembershipInGroups
 
