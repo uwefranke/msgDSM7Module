@@ -12,11 +12,15 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-## [1.0.1.12] - 2018-08-20
+## [1.0.1.12] - 2018-10-16
 
 ### Fixed
 
-* New-DSM7Policy (create DenyPolicy, default parameter changed)
+* function New-DSM7Policy (create DenyPolicy, default parameter changed)
+* function Convert-DSM7PolicytoPSObject
+* function New-DSM7Policy
+* function Get-DSM7ListOfMemberships
+* function Update-DSM7MembershipInGroups
 
 ## [1.0.1.11] - 2018-08-14
 
@@ -26,7 +30,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-* Copy-DSM7PolicyListNewTarget (New Group) 
+* function Copy-DSM7PolicyListNewTarget (New Group) 
 
 ## [1.0.1.10] - 2018-08-06
 
