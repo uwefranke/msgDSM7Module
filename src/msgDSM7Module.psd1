@@ -1,5 +1,5 @@
 #
-# Modulmanifest für das Modul "PSGet_msgDSM7Module"
+# Modulmanifest fï¿½r das Modul "PSGet_msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
@@ -8,11 +8,11 @@
 
 @{
 
-# Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
+# Die diesem Manifest zugeordnete Skript- oder Binï¿½rmoduldatei.
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.12'
+ModuleVersion = '1.0.1.13'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -23,37 +23,37 @@ Author = 'Uwe Franke'
 # Unternehmen oder Hersteller dieses Moduls
 CompanyName = 'msg services AG'
 
-# Urheberrechtserklärung für dieses Modul
+# Urheberrechtserklï¿½rung fï¿½r dieses Modul
 Copyright = 'msg services AG (c) 2013-2018. All rights reserved.'
 
 # Beschreibung der von diesem Modul bereitgestellten Funktionen
 Description = 'powershell Module for SOAP interface Ivanti (https://www.ivanti.com) DSM'
 
-# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
+# Die fï¿½r dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
 PowerShellVersion = '3.0'
 
-# Der Name des für dieses Modul erforderlichen Windows PowerShell-Hosts
+# Der Name des fï¿½r dieses Modul erforderlichen Windows PowerShell-Hosts
 # PowerShellHostName = ''
 
-# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Hosts
+# Die fï¿½r dieses Modul mindestens erforderliche Version des Windows PowerShell-Hosts
 # PowerShellHostVersion = ''
 
-# Die für dieses Modul mindestens erforderliche Microsoft .NET Framework-Version
+# Die fï¿½r dieses Modul mindestens erforderliche Microsoft .NET Framework-Version
 DotNetFrameworkVersion = '2.0'
 
-# Die für dieses Modul mindestens erforderliche Version der CLR (Common Language Runtime)
+# Die fï¿½r dieses Modul mindestens erforderliche Version der CLR (Common Language Runtime)
 CLRVersion = '2.0.50727'
 
-# Die für dieses Modul erforderliche Prozessorarchitektur ("Keine", "X86", "Amd64").
+# Die fï¿½r dieses Modul erforderliche Prozessorarchitektur ("Keine", "X86", "Amd64").
 # ProcessorArchitecture = ''
 
-# Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden müssen
+# Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden mï¿½ssen
 # RequiredModules = @()
 
-# Die Assemblys, die vor dem Importieren dieses Moduls geladen werden müssen
+# Die Assemblys, die vor dem Importieren dieses Moduls geladen werden mï¿½ssen
 # RequiredAssemblies = @()
 
-# Die Skriptdateien (PS1-Dateien), die vor dem Importieren dieses Moduls in der Umgebung des Aufrufers ausgeführt werden.
+# Die Skriptdateien (PS1-Dateien), die vor dem Importieren dieses Moduls in der Umgebung des Aufrufers ausgefï¿½hrt werden.
 # ScriptsToProcess = @()
 
 # Die Typdateien (.ps1xml), die beim Importieren dieses Moduls geladen werden sollen
@@ -122,7 +122,7 @@ AliasesToExport = 'Get-DSM7SoftwarebyIDs'
 # Liste aller Dateien in diesem Modulpaket
 # FileList = @()
 
-# Die privaten Daten, die an das in "RootModule/ModuleToProcess" angegebene Modul übergeben werden sollen. Diese können auch eine PSData-Hashtabelle mit zusätzlichen von PowerShell verwendeten Modulmetadaten enthalten.
+# Die privaten Daten, die an das in "RootModule/ModuleToProcess" angegebene Modul ï¿½bergeben werden sollen. Diese kï¿½nnen auch eine PSData-Hashtabelle mit zusï¿½tzlichen von PowerShell verwendeten Modulmetadaten enthalten.
 PrivateData = @{
 
     PSData = @{
@@ -158,7 +158,7 @@ PrivateData = @{
 # HelpInfo-URI dieses Moduls
 HelpInfoURI = 'https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md'
 
-# Standardpräfix für Befehle, die aus diesem Modul exportiert werden. Das Standardpräfix kann mit "Import-Module -Prefix" überschrieben werden.
+# Standardprï¿½fix fï¿½r Befehle, die aus diesem Modul exportiert werden. Das Standardprï¿½fix kann mit "Import-Module -Prefix" ï¿½berschrieben werden.
 # DefaultCommandPrefix = ''
 
 }
