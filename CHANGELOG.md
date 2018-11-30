@@ -14,6 +14,10 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.1.12] - 2018-10-16
 
+### Added
+
+* function Get-DSM7GroupList 
+
 ### Fixed
 
 * function New-DSM7Policy (create DenyPolicy, default parameter changed)

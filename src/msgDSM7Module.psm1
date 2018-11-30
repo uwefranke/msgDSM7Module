@@ -3067,6 +3067,8 @@ function Get-DSM7Group {
 	.LINK
 		Get-DSM7Group
 	.LINK
+		Get-DSM7GroupList
+	.LINK
 		New-DSM7Group
 	.LINK
 		Move-DSM7Group
@@ -3159,6 +3161,93 @@ function Get-DSM7Group {
 	}
 } 
 Export-ModuleMember -Function Get-DSM7Group
+function Get-DSM7GroupList {
+	<#
+	.SYNOPSIS
+		Gibt eine Liste von Gruppen zur�ck.
+	.DESCRIPTION
+		Gibt eine Liste von Gruppen zur�ck.
+	.EXAMPLE
+		Get-DSM7GroupList -LDAPPath "Managed Users & Computers/OU1/OU2" -recursive
+	.NOTES
+	.LINK
+		Get-DSM7Group
+	.LINK
+		Get-DSM7GroupList
+	.LINK
+		New-DSM7Group
+	.LINK
+		Move-DSM7Group
+	.LINK
+		Update-DSM7Group
+	.LINK
+		Remove-DSM7Group
+	.LINK
+		Get-DSM7GroupMembers
+	.LINK
+		Get-DSM7ListOfMemberships
+	.LINK
+		Add-DSM7ComputerToGroup
+	.LINK
+		Remove-DSM7ComputerFromGroup
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[ValidateSet("Group","DynamicGroup","ExternalGroup")]
+		[system.string]$SchemaTag,
+		[system.string]$Attributes,
+		[system.string]$Filter,
+		[system.string]$LDAPPath = "",
+		[int]$ParentContID,
+		[switch]$GenTypeData = $false,
+		[switch]$recursive = $false
+	)
+	if (Confirm-Connect) {
+		if ($LDAPPath) {
+			$ParentContID = Get-DSM7LDAPPathID -LDAPPath $LDAPPath
+		}
+		if ($SchemaTag) {
+			$Filter = "(SchemaTag=$SchemaTag)$Filter"
+		}
+		$Attributes = "$Attributes,DynamicGroupProps.Filter,DynamicGroupProps.IsComplex,DynamicGroupProps.ParentDynGroupId,Group.TargetCategory"
+		$Attributes = $Attributes.TrimStart(",")
+		if ($recursive) {
+			if ($ParentContID -gt 0) {
+				$result = @()
+				$resultComputer = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+				if ($resultComputer) {
+					$result += $resultComputer
+				} 
+				$resultContainer = Get-DSM7ObjectList -Filter $DSM7Container -ParentContID $ParentContID -recursive
+				foreach ($Container in $resultContainer) {
+					$FilterContainer = "(&(ParentContID=$($Container.ID))(BasePropGroupTag=Group)$filter)"
+					$resultComputer = Get-DSM7ObjectList -Attributes $Attributes -Filter $FilterContainer 
+					if ($resultComputer) {
+						$result += $resultComputer
+					}
+				} 
+			}
+			else {
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+			}
+		}
+		else {
+			if ($ParentContID -gt 0) {
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+			}
+			else {
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -GenTypeData:$GenTypeData
+			}
+		}
+		if ($result) {
+			return $result
+		}
+		else {
+			return $false
+		}
+	}
+}
+Export-ModuleMember -Function Get-DSM7GroupList
 function New-DSM7Group {
 	<#
 	.SYNOPSIS
@@ -8847,8 +8936,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU87aRXg+vAsxevFhzf8gjJZ1J
-# n7GgggJAMIICPDCCAamgAwIBAgIQbG2/DC9RTY1HuzJJHSF6MzAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUnfWXZkL4S9HvNyuy7JyMYDfJ
+# V6SgggJAMIICPDCCAamgAwIBAgIQbG2/DC9RTY1HuzJJHSF6MzAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgLSBtc2cgc2VydmljZXMgQUcwHhcNMTgw
 # ODIwMTUwNjU0WhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IC0gbXNnIHNlcnZpY2VzIEFHMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCu
@@ -8863,9 +8952,9 @@ Export-ModuleMember -Function Get-DSM7User
 # ks4Dm2zKMYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIC0gbXNn
 # IHNlcnZpY2VzIEFHAhBsbb8ML1FNjUe7MkkdIXozMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQV
-# ptS0JrXzYOq+hDLIpRc6qXCVYzANBgkqhkiG9w0BAQEFAASBgJZvzEpqaI9JOKa1
-# pqYYT0tiAKdJeFqlz73k6QYFozO7xd+tlORdF3MdpUMlzCSnPCikIYqoo3Jkt+hG
-# ZKNAnT86OiSlM1AReQjb8mUKRGm0etxpnKcFiF9h+me6htbb92IWzepSQpNsDjHJ
-# yD9qv/GViLkGjp+3V//JVorDM8rQ
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQp
+# 6LTdB4NYdLiBJTNd7V0WwB30+TANBgkqhkiG9w0BAQEFAASBgAwObRSFE+rumfna
+# yax28PsSudOIcjYRhbw8T3ve/RZBtP7/JXU/309BUAAsDNKQIqaPrTP9H5WYFYLr
+# UnSNsmqgK6R0AfT8ZcE2ikEx90qrXzTHVqPGujyFuXQZZana3jaYkUvti2legkYe
+# ZcEgGub82EI1JKdNFjKEGzMlugA8
 # SIG # End signature block
