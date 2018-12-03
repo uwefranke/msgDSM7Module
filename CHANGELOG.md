@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.1.14] - 2018-12-03
+
+### Fixed
+
+* function Get-DSM7GroupList (export)
+
 ## [1.0.1.13] - 2018-11-30
 
 ### Added

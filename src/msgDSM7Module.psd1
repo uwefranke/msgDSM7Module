@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.13'
+ModuleVersion = '1.0.1.14'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -77,7 +77,7 @@ FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-C
                'Get-DSM7OrgTreeContainer', 'Get-DSM7OrgTreeContainers', 
                'New-DSM7OrgTreeContainer', 'Move-DSM7OrgTreeContainer', 
                'Update-DSM7OrgTreeContainer', 'Remove-DSM7OrgTreeContainer', 
-               'Get-DSM7Group', 'New-DSM7Group', 'Update-DSM7Group', 'Move-DSM7Group', 
+               'Get-DSM7Group', 'Get-DSM7GroupList', 'New-DSM7Group', 'Update-DSM7Group', 'Move-DSM7Group', 
                'Remove-DSM7Group', 'Get-DSM7ComputerGroupMembers', 
                'Get-DSM7ComputerInGroups', 'Get-DSM7ExternalGroupMembers', 
                'Get-DSM7GroupMembers', 'Get-DSM7ListOfMemberships', 
