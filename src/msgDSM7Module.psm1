@@ -8301,6 +8301,35 @@ function Remove-DSM7SwInstallationParamDefinitionsObject {
 		return $false 
 	} 
 }
+function Get-DSM7DepotStatesOfPackage {
+	[CmdletBinding()] 
+	param ( 
+		[Parameter(Position=0, Mandatory=$true)]
+		[int32]$ID
+	)
+	$result = Get-DSM7DepotStatesOfPackageObject -ID $ID
+	return $result	
+}
+#Export-ModuleMember -Function Get-DSM7DepotStatesOfPackage
+function Get-DSM7DepotStatesOfPackageObject {
+	[CmdletBinding()] 
+	param ( 
+		[Parameter(Position=0, Mandatory=$true)]
+		[int32]$ID
+
+	)
+	try {
+		$Webrequest = Get-DSM7RequestHeader -action "GetDepotStatesOfPackage"
+		$Webrequest.PackageId = $ID
+		$Webresult = $DSM7WebService.GetDepotStatesOfPackage($Webrequest).DepotStates
+		return $Webresult
+	}
+	catch [system.exception] 
+	{
+		Write-Log 2 $_ $MyInvocation.MyCommand 
+		return $false 
+	} 
+}
 ###############################################################################
 # DSM7 Funktionen - Variablen 
 function Get-DSM7ResolveVariablesForTargetObject {
@@ -8936,8 +8965,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIIEMQYJKoZIhvcNAQcCoIIEIjCCBB4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUt7wxMbDxqLgV4oXX53JPyza6
-# 0oqgggJAMIICPDCCAamgAwIBAgIQbG2/DC9RTY1HuzJJHSF6MzAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUcquuPI0rHz00zH1CZWA0uflA
+# PDGgggJAMIICPDCCAamgAwIBAgIQbG2/DC9RTY1HuzJJHSF6MzAJBgUrDgMCHQUA
 # MCcxJTAjBgNVBAMTHFV3ZSBGcmFua2UgLSBtc2cgc2VydmljZXMgQUcwHhcNMTgw
 # ODIwMTUwNjU0WhcNMzkxMjMxMjM1OTU5WjAnMSUwIwYDVQQDExxVd2UgRnJhbmtl
 # IC0gbXNnIHNlcnZpY2VzIEFHMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCu
@@ -8952,9 +8981,9 @@ Export-ModuleMember -Function Get-DSM7User
 # ks4Dm2zKMYIBWzCCAVcCAQEwOzAnMSUwIwYDVQQDExxVd2UgRnJhbmtlIC0gbXNn
 # IHNlcnZpY2VzIEFHAhBsbb8ML1FNjUe7MkkdIXozMAkGBSsOAwIaBQCgeDAYBgor
 # BgEEAYI3AgEMMQowCKACgAChAoAAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBR2
-# 3VGgaWmgUt/dfMQ9dAvIr4A79TANBgkqhkiG9w0BAQEFAASBgEZIL+fMxdRiqVOW
-# X972orO6qwBKc+1VADEGPkHeYKhhIMLg7zmZw8uNNLX6DxoNB3/YXDHIWOe34CRG
-# +vV8qGZ//AF6HX+yU+D4L2MwvCpZLscZ+UBCufEg0S/5M2Cn2/cxGTRBEQapKOUh
-# QaeU3vxwrCPhsTck2UiuFysU2suD
+# MBwGCisGAQQBgjcCAQsxDjAMBgorBgEEAYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTU
+# WbrKQVYhLSfE1yo7Tlz/st9D2zANBgkqhkiG9w0BAQEFAASBgG8yvu6RsesE9Eyz
+# etZ4kRucpxFWmBfyXJIGsKDbSb9TWiaV3DEr7WPQuSrXTEU+B3RibkDRQ7vAWbOW
+# HSlGaI1gGKy4Fo5IOjpPLI4Yknx/ylYzSuDpLeCmkAWJjWwUn9szIr8UWqwy6Aee
+# oSeHoP4+LE9zsmIW92yuFEWTxmTi
 # SIG # End signature block
