@@ -1,5 +1,5 @@
 #
-# Modulmanifest f�r das Modul "PSGet_msgDSM7Module"
+# Modulmanifest f�r das Modul "msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
