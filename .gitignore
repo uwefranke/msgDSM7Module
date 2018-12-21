@@ -1,0 +1,4 @@
+# ignore all logs
+*.log
+# ignore config file
+msg.ADGPOReport.xml
