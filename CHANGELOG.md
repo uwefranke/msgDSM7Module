@@ -8,9 +8,15 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-* New-DSM7Policy (create ShopPolicy)
+* function New-DSM7Policy (create ShopPolicy)
 
 ### Fixed
+
+## [1.0.1.15] - 2019-01-14
+
+### Added
+
+*  function Get-DSM7Permissions 
 
 ## [1.0.1.14] - 2018-12-03
 

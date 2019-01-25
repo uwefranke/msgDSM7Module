@@ -24,7 +24,7 @@ Author = 'Uwe Franke'
 CompanyName = 'msg services AG'
 
 # Urheberrechtserkl�rung f�r dieses Modul
-Copyright = 'msg services AG (c) 2013-2018. All rights reserved.'
+Copyright = 'msg services AG (c) 2013-2019. All rights reserved.'
 
 # Beschreibung der von diesem Modul bereitgestellten Funktionen
 Description = 'powershell Module for SOAP interface Ivanti (https://www.ivanti.com) DSM'
