@@ -12,11 +12,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-## [1.0.1.15] - 2019-01-14
+## [1.0.1.15] - 2019-10-09
 
 ### Added
 
 *  function Get-DSM7Permissions 
+
+*  function Get-DSM7ComputerToUser 
 
 ## [1.0.1.14] - 2018-12-03
 

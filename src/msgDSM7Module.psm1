@@ -8808,20 +8808,20 @@ Export-ModuleMember -Function Add-DSM7ComputerToUser
 function Get-DSM7ComputerToUser {
 	<#
 	.SYNOPSIS
-		Ordnet einem Computer einen Benutzer zu.
+		Gibt die zugeordneten Benutzer zu einem Computer zurueck.
 	.DESCRIPTION
-		Ordnet einem Computer einen Benutzer zu.
+		Gibt die zugeordneten Benutzer zu einem Computer zurueck.
 	.EXAMPLE
-		Add-DSM7ComputerToUser -ID x -UserID y
+		Get-DSM7ComputerToUser -ID x
 	.EXAMPLE
-		Add-DSM7ComputerToUser -Name %Computername% -Username %Username%
-	.EXAMPLE
-		Add-DSM7ComputerToUser -Name %Computername% -UserUniqueID %SID%
+		Get-DSM7ComputerToUser -UserID x
 	.NOTES
 	.LINK
 		Add-DSM7ComputerToUser 
 	.LINK
 		Remove-DSM7ComputerToUser
+	.LINK
+		Get-DSM7ComputerToUser
 	#>
 	[CmdletBinding()] 
 	param ( 
