@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.14
+	Version		: 1.0.1.15
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -22,7 +22,7 @@
 ###############################################################################
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benoetigte DSM Version 7.0 oder hoeher
-$DSM7testedVersion = "7.4.1.5" # hoechste getestet DSM Version mit diesem Modul
+$DSM7testedVersion = "7.4.2.3" # hoechste getestet DSM Version mit diesem Modul
 $DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=ExternalGroup)(SchemaTag=DynamicGroup))"
 $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
@@ -8805,6 +8805,92 @@ function Add-DSM7ComputerToUser {
 	}
 }
 Export-ModuleMember -Function Add-DSM7ComputerToUser
+function Get-DSM7ComputerToUser {
+	<#
+	.SYNOPSIS
+		Ordnet einem Computer einen Benutzer zu.
+	.DESCRIPTION
+		Ordnet einem Computer einen Benutzer zu.
+	.EXAMPLE
+		Add-DSM7ComputerToUser -ID x -UserID y
+	.EXAMPLE
+		Add-DSM7ComputerToUser -Name %Computername% -Username %Username%
+	.EXAMPLE
+		Add-DSM7ComputerToUser -Name %Computername% -UserUniqueID %SID%
+	.NOTES
+	.LINK
+		Add-DSM7ComputerToUser 
+	.LINK
+		Remove-DSM7ComputerToUser
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[Parameter(Position=0, Mandatory=$false)]
+		[system.int32]$ID,
+		[Parameter(Position=0, Mandatory=$false)]
+		[system.string]$Name,
+		[Parameter(Position=1, Mandatory=$false)]
+		[system.string]$LDAPPath,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.int32]$UserID,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.string]$UserName,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.string]$UserUniqueID,
+		[Parameter(Position=3, Mandatory=$false)]
+		[system.string]$UserLDAPPath
+	)
+	if (Confirm-Connect) {
+		if ($DSM7Version -gt "7.3.2") {
+			if (!$ID) {
+				$ID = (Get-DSM7Computer -Name $Name -LDAPPath $LDAPPath).ID
+			}
+			if (!$UserID) {
+				if ($UserName) {
+					$UserID = (Get-DSM7User -Name $UserName -LDAPPath $UserLDAPPath).ID
+				}
+				if ($UserUniqueID) {
+					$UserID = (Get-DSM7User -UniqueID $UserUniqueID -LDAPPath $UserLDAPPath).ID
+				}
+			}
+			if ($ID -or $UserID) {
+				if ($ID) {	
+					$result = Get-DSM7AssociationList -SchemaTag "ComputerAssociatedUser" -SourceObjectID $ID
+				}
+				if ($result) {
+					Write-Log 1 "Computer ($ID) hat zugehoerige Benutzer." $MyInvocation.MyCommand
+					$result = Convert-DSM7AssociationListtoPSObject($result) -resolvedName
+					return $result
+				}
+				else {
+					Write-Log 1 "Computer ($ID) hat keine Benutzer!" $MyInvocation.MyCommand
+					return $false
+				}
+				if ($UserID) {
+					$result = Get-DSM7AssociationList -SchemaTag "ComputerAssociatedUser" -TargetObjectID $UserID -TargetSchemaTag "User"
+				}
+				if ($result) {
+					Write-Log 1 "Benutzer ($UserID) ist Computern zugeordnet." $MyInvocation.MyCommand
+					$result = Convert-DSM7AssociationListtoPSObject($result) -resolvedName
+					return $result
+				}
+				else {
+					Write-Log 1 "Benutzer ($ID) keinem Computer zugeordnet!" $MyInvocation.MyCommand
+					return $false
+				}
+			}
+			else {
+				Write-Log 1 "Computer ($ID) oder Benutzer ($UserID) nicht angeben." $MyInvocation.MyCommand
+				return $false
+			}
+		}
+		else {
+			Write-Log 1 "Funktion nicht in der Version vorhanden!" $MyInvocation.MyCommand
+			return $false
+		}
+	}
+}
+Export-ModuleMember -Function Get-DSM7ComputerToUser
 function Remove-DSM7ComputerToUser {
 	<#
 	.SYNOPSIS
