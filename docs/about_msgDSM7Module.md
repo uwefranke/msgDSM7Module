@@ -54,6 +54,9 @@ PS> DisConnect-DSM7Web
 * [New-DSM7Computer](New-DSM7Computer.md)
 * [Remove-DSM7Computer](Remove-DSM7Computer.md)
 * [Move-DSM7Computer](Move-DSM7Computer.md)
+* [Get-DSM7ComputerToUser](Get-DSM7ComputerToUser.md)
+* [Add-DSM7ComputerToUser](Add-DSM7ComputerToUser.md)
+* [Remove-DSM7ComputerToUser](Remove-DSM7ComputerToUser.md)
 
 ### DSM group objects
 
