@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 * function Get-DSM7PolicyInstanceCountByPolicy 
+* function Get-DSM7ComputerToUser 
 
 ## [1.0.1.15] - 2019-10-09
 
