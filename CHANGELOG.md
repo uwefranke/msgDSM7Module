@@ -12,6 +12,16 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.1.16] - 2019-12-04
+
+### Added
+
+*  function Get-DSM7PolicyInstanceListByPolicy 
+
+### Fixed
+
+* function Get-DSM7PolicyInstanceCountByPolicy 
+
 ## [1.0.1.15] - 2019-10-09
 
 ### Added

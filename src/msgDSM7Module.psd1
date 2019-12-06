@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.15'
+ModuleVersion = '1.0.1.16'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -87,13 +87,13 @@ FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-C
                'Move-DSM7PolicyToTarget', 'Remove-DSM7PolicyFromTarget', 
                'Add-DSM7PolicyToTarget', 'New-DSM7Policy', 'Copy-DSM7Policy', 
                'Remove-DSM7Policy', 'Get-DSM7PolicyListByAssignedSoftware', 
-               'Get-DSM7PolicyListByTarget', 'Copy-DSM7PolicyListNewTarget', 
+               'Get-DSM7PolicyListByTarget','Copy-DSM7PolicyListNewTarget', 
                'Get-DSM7PolicyStatisticsByTarget', 'Get-DSM7PolicyStatistics', 
                'Get-DSM7PolicyStatisticsByPolicies', 
                'Get-DSM7ComputerMissingPatch', 
                'Get-DSM7PolicyInstanceCountByPolicy', 
 			   'Get-DSM7SwInstallationParamDefinitions',
-               'Get-DSM7PolicyInstanceListByNode', 'Update-DSM7PolicyInstances', 
+               'Get-DSM7PolicyInstanceListByNode','Get-DSM7PolicyInstanceListByPolicy', 'Update-DSM7PolicyInstances', 
                'Remove-DSM7PolicyInstance', 
                'Get-DSM7SwInstallationConfigurationsObject', 'Get-DSM7SoftwareIDs', 
                'Get-DSM7Software', 'Move-DSM7Software', 'Update-DSM7Software', 
@@ -102,7 +102,7 @@ FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-C
                'Update-DSM7SoftwareCategory', 'Remove-DSM7SoftwareCategory', 
                'Get-DSM7ResolveVariablesForTarget', 'Get-DSM7VariableGroups', 
                'Set-DSM7VariablesOnTarget', 'Remove-DSM7VariablesOnTarget', 
-               'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser','Get-DSM7ComputerToUser', 'Get-DSM7User'
+               'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser','Get-DSM7ComputerToUser', 'Get-DSM7ComputerToUserList', 'Get-DSM7User'
 
 # Aus diesem Modul zu exportierende Cmdlets
 CmdletsToExport = '*'
@@ -162,4 +162,5 @@ HelpInfoURI = 'https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about
 # DefaultCommandPrefix = ''
 
 }
+
 

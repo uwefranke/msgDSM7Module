@@ -61,6 +61,12 @@ functions in msgDSM7Module
     Remove-DSM7Computer
     *
     Move-DSM7Computer
+    *
+    Get-DSM7ComputerToUser
+    *
+    Add-DSM7ComputerToUser
+    *
+    Remove-DSM7ComputerToUser
 
     DSM GROUP OBJECTS
     *

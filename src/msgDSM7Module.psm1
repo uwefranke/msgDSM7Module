@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.15
+	Version		: 1.0.1.16
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -877,6 +877,10 @@ function Convert-DSM7PolicyInstancetoPSObject {
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectSchemaTag -Value $AssignedObjectSchemaTag
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectUniqueId -Value $AssignedObjectUniqueId 
 		$AssignedObjectNameOld = $AssignedObjectName
+		if ($DSM7Object.TargetObjectID) {
+			$TargetObjectName = $($DSM7Objects|where {$_.ID -eq $DSM7Object.TargetObjectID}).Name 
+			add-member -inputobject $Raw -MemberType NoteProperty -name TargetObjectName -Value $TargetObjectName
+		}
 	}
 	if ($DSM7Object.GenTypeData) {
 		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
@@ -895,7 +899,6 @@ function Convert-DSM7PolicyInstancetoPSObject {
 			}
 		}
 	} 
-
 	if ($DSM7Object.TargetObjectList) {
 		$TargetObjectList = @()
 		foreach ($TargetObject in $DSM7Object.TargetObjectList) {
@@ -924,6 +927,7 @@ function Convert-DSM7PolicyInstanceListtoPSObject {
 		else {
 			$IDs += ($ObjectList|Select-Object -ExpandProperty AssignedObjectID)
 		}
+		$IDs += ($ObjectList|Select-Object -ExpandProperty TargetObjectID)
 		$DSM7Objects = Get-DSM7ObjectsObject -IDs $IDs
 	} 
 	$DSM7ObjectMembers = ($ObjectList|Get-Member -MemberType Properties).Name
@@ -4311,7 +4315,7 @@ function Update-DSM7MembershipInGroups {
 		else {
 			Write-Log 1 "Keine Gruppe angegeben!!!" $MyInvocation.MyCommand 
 		}
-	}	
+	} 
 	else {
 		Write-Log 1 "Name($Name) oder ID($ID) nicht angegeben!!!" $MyInvocation.MyCommand 
 		return $false
@@ -6347,7 +6351,7 @@ function Get-DSM7PolicyStatisticsByTargetObject {
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "GetPolicyStatisticsByTarget"
 		$Webrequest.TargetId = $ID
-		$Webresult = $DSM7WebService.GetPolicyStatisticsByTarget($Webrequest)
+		$Webresult = $DSM7WebService.GetPolicyStatisticsByTarget($Webrequest).ComplianceStatisticResults
 		return $Webresult
 	}
 	catch [system.exception] 
@@ -6603,13 +6607,16 @@ Export-ModuleMember -Function Get-DSM7ComputerMissingPatch
 function Get-DSM7PolicyInstanceCountByPolicyObject {
 	[CmdletBinding()] 
 	param ( 
-		[system.string]$ID
+		[system.string]$ID,
+		[system.string]$ComplianceState
 	)
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "GetPolicyInstanceCountByPolicy"
 		$Webrequest.PolicyId = $ID
-		$Webrequest.FilterCriteria = New-Object $DSM7Types["PolicyInstanceFilterCriteria"] 
-		$Webrequest.FilterCriteria.ComplianceState = "Compliant" 
+		if ($ComplianceState) {
+			$Webrequest.FilterCriteria = New-Object $DSM7Types["PolicyInstanceFilterCriteria"] 
+			$Webrequest.FilterCriteria.ComplianceStates = $ComplianceState
+		}
 		$Webresult = $DSM7WebService.GetPolicyInstanceCountByPolicy($Webrequest).NumberOfResults
 		return $Webresult
 	}
@@ -6627,7 +6634,7 @@ function Get-DSM7PolicyInstanceCountByPolicy {
 	.DESCRIPTION
 		Gibt eine Statistik von einer Policy zurueck.
 	.EXAMPLE
-		Get-DSM7PolicyInstanceCountByPolicy -Name "Policy" 
+		Get-DSM7PolicyInstanceCountByPolicy -ID 123456 -ComplianceState Compliant 
 	.NOTES
 	.LINK
 		Get-DSM7PolicyInstanceCountByPolicy
@@ -6637,14 +6644,16 @@ function Get-DSM7PolicyInstanceCountByPolicy {
 		Update-DSM7PolicyInstance
 	#>
 	[CmdletBinding()] 
-	param ( 
-		[system.string]$Name,
+	param (
+		[Parameter(Position=0, Mandatory=$true)] 
 		[system.string]$ID,
-		[system.string]$LDAPPath = ""
+		[Parameter(Position=1, Mandatory=$false)]
+		[ValidateSet("Undefined","Compliant","NotCompliant","CompliancePending","NotPossible","ClientSidePrerequisitesFailed")]
+		[system.string]$ComplianceState
 	)
 	if (Confirm-Connect) {
 		if ($ID -or $Name) {
-			$result = Get-DSM7PolicyInstanceCountByPolicyObject -ID $ID
+			$result = Get-DSM7PolicyInstanceCountByPolicyObject -ID $ID -ComplianceState $ComplianceState
 			return $result
 		}
 	}
@@ -6667,7 +6676,6 @@ function Get-DSM7PolicyInstanceListByNodeObject {
 		return $false 
 	} 
 }
-
 function Get-DSM7PolicyInstanceListByNode {
 	<#
 	.SYNOPSIS
@@ -6730,6 +6738,61 @@ function Update-DSM7PolicyInstanceListObject {
 		return $false 
 	} 
 }
+function Get-DSM7PolicyInstanceListByPolicyObject {
+	[CmdletBinding()] 
+	param ( 
+		[system.string]$ID
+	)
+	try {
+		$Webrequest = Get-DSM7RequestHeader -action "GetPolicyInstanceListByPolicy"
+		$Webrequest.PolicyId = $ID
+		$Webresult = $DSM7WebService.GetPolicyInstanceListByPolicy($Webrequest).PolicyInstanceList
+		return $Webresult
+	}
+	catch [system.exception] 
+	{
+		Write-Log 2 $_ $MyInvocation.MyCommand 
+		return $false 
+	} 
+}
+function Get-DSM7PolicyInstanceListByPolicy {
+	<#
+	.SYNOPSIS
+		Gibt eine Liste PolicyInstances von Policys zurueck.
+	.DESCRIPTION
+		Gibt eine Liste PolicyInstances von Policys zurueck.
+	.EXAMPLE
+		Get-DSM7PolicyInstanceListByPolicy -ID 123456" 
+	.NOTES
+	.LINK
+		Get-DSM7PolicyInstanceCountByPolicy
+	.LINK
+		Get-DSM7PolicyInstanceListByNode
+	.LINK
+		Update-DSM7PolicyInstance
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[system.string]$ID,
+		[switch]$resolvedName = $false
+	)
+	if (Confirm-Connect) {
+		if ($ID) {
+			$result = Get-DSM7PolicyInstanceListByPolicyObject -ID $ID
+			if ($result) {
+				Write-Log 0 "PolicyInstances bei Policy $ID!" $MyInvocation.MyCommand 
+
+				$result = Convert-DSM7PolicyInstanceListtoPSObject -resolvedName:$resolvedName $result 
+				return $result
+			}
+			else {
+				Write-Log 1 "Keine PolicyInstances vorhanden am Object $ID!" $MyInvocation.MyCommand 
+				return $false
+			}
+		}
+	}
+}
+Export-ModuleMember -Function Get-DSM7PolicyInstanceListByPolicy
 function Get-DSM7PolicyInstancesObject {
 	[CmdletBinding()] 
 	param ( 
@@ -8308,7 +8371,7 @@ function Get-DSM7DepotStatesOfPackage {
 		[int32]$ID
 	)
 	$result = Get-DSM7DepotStatesOfPackageObject -ID $ID
-	return $result	
+	return $result 
 }
 #Export-ModuleMember -Function Get-DSM7DepotStatesOfPackage
 function Get-DSM7DepotStatesOfPackageObject {
@@ -8854,11 +8917,11 @@ function Get-DSM7ComputerToUser {
 				}
 			}
 			if ($ID -or $UserID) {
-				if ($ID) {	
+				if ($ID) { 
 					$result = Get-DSM7AssociationList -SchemaTag "ComputerAssociatedUser" -SourceObjectID $ID
 				}
 				if ($result) {
-					Write-Log 1 "Computer ($ID) hat zugehoerige Benutzer." $MyInvocation.MyCommand
+					Write-Log 0 "Computer ($ID) hat zugehoerige Benutzer." $MyInvocation.MyCommand
 					$result = Convert-DSM7AssociationListtoPSObject($result) -resolvedName
 					return $result
 				}
@@ -8870,7 +8933,7 @@ function Get-DSM7ComputerToUser {
 					$result = Get-DSM7AssociationList -SchemaTag "ComputerAssociatedUser" -TargetObjectID $UserID -TargetSchemaTag "User"
 				}
 				if ($result) {
-					Write-Log 1 "Benutzer ($UserID) ist Computern zugeordnet." $MyInvocation.MyCommand
+					Write-Log 0 "Benutzer ($UserID) ist Computern zugeordnet." $MyInvocation.MyCommand
 					$result = Convert-DSM7AssociationListtoPSObject($result) -resolvedName
 					return $result
 				}
@@ -8891,6 +8954,38 @@ function Get-DSM7ComputerToUser {
 	}
 }
 Export-ModuleMember -Function Get-DSM7ComputerToUser
+function Get-DSM7ComputerToUserList {
+	<#
+	.SYNOPSIS
+		Gibt die Liste zugeordneten Benutzer zu Computer zurueck.
+	.DESCRIPTION
+		Gibt die Liste zugeordneten Benutzer zu Computer zurueck.
+	.EXAMPLE
+		Get-DSM7ComputerToUserList
+	.NOTES
+	.LINK
+		Add-DSM7ComputerToUser 
+	.LINK
+		Remove-DSM7ComputerToUser
+	.LINK
+		Get-DSM7ComputerToUser
+	.LINK
+		Get-DSM7ComputerToUserList
+	#>
+	if (Confirm-Connect) {
+		$result = Get-DSM7AssociationList -SchemaTag "ComputerAssociatedUser"
+		if ($result) {
+			Write-Log 0 "Liste fertig." $MyInvocation.MyCommand
+			$result = Convert-DSM7AssociationListtoPSObject($result) -resolvedName
+			return $result
+		}
+		else {
+			Write-Log 1 "Es gibt keine zugeordneten Benutzer zu Computern!" $MyInvocation.MyCommand
+			return $false
+		}
+	}
+}
+Export-ModuleMember -Function Get-DSM7ComputerToUserList
 function Remove-DSM7ComputerToUser {
 	<#
 	.SYNOPSIS
@@ -9046,3 +9141,27 @@ function Get-DSM7User {
 } 
 Export-ModuleMember -Function Get-DSM7User
 
+
+# SIG # Begin signature block
+# MIID6QYJKoZIhvcNAQcCoIID2jCCA9YCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUaLMfg1aPgJKUvvOx5NL2xlD2
+# 3rGgggIKMIICBjCCAXOgAwIBAgIQu5sKUC9Qh6ZJ3pWdk+J2LzAJBgUrDgMCHQUA
+# MBUxEzARBgNVBAMTClV3ZSBGcmFua2UwHhcNMTkxMTI5MTM1MDMyWhcNMzkxMjMx
+# MjM1OTU5WjAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlMIGfMA0GCSqGSIb3DQEBAQUA
+# A4GNADCBiQKBgQCtDYV+VqoUSxMgO+is0UUWdyzvWchxX2+JKiuI8vqEz5wdhYdR
+# qysDT1sBvIHVpkd8Bwg1V5R+t9W9BmLYxugQhcXRrcvH7q6NuQ8Sj4gez5JuVmsI
+# XHNz82lL0KZalR6o1ShkcsyeMY9WxRobpVD8yGJ2r0T4bW5V1Zbb9eDKTQIDAQAB
+# o18wXTATBgNVHSUEDDAKBggrBgEFBQcDAzBGBgNVHQEEPzA9gBA5Gm4cEkdUJ8rS
+# pxcYeU3roRcwFTETMBEGA1UEAxMKVXdlIEZyYW5rZYIQu5sKUC9Qh6ZJ3pWdk+J2
+# LzAJBgUrDgMCHQUAA4GBAIYzsiiW7hfNxy5DoGR8ZL5LDo4MQ3P9Zt8KJPux1lcT
+# /xYTrcvHEdJ0oYfHekhBi43aA7jk1tjtU2kL2VqWlt477q6zxXfgWSJS62kUeKvf
+# 151usx5IWvaFONFgXwSlTG6lqGD6fkLrtdybMGX03ZgJ6rn6F6S3vdMTvakkCh7x
+# MYIBSTCCAUUCAQEwKTAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlAhC7mwpQL1CHpkne
+# lZ2T4nYvMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkG
+# CSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEE
+# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRuEF2w5QfLfJ0Ib2f/IrtffPm+wTANBgkq
+# hkiG9w0BAQEFAASBgGlCSgxB/ZskNhW2U7lO94Are9NiB2liDOOLtPzrgs4wM8XW
+# xcGMC/qWEIVQaCD5QhmKeNJxZLKlogATInORVvFrOqTj3jgRwK1r+qyG599LMp07
+# wi9O09SDykQPtHwxXO0GqRwjNrGWMgK9o1otCUMhuHgoFT/JO8CKlvvZJ3f6
+# SIG # End signature block
