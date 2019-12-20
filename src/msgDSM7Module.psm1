@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.16
+	Version		: 1.0.1.17
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -22,7 +22,7 @@
 ###############################################################################
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benoetigte DSM Version 7.0 oder hoeher
-$DSM7testedVersion = "7.4.2.3" # hoechste getestet DSM Version mit diesem Modul
+$DSM7testedVersion = "7.4.2.4" # hoechste getestet DSM Version mit diesem Modul
 $DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=ExternalGroup)(SchemaTag=DynamicGroup))"
 $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
@@ -915,9 +915,12 @@ function Convert-DSM7PolicyInstancetoPSObject {
 function Convert-DSM7PolicyInstanceListtoPSObject {
 	[CmdletBinding()] 
 	param ( $ObjectList,[switch]$resolvedName = $false)
+	$DSM7ConfigIDs = @()
 	if ($DSM7Version -gt "7.3.0") {
 		$DSM7ConfigIDs += ($ObjectList|where {$_.AssignedConfiguration}|Select-Object -ExpandProperty AssignedConfiguration)
-		$DSM7Configs = Get-DSM7SwInstallationConfigurationsObject $DSM7ConfigIDs
+		if ($DSM7ConfigIDs.count -gt 0) { 
+			$DSM7Configs = Get-DSM7SwInstallationConfigurationsObject $DSM7ConfigIDs
+		}
 	} 
 	if ($resolvedName) {
 		$IDs = @() 
@@ -9145,8 +9148,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIID6QYJKoZIhvcNAQcCoIID2jCCA9YCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUaLMfg1aPgJKUvvOx5NL2xlD2
-# 3rGgggIKMIICBjCCAXOgAwIBAgIQu5sKUC9Qh6ZJ3pWdk+J2LzAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUGt8T5oil7c1LoYhgEAz8q7vJ
+# 8UegggIKMIICBjCCAXOgAwIBAgIQu5sKUC9Qh6ZJ3pWdk+J2LzAJBgUrDgMCHQUA
 # MBUxEzARBgNVBAMTClV3ZSBGcmFua2UwHhcNMTkxMTI5MTM1MDMyWhcNMzkxMjMx
 # MjM1OTU5WjAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlMIGfMA0GCSqGSIb3DQEBAQUA
 # A4GNADCBiQKBgQCtDYV+VqoUSxMgO+is0UUWdyzvWchxX2+JKiuI8vqEz5wdhYdR
@@ -9160,8 +9163,8 @@ Export-ModuleMember -Function Get-DSM7User
 # MYIBSTCCAUUCAQEwKTAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlAhC7mwpQL1CHpkne
 # lZ2T4nYvMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkG
 # CSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEE
-# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBRuEF2w5QfLfJ0Ib2f/IrtffPm+wTANBgkq
-# hkiG9w0BAQEFAASBgGlCSgxB/ZskNhW2U7lO94Are9NiB2liDOOLtPzrgs4wM8XW
-# xcGMC/qWEIVQaCD5QhmKeNJxZLKlogATInORVvFrOqTj3jgRwK1r+qyG599LMp07
-# wi9O09SDykQPtHwxXO0GqRwjNrGWMgK9o1otCUMhuHgoFT/JO8CKlvvZJ3f6
+# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQzmXJdkTh6gRbsegKIKboTYBvktzANBgkq
+# hkiG9w0BAQEFAASBgAbyDuXjIv0xMSRj8TcPUnPFU44HvNZ4P3fIMWBwct9BnmRW
+# 1NtCKJpvx8XWozaZ77x4uaZYwA6a/qDdktmitAdeTUZK7pi33Q8enj5Rq4o7OVv+
+# 0pCugqStF2OCbQrGyS1LB53dxXqPbunTJn5q6DQrbZ73J1HZHP06AHBKJneq
 # SIG # End signature block

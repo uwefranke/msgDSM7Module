@@ -12,6 +12,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.1.17] - 2019-12-20
+
+
+### Fixed
+
+* function internal Convert-DSM7PolicyInstanceListtoPSObject 
+
 ## [1.0.1.16] - 2019-12-04
 
 ### Added
