@@ -1,8 +1,8 @@
 <#  
 .SYNOPSIS  
-    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2018.1)  
+    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2019.1)  
 .DESCRIPTION
- 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2018.1)  
+ 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2019.1)  
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
@@ -9064,6 +9064,71 @@ Export-ModuleMember -Function Remove-DSM7ComputerToUser
 ###############################################################################
 # DSM7 Funktionen - Benutzer
 ###############################################################################
+function Get-DSM7UserList {
+	<#
+	.SYNOPSIS
+		Gibt eine Liste von User zurueck.
+	.DESCRIPTION
+		Gibt eine Liste von User zurueck.
+	.EXAMPLE
+		Get-DSM7UserList -LDAPPath "Managed Users & Computers/OU1/OU2" -recursive
+	.NOTES
+	.LINK
+		Get-DSM7UserList
+	.LINK
+		Get-DSM7User
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[system.string]$Attributes,
+		[system.string]$Filter,
+		[system.string]$LDAPPath = "",
+		[int]$ParentContID,
+		[switch]$GenTypeData = $false,
+		[switch]$recursive = $false
+	)
+	if (Confirm-Connect) {
+		if ($LDAPPath) {
+			$ParentContID = Get-DSM7LDAPPathID -LDAPPath $LDAPPath
+		}
+		if ($recursive) {
+			if ($ParentContID -gt 0) {
+				$result = @()
+				$resultUser = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(SchemaTag=User)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+				if ($resultUser) {
+					$result += $resultUser
+				} 
+				$resultContainer = Get-DSM7ObjectList -Filter $DSM7Container -ParentContID $ParentContID -recursive
+				foreach ($Container in $resultContainer) {
+					$FilterContainer = "(&(ParentContID=$($Container.ID))(SchemaTag=User)$filter)"
+					$resultUser = Get-DSM7ObjectList -Attributes $Attributes -Filter $FilterContainer 
+					if ($resultUser) {
+						$result += $resultUser
+					}
+				} 
+			}
+			else {
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(SchemaTag=User)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+			}
+		}
+		else {
+			if ($ParentContID -gt 0) {
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(SchemaTag=User)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+			}
+			else {
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(SchemaTag=User)$Filter)" -GenTypeData:$GenTypeData
+			}
+		}
+		if ($result) {
+			return $result
+		}
+		else {
+			return $false
+		}
+	}
+}
+Export-ModuleMember -Function Get-DSM7UserList
+
 function Get-DSM7User {
 	<#
 	.SYNOPSIS
@@ -9148,8 +9213,8 @@ Export-ModuleMember -Function Get-DSM7User
 # SIG # Begin signature block
 # MIID6QYJKoZIhvcNAQcCoIID2jCCA9YCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUGt8T5oil7c1LoYhgEAz8q7vJ
-# 8UegggIKMIICBjCCAXOgAwIBAgIQu5sKUC9Qh6ZJ3pWdk+J2LzAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUv0QklbtCktXWrYiQummt3wd5
+# ewWgggIKMIICBjCCAXOgAwIBAgIQu5sKUC9Qh6ZJ3pWdk+J2LzAJBgUrDgMCHQUA
 # MBUxEzARBgNVBAMTClV3ZSBGcmFua2UwHhcNMTkxMTI5MTM1MDMyWhcNMzkxMjMx
 # MjM1OTU5WjAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlMIGfMA0GCSqGSIb3DQEBAQUA
 # A4GNADCBiQKBgQCtDYV+VqoUSxMgO+is0UUWdyzvWchxX2+JKiuI8vqEz5wdhYdR
@@ -9163,8 +9228,8 @@ Export-ModuleMember -Function Get-DSM7User
 # MYIBSTCCAUUCAQEwKTAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlAhC7mwpQL1CHpkne
 # lZ2T4nYvMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkG
 # CSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEE
-# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQzmXJdkTh6gRbsegKIKboTYBvktzANBgkq
-# hkiG9w0BAQEFAASBgAbyDuXjIv0xMSRj8TcPUnPFU44HvNZ4P3fIMWBwct9BnmRW
-# 1NtCKJpvx8XWozaZ77x4uaZYwA6a/qDdktmitAdeTUZK7pi33Q8enj5Rq4o7OVv+
-# 0pCugqStF2OCbQrGyS1LB53dxXqPbunTJn5q6DQrbZ73J1HZHP06AHBKJneq
+# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBTEPibe9WyFfaPnFinsiRPMLYI95jANBgkq
+# hkiG9w0BAQEFAASBgFkWe1oBIuQRPcI3/t6SG43kVSmqVtAWXQzzbznJLcZwl4r1
+# uwRjQy0fGjXxkVK0B6dsbppYQaYmIxJLgV0nmByMMGgnTM5DYnqclpJ2GH0Qa1ph
+# POURNd1qGgxhtPh11IF+oifZhPK/OILxZd2CDno49KkXnrJtYjPXP08T4tS+
 # SIG # End signature block

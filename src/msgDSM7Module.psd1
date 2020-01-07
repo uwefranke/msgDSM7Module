@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.16'
+ModuleVersion = '1.0.1.17'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -24,7 +24,7 @@ Author = 'Uwe Franke'
 CompanyName = 'msg services AG'
 
 # Urheberrechtserkl�rung f�r dieses Modul
-Copyright = 'msg services AG (c) 2013-2019. All rights reserved.'
+Copyright = 'msg services AG (c) 2013-2020. All rights reserved.'
 
 # Beschreibung der von diesem Modul bereitgestellten Funktionen
 Description = 'powershell Module for SOAP interface Ivanti (https://www.ivanti.com) DSM'
@@ -102,7 +102,8 @@ FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-C
                'Update-DSM7SoftwareCategory', 'Remove-DSM7SoftwareCategory', 
                'Get-DSM7ResolveVariablesForTarget', 'Get-DSM7VariableGroups', 
                'Set-DSM7VariablesOnTarget', 'Remove-DSM7VariablesOnTarget', 
-               'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser','Get-DSM7ComputerToUser', 'Get-DSM7ComputerToUserList', 'Get-DSM7User'
+               'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser','Get-DSM7ComputerToUser',
+			   'Get-DSM7ComputerToUserList', 'Get-DSM7User','Get-DSM7UserList'
 
 # Aus diesem Modul zu exportierende Cmdlets
 CmdletsToExport = '*'
