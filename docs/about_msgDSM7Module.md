@@ -60,7 +60,7 @@ PS> DisConnect-DSM7Web
 
 ### DSM user objects
 
-* [Get-DSM7UserList](Get-DSM7UserList)
+* [Get-DSM7UserList](Get-DSM7UserList.md)
 * [Get-DSM7User](Get-DSM7User.md)
 
 ### DSM group objects

@@ -68,6 +68,12 @@ functions in msgDSM7Module
     *
     Remove-DSM7ComputerToUser
 
+    DSM USER OBJECTS
+    *
+    Get-DSM7UserList
+    *
+    Get-DSM7User
+
     DSM GROUP OBJECTS
     *
     Get-DSM7Group
