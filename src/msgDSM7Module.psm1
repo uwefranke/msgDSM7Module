@@ -1,12 +1,12 @@
 <#  
 .SYNOPSIS  
-    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2019.1)  
+    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.1)  
 .DESCRIPTION
- 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2019.1)  
+ 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.1)  
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.17
+	Version		: 1.0.1.18
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -22,13 +22,17 @@
 ###############################################################################
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benoetigte DSM Version 7.0 oder hoeher
-$DSM7testedVersion = "7.4.2.4" # hoechste getestet DSM Version mit diesem Modul
+$DSM7testedVersion = "7.4.3.0" # hoechste getestet DSM Version mit diesem Modul
 $DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=ExternalGroup)(SchemaTag=DynamicGroup))"
 $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7StructureComputer = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup))"
 $DSM7StructureSoftware = "(|(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $global:DSM7GenTypeData = "ModifiedBy,CreatedBy,Modified,Created"
+$DSM7RegPath = "HKEY_LOCAL_MACHINE\SOFTWARE\NetSupport\NetInstall"
+$DSM7ExportNCP = "NcpExport.exe"
+$DSM7ExportNCPXML ="NcpExport.xml"
+$DSM7NCPfile = "NiCfgSrv.ncp"
 ###############################################################################
 # Allgemeine interne Funktionen
 function Get-PSCredential {
@@ -130,7 +134,127 @@ function Remove-Log {
 	} 
 }
 Export-ModuleMember -Function Remove-Log
+function Convert-ToFilename {
+	param(
+		$filename
+	)
+	$filename = $filename.Replace("/","_")
+	$filename = $filename.Replace("\","_")
+	$filename = $filename.Replace(";","_")
+	$filename = $filename.Replace(",","_")
+	return $filename
+}
+function Test-RegistryValue {
+	param (
+		[parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]$Path,
+		[parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]$Value
+	)
+	try {
+		Get-ItemProperty -Path $Path | Select-Object -ExpandProperty $Value -ErrorAction Stop | Out-Null
+		Write-Log 0 "Value ($Value) found" $MyInvocation.MyCommand 
+		return $true
+	}
+	catch {
+		Write-Log 1 "Value ($Value) not found!" $MyInvocation.MyCommand 
+		return $false
+	}
+}
+function Remove-Files {
+	<#
+	.SYNOPSIS
+		function to remove files
+	.DESCRIPTION
+		function to remove files
+	.EXAMPLE
+		Remove-Files -CountFiles 10 -DaysFilesAge 30 -Filepath "c:\Logs" -Filename "Test"
+	.NOTES
+	.LINK
+		Remove-Files
+	.LINK
+		Remove-Files
+	#>
+	[CmdletBinding()] 
+	param (
+		[Parameter(Position=0, Mandatory=$true)]
+		[system.String]$Filepath, 
+		[Parameter(Position=1, Mandatory=$true)]
+		[system.String]$Filename,
+		[int]$CountFiles = 0, 
+		[int]$DaysFilesAge = 0
+	)
+	$DateFiles = (Get-Date).AddDays(-$DaysFilesAge)
+	Write-Log 0 "Delete all file(s), keep the last $CountFiles, older then $DaysFilesAge and file name contains ($filename) in path ($Filepath)." $MyInvocation.MyCommand
+	try { 
+		$filestodelete = Get-ChildItem $Filepath -Recurse| Where-Object {$_.Name -like "$filename*"} 
+		if ($DaysFilesAge -gt 0) {
+			$filestodelete = $filestodelete| Where-Object {$_.LastWriteTime -lt $DateFiles}
+			Write-Log 0 "Delete $($filestodelete.count) file(s), older then $DaysFilesAge day(s)." $MyInvocation.MyCommand
+			$filestodelete |Remove-Item -Force -Verbose:$Verbose
+			$filestodelete = Get-ChildItem $Filepath -Recurse| Where-Object {$_.Name -like "$filename*"} 
+		}
+		if ($filestodelete.Count -gt $CountFiles -and $CountFiles -gt 0) {
+			$filestodelete = $filestodelete|Sort-Object LastWriteTime -Descending|select-object -Last ($filestodelete.Count - $CountFiles)
+			Write-Log 0 "Delete $($filestodelete.count) file(s) more then count ($CountFiles)." $MyInvocation.MyCommand
+			$filestodelete |Remove-Item -Force -Verbose:$Verbose
+		}
+		return $true
+	}
+	catch [system.exception] 
+	{
+		Write-Log 2 $_ $MyInvocation.MyCommand 
+		return $false 
+	} 
+}
+function remove-XMLSpecialChar {
+	param (
+		$file
+	)
+	$temp = (Get-Content -path $file ) -join "`r"
+	$temp = $temp |foreach { $_ -replace "`n|`r" }
+	#	$temp = $temp -replace "[^\u0000-\u007F]+"
+	$temp = $temp -replace "\x04"
+	$temp = $temp -replace "\x05"
+	$temp = $temp -replace "\x06"
+	$temp = $temp -replace "\x1d"
+	$temp = $temp -replace "<\?xml version=`"1.0`" encoding=`"UTF-8`"\?>" , "<?xml version=`"1.0`" encoding=`"UTF-8`"?>`n"
+	Set-Content -path $file -Value $temp -Force
+	$temp = ""
+	return $true
+}
+function Get-RegistryValue {
+	param (
+		[parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]$Path,
+		[parameter(Mandatory=$true)]
+		[ValidateNotNullOrEmpty()]$Value
+	)
+	try {
+		$Item = (Get-ItemProperty -Path $Path| Select-Object $Value).$Value
+		Write-Log 0 "Value ($Value): ($Item)" $MyInvocation.MyCommand 
+		return $Item
+	}
+	catch {
+		Write-Log 1 "cant read Value ($Value)!" $MyInvocation.MyCommand 
+		return $false
+	}
+}
+function Convert-StringtoPSRegKey {
+	param (
+		$KeyPath,
+		[switch]$is32Bit
+	)
+	$KeyPath = $KeyPath -replace ("HKLM\\","HKLM:\\")
+	$KeyPath = $KeyPath -replace ("HKU\\","HKU:\\")
+	$KeyPath = $KeyPath -replace ("HKEY_LOCAL_MACHINE\\","HKLM:\\")
+	$KeyPath = $KeyPath -replace ("HKEY_USERS\\","HKU:\\")
+	if ($is32Bit -and [Environment]::Is64BitProcess -and $KeyPath -like "HKLM:\\SOFTWARE*") 	{
+		$KeyPath = $KeyPath -replace ("HKLM:\\\\SOFTWARE","HKLM:\\SOFTWARE\WOW6432Node")
 
+	}
+	return $KeyPath
+}
 function Convert-ArrayToHash {
 	<#
 	.SYNOPSIS
@@ -9210,13 +9334,94 @@ function Get-DSM7User {
 	}
 } 
 Export-ModuleMember -Function Get-DSM7User
+###############################################################################
+# DSM7 Funktionen - NCP
+###############################################################################
+function Get-DSM7NCP {
+	<#
+	.SYNOPSIS
+		Gibt das NCP als XML zurueck.
+	.DESCRIPTION
+		Gibt das NCP als XML zurueck.
+	.EXAMPLE
+		Get-DSM7NCP 
+	.NOTES
+	.LINK
+		Get-DSM7NCP
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[system.string]$Path,
+		[system.string]$NCPFile,
+		$Credential
+	)
+	if (!$Path) {
+		$DSM7RegPath = Convert-StringtoPSRegKey $DSM7RegPath -is32Bit
+		Write-Log 0 "Registry DSM Client Base ($DSM7RegPath)." $MyInvocation.MyCommand 
+		$DSM7Path = Get-RegistryValue $DSM7RegPath "ServerSourcePath"
+		Write-Log 0 "DSM Server Path: ($DSM7Path)." $MyInvocation.MyCommand 
+	}
+	else {
+		$DSM7Path = $Path
+	}
+	Write-Log 0 "DSM Server Path: ($DSM7Path)." $MyInvocation.MyCommand 
+	if ($Credential) {
+		New-PSDrive -Name ORG -PSProvider FileSystem -Root $DSM7Path -Credential $Credential |Out-Null
+	}
+	else {
+		New-PSDrive -Name ORG -PSProvider FileSystem -Root $DSM7Path |Out-Null
 
+	}
+	$DSM7ExportNCPlocal = $NCPFile
+	if (Test-Path "ORG:\$DSM7ExportNCP") {
+		if (Test-Path "ORG:\$DSM7ExportNCPfile") {
+			$NCPFilelastwritetime = [datetime](Get-ItemProperty -Path "ORG:\$DSM7NCPfile" -Name LastWriteTime).lastwritetime
+			Write-Log 0 "Lastwritetime of file $DSM7Path\$DSM7NCPfile ($NCPFilelastwritetime)." $MyInvocation.MyCommand 
+		} 
+		if (Test-Path "ORG:\$DSM7ExportNCPXML") {
+			$DSM7ExportNCPlastwritetime = [datetime](Get-ItemProperty -Path "ORG:\$DSM7ExportNCPXML" -Name LastWriteTime).lastwritetime
+			Write-Log 0 "Lastwritetime of file $DSM7Path\$DSM7ExportNCPXML ($DSM7ExportNCPlastwritetime)." $MyInvocation.MyCommand 
+		}
+		else {
+			[datetime]$DSM7ExportNCPlastwritetime = "1970/01/01"
+		}
+		if ($NCPFilelastwritetime -gt $DSM7ExportNCPlastwritetime ){
+			Write-Log 0 "Create DSM Export XML.($NCPFilelastwritetime > $DSM7ExportNCPlastwritetime)" $MyInvocation.MyCommand 
+			Start-Process -FilePath "ORG:\$DSM7ExportNCP" -Wait
+		}
+		if (!$DSM7ExportNCPlocal) {$DSM7ExportNCPlocal = "$ENV:Temp\$DSM7ExportNCPXML"}
+		if (!(Test-Path $DSM7ExportNCPlocal)) {
+			if (Test-Path "ORG:\$DSM7ExportNCPXML") {
+				Write-Log 0 "Copy  $DSM7Path\$DSM7ExportNCPXML to $DSM7ExportNCPlocal." $MyInvocation.MyCommand 
+				Copy-Item -Path "ORG:\$DSM7ExportNCPXML" -Destination $DSM7ExportNCPlocal
+			}
+			else {
+				Write-Log 1 "Nicht vorhanden  $DSM7Path\$DSM7ExportNCPXML!" $MyInvocation.MyCommand 
+			}
+		}
+		else {
+			$DSM7ExportNCPlocallastwritetime = [datetime](Get-ItemProperty -Path $DSM7ExportNCPlocal -Name LastWriteTime).lastwritetime
+			if ($DSM7ExportNCPlocallastwritetime -lt $DSM7ExportNCPlastwritetime ){
+				Write-Log 0 "Copy $DSM7Path\$DSM7ExportNCPXML to $DSM7ExportNCPlocal." $MyInvocation.MyCommand 
+				Copy-Item -Path "ORG:\$DSM7ExportNCPXML" -Destination $DSM7ExportNCPlocal -Force
+			}
+		}
+	}
+	Remove-PSDrive ORG
+	if (test-path $DSM7ExportNCPlocal) {
+		if (remove-XMLSpecialChar -file $DSM7ExportNCPlocal) {
+			$DSMNCP = [XML] (get-content -path $DSM7ExportNCPlocal -Encoding UTF8)
+		}
+	}
 
+	return $DSMNCP
+} 
+Export-ModuleMember -Function Get-DSM7NCP
 # SIG # Begin signature block
 # MIID6QYJKoZIhvcNAQcCoIID2jCCA9YCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUHwvXMMq/Noyrw1qvK0pQx+9D
-# 94+gggIKMIICBjCCAXOgAwIBAgIQu5sKUC9Qh6ZJ3pWdk+J2LzAJBgUrDgMCHQUA
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUwlXiYSsNMOv5ljR0dzkDy++h
+# jM6gggIKMIICBjCCAXOgAwIBAgIQu5sKUC9Qh6ZJ3pWdk+J2LzAJBgUrDgMCHQUA
 # MBUxEzARBgNVBAMTClV3ZSBGcmFua2UwHhcNMTkxMTI5MTM1MDMyWhcNMzkxMjMx
 # MjM1OTU5WjAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlMIGfMA0GCSqGSIb3DQEBAQUA
 # A4GNADCBiQKBgQCtDYV+VqoUSxMgO+is0UUWdyzvWchxX2+JKiuI8vqEz5wdhYdR
@@ -9230,8 +9435,8 @@ Export-ModuleMember -Function Get-DSM7User
 # MYIBSTCCAUUCAQEwKTAVMRMwEQYDVQQDEwpVd2UgRnJhbmtlAhC7mwpQL1CHpkne
 # lZ2T4nYvMAkGBSsOAwIaBQCgeDAYBgorBgEEAYI3AgEMMQowCKACgAChAoAAMBkG
 # CSqGSIb3DQEJAzEMBgorBgEEAYI3AgEEMBwGCisGAQQBgjcCAQsxDjAMBgorBgEE
-# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQkTrFpcoAxphhscF6p32hMy9LbRDANBgkq
-# hkiG9w0BAQEFAASBgCIDbwzbqfztcHYivC40vNNBHPix0RFBL5LmA2CQ0z5q//rl
-# Z0hbQgfQzxTPkGDywCledmvUhsQtRc/EKBBCNylzbgJ8h50GK6lmlqzIARucANlk
-# xavTDBQpqaJxz1xmmK0MNIgQAI/qpzXVrvIl4cr/oiEPfntCiwJYW/q1b7H9
+# AYI3AgEVMCMGCSqGSIb3DQEJBDEWBBQuqMUdwayhSJjUfOZl0W3lB/AuiDANBgkq
+# hkiG9w0BAQEFAASBgAPdwzzO33Y1lHgd66tQCrPKlaheLK6+x8BpQqXRqJ9MuyHF
+# fK0k1OnEOFVG+JnkAL5bjSXxSBbV4K7fVQQXDNfQpOfRa+AkM4MU9rqSmfpc0eGR
+# nNpTsS6Jj+3xQVLo5Sj8U5dxwjXcEuqlqggacQkNPPGHPCk1DPHfK+W6F5CC
 # SIG # End signature block

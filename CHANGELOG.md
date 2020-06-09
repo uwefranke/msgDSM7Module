@@ -12,9 +12,17 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.1.18] - 2020-06-09
+
+### Added
+
+* support DSM Version 7.4.3.0   
+* function Get-DSM7NCP
+
 ## [1.0.1.17] - 2019-12-20
 
 ### Added
+
 * function Get-DSM7UserList
 
 ### Fixed

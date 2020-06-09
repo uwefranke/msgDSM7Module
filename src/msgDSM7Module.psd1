@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.17'
+ModuleVersion = '1.0.1.18'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -103,7 +103,8 @@ FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-C
                'Get-DSM7ResolveVariablesForTarget', 'Get-DSM7VariableGroups', 
                'Set-DSM7VariablesOnTarget', 'Remove-DSM7VariablesOnTarget', 
                'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser','Get-DSM7ComputerToUser',
-			   'Get-DSM7ComputerToUserList', 'Get-DSM7User','Get-DSM7UserList'
+               'Get-DSM7ComputerToUserList', 'Get-DSM7User','Get-DSM7UserList',
+               'Get-DSM7NCP'
 
 # Aus diesem Modul zu exportierende Cmdlets
 CmdletsToExport = '*'
