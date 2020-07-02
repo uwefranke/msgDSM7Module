@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.18
+	Version		: 1.0.1.19
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -7886,6 +7886,7 @@ function New-DSM7SoftwareCategory {
 		[system.string]$Filter,
 		[Parameter(Position=8, Mandatory=$false)]
 		[switch]$resolvedName = $false,
+		[switch]$lastCat = $false,
 		[switch]$PatchLink
 
 	) 
@@ -7917,10 +7918,22 @@ function New-DSM7SoftwareCategory {
 							foreach ($LineName in $linepara[1].split(",")){
 								$LineName = Convert-ReplaceStringToLDAPString $LineName
 								[System.Array]$FilterName = Get-DSM7ObjectList -LDAProot "<LDAP://rootCatalog>" -Filter "(&(Name=$LineName)(PatchCategoryObject.RequiredLicense=$PatchMgmtLicense)(SchemaTag=$PatchSchema)(BasePropGroupTag=PatchCategoryObject))" -Attributes "PatchCategoryObject.RequiredLicense"
-								if ($FilterName -and $FilterName.count -eq 1) {
+								if ($FilterName -and $FilterName.count -gt 0) {
 									$LineName = $LineName.replace("\","\\\")
+									$LineName = $LineName.replace("+","\+")
+									$LineName = $LineName.replace("-","\-")
 									$regex = [Regex]$LineName
-									$Filter = $regex.Replace($Filter,$FilterName.ID,1)
+									if ($FilterName.count -gt 1) {
+										if ($lastCat) { 
+											$Filter = $regex.Replace($Filter,$FilterName[-1].ID,1)
+										}
+										else {
+											Write-Log 1 "Konnte Filter ($Filter) nicht aufloesen, mehrere Objekte vorhanden ($($FilterName.count))!!!" $MyInvocation.MyCommand 
+										} 
+									}
+									else {
+										$Filter = $regex.Replace($Filter,$FilterName.ID,1)
+									}
 								}
 								else {
 									Write-Log 1 "Konnte Filter ($Filter) nicht aufloesen!!!" $MyInvocation.MyCommand 
@@ -8100,6 +8113,8 @@ function Update-DSM7SoftwareCategory {
 		[Parameter(Position=6, Mandatory=$false)]
 		[switch]$resolvedName = $false,
 		[Parameter(Position=7, Mandatory=$false)]
+		[switch]$lastCat = $false,
+		[Parameter(Position=8, Mandatory=$false)]
 		[system.string]$NewName
 	) 
 	if (Confirm-Connect) {
@@ -8136,10 +8151,22 @@ function Update-DSM7SoftwareCategory {
 								foreach ($LineName in $linepara[1].split(",")){
 									$LineName = Convert-ReplaceStringToLDAPString $LineName
 									[System.Array]$FilterName = Get-DSM7ObjectList -LDAProot "<LDAP://rootCatalog>" -Filter "(&(Name=$LineName)(PatchCategoryObject.RequiredLicense=$PatchMgmtLicense)(SchemaTag=$PatchSchema)(BasePropGroupTag=PatchCategoryObject))" -Attributes "PatchCategoryObject.RequiredLicense"
-									if ($FilterName -and $FilterName.count -eq 1) {
+									if ($FilterName -and $FilterName.count -gt 0) {
 										$LineName = $LineName.replace("\","\\\")
+										$LineName = $LineName.replace("+","\+")
+										$LineName = $LineName.replace("-","\-")
 										$regex = [Regex]$LineName
-										$Filter = $regex.Replace($Filter,$FilterName.ID,1) 
+										if ($FilterName.count -gt 1) {
+											if ($lastCat) { 
+												$Filter = $regex.Replace($Filter,$FilterName[-1].ID,1)
+											}
+											else {
+												Write-Log 1 "Konnte Filter ($Filter) nicht aufloesen, mehrere Objekte vorhanden ($($FilterName.count))!!!" $MyInvocation.MyCommand 
+											} 
+										}
+										else {
+											$Filter = $regex.Replace($Filter,$FilterName.ID,1)
+										}
 									}
 									else {
 										Write-Log 1 "Konnte Filter ($Filter) nicht aufloesen!!!" $MyInvocation.MyCommand 
