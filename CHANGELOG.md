@@ -12,13 +12,21 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.2.1] - 2020-08-12
+
+### Added
+
+* function Get-DSM7NCPObjects
+
+### Changed
+* required powershell version 5.1
+
 ## [1.0.1.19] - 2020-07-02
 
 ### Changed
 
 * function Update-DSM7SoftwareCategory
 * function New-DSM7SoftwareCategory
-
 
 ## [1.0.1.18] - 2020-06-09
 

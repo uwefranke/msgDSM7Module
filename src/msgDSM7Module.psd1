@@ -1,5 +1,5 @@
 #
-# Modulmanifest fï¿½r das Modul "msgDSM7Module"
+# Modulmanifest für das Modul "msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.1.19'
+ModuleVersion = '1.0.2.1'
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -30,7 +30,7 @@ Copyright = 'msg services AG (c) 2013-2020. All rights reserved.'
 Description = 'powershell Module for SOAP interface Ivanti (https://www.ivanti.com) DSM'
 
 # Die fï¿½r dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
-PowerShellVersion = '3.0'
+PowerShellVersion = '5.1'
 
 # Der Name des fï¿½r dieses Modul erforderlichen Windows PowerShell-Hosts
 # PowerShellHostName = ''
@@ -104,7 +104,7 @@ FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-C
                'Set-DSM7VariablesOnTarget', 'Remove-DSM7VariablesOnTarget', 
                'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser','Get-DSM7ComputerToUser',
                'Get-DSM7ComputerToUserList', 'Get-DSM7User','Get-DSM7UserList',
-               'Get-DSM7NCP'
+               'Get-DSM7NCP','Get-DSM7NCPObjects'
 
 # Aus diesem Modul zu exportierende Cmdlets
 CmdletsToExport = '*'

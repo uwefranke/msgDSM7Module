@@ -9444,6 +9444,71 @@ function Get-DSM7NCP {
 	return $DSMNCP
 } 
 Export-ModuleMember -Function Get-DSM7NCP
+function Get-DSM7NCPObjects {
+	param(
+		[System.Array]$DSMNCPObjects,
+		[system.int32]$ParentID,
+		[array]$object,
+		[string]$Path
+	)
+	foreach ($item in $object) {
+		switch ($item.type) {
+			"ORG" {$InfraID = 0}
+			"OU" {$InfraID = 1}
+			"Site" {$InfraID = 2}
+			Default {$InfraID = 9}
+		}
+		$Raw = New-Object PSObject
+		if ($item.Type -eq "MGNT_POINT") {$Name = $item.Name -replace "Management Point " -replace '\(|\)' }
+		else {$Name = $item.Name}
+		add-member -inputobject $Raw -MemberType NoteProperty -name "Name" -Value $Name
+		add-member -inputobject $Raw -MemberType NoteProperty -name "Type" -Value $item.Type
+		add-member -inputobject $Raw -MemberType NoteProperty -name "InfraID" -Value $InfraID
+		add-member -inputobject $Raw -MemberType NoteProperty -name "ID" -Value $item.ID
+		add-member -inputobject $Raw -MemberType NoteProperty -name "Description" -Value $item.Description.value
+		$sections = @()
+		foreach ($section in $item.SECTION) {
+			$RawSection = New-Object PSObject
+			add-member -inputobject $RawSection -MemberType NoteProperty -name "Name" -Value $section.value
+			$Variables = @()
+			foreach ($variable in $section.variable) {
+				$RawVar = New-Object PSObject
+				add-member -inputobject $RawVar -MemberType NoteProperty -name "Name" -Value $variable.Name
+				add-member -inputobject $RawVar -MemberType NoteProperty -name "Type" -Value $variable.type
+				add-member -inputobject $RawVar -MemberType NoteProperty -name "Value" -Value $variable.value
+				add-member -inputobject $RawVar -MemberType NoteProperty -name "Status" -Value $variable.STATUS_SPECIFIED
+				$Variables += $RawVar 
+			}
+			add-member -inputobject $RawSection -MemberType NoteProperty -name "Variables" -Value $Variables
+			$sections += $RawSection
+		}
+		add-member -inputobject $Raw -MemberType NoteProperty -name "Sections" -Value $sections
+		add-member -inputobject $Raw -MemberType NoteProperty -name "ParentPath" -Value $Path
+		add-member -inputobject $Raw -MemberType NoteProperty -name "ParentID" -Value $ParentID
+
+		if ($infraID -lt 4) {
+			$Path = $Path + "/Infra=" + $item.Name
+		}
+		else {
+			$Path = $Path + "/Name=" + $item.Name
+
+		}
+		$path = $Path.trimstart("/")
+		$DSMCount = ($Path).split("/").count 
+		add-member -inputobject $Raw -MemberType NoteProperty -name "DSMCount" -Value $DSMCount -Force
+
+		foreach ($ncpitem in $item.NCPObject) {
+			$DSMNCPObjects = Get-DSMNCPObjects -object $ncpitem -Path $Path -ParentID $item.ID -DSMNCPObjects $DSMNCPObjects
+		}
+		$PathSort = $Path -replace " "
+		add-member -inputobject $Raw -MemberType NoteProperty -name "Path" -Value $Path
+		add-member -inputobject $Raw -MemberType NoteProperty -name "PathSort" -Value $PathSort
+		$DSMNCPObjects += $Raw
+
+	}
+	return $DSMNCPObjects
+}
+Export-ModuleMember -Function Get-DSM7NCPObjects
 # SIG # Begin signature block
 # MIID6QYJKoZIhvcNAQcCoIID2jCCA9YCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
