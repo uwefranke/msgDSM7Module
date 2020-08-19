@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.1.19
+	Version		: 1.0.2.2
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -9374,6 +9374,8 @@ function Get-DSM7NCP {
 		Get-DSM7NCP 
 	.NOTES
 	.LINK
+		Get-DSM7NCPObjects
+	.LINK
 		Get-DSM7NCP
 	#>
 	[CmdletBinding()] 
@@ -9445,12 +9447,29 @@ function Get-DSM7NCP {
 } 
 Export-ModuleMember -Function Get-DSM7NCP
 function Get-DSM7NCPObjects {
+	<#
+	.SYNOPSIS
+		Gibt das NCP Objekte zurueck.
+	.DESCRIPTION
+		Gibt das NCP Objekt zurueck.
+	.EXAMPLE
+		Get-DSM7NCPObjects -DSMNCP $NCP
+	.NOTES
+	.LINK
+		Get-DSM7NCPObjects
+	.LINK
+		Get-DSM7NCP
+#>
 	param(
+		[XML]$DSMNCP,
 		[System.Array]$DSMNCPObjects,
 		[system.int32]$ParentID,
 		[array]$object,
 		[string]$Path
 	)
+	if ($DSMNCP) {
+		$object = $DSMNCP.SelectNodes("//NCPObject")[0]
+	}
 	foreach ($item in $object) {
 		switch ($item.type) {
 			"ORG" {$InfraID = 0}
@@ -9498,7 +9517,7 @@ function Get-DSM7NCPObjects {
 		add-member -inputobject $Raw -MemberType NoteProperty -name "DSMCount" -Value $DSMCount -Force
 
 		foreach ($ncpitem in $item.NCPObject) {
-			$DSMNCPObjects = Get-DSMNCPObjects -object $ncpitem -Path $Path -ParentID $item.ID -DSMNCPObjects $DSMNCPObjects
+			$DSMNCPObjects = Get-DSM7NCPObjects -object $ncpitem -Path $Path -ParentID $item.ID -DSMNCPObjects $DSMNCPObjects
 		}
 		$PathSort = $Path -replace " "
 		add-member -inputobject $Raw -MemberType NoteProperty -name "Path" -Value $Path

@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.2.2] - 2020-08-19
+
+### Fixed
+
+* function Get-DSM7NCPObjects
+
 ## [1.0.2.1] - 2020-08-12
 
 ### Added
