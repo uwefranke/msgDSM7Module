@@ -4392,6 +4392,10 @@
     </command:examples>
     <command:relatedLinks>
       <maml:navigationLink>
+        <maml:linkText>Get-DSM7NCPObjects</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
         <maml:linkText>Get-DSM7NCP</maml:linkText>
         <maml:uri></maml:uri>
       </maml:navigationLink>
@@ -4403,16 +4407,28 @@
       <command:verb>Get</command:verb>
       <command:noun>DSM7NCPObjects</command:noun>
       <maml:description>
-        <maml:para>{{Fill in the Synopsis}}</maml:para>
+        <maml:para>Gibt das NCP Objekte zurueck.</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>{{Fill in the Description}}</maml:para>
+      <maml:para>Gibt das NCP Objekt zurueck.</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
         <maml:name>Get-DSM7NCPObjects</maml:name>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+          <maml:name>DSMNCP</maml:name>
+          <maml:Description>
+            <maml:para>{{Fill DSMNCP Description}}</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">XmlDocument</command:parameterValue>
+          <dev:type>
+            <maml:name>XmlDocument</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
           <maml:name>DSMNCPObjects</maml:name>
           <maml:Description>
             <maml:para>{{Fill DSMNCPObjects Description}}</maml:para>
@@ -4424,7 +4440,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
           <maml:name>ParentID</maml:name>
           <maml:Description>
             <maml:para>{{Fill ParentID Description}}</maml:para>
@@ -4434,9 +4450,9 @@
             <maml:name>Int32</maml:name>
             <maml:uri />
           </dev:type>
-          <dev:defaultValue>None</dev:defaultValue>
+          <dev:defaultValue>0</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
           <maml:name>object</maml:name>
           <maml:Description>
             <maml:para>{{Fill object Description}}</maml:para>
@@ -4448,7 +4464,7 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
           <maml:name>Path</maml:name>
           <maml:Description>
             <maml:para>{{Fill Path Description}}</maml:para>
@@ -4463,7 +4479,19 @@
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="0" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+        <maml:name>DSMNCP</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill DSMNCP Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">XmlDocument</command:parameterValue>
+        <dev:type>
+          <maml:name>XmlDocument</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
         <maml:name>DSMNCPObjects</maml:name>
         <maml:Description>
           <maml:para>{{Fill DSMNCPObjects Description}}</maml:para>
@@ -4475,7 +4503,7 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
         <maml:name>ParentID</maml:name>
         <maml:Description>
           <maml:para>{{Fill ParentID Description}}</maml:para>
@@ -4485,21 +4513,9 @@
           <maml:name>Int32</maml:name>
           <maml:uri />
         </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
+        <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
-        <maml:name>Path</maml:name>
-        <maml:Description>
-          <maml:para>{{Fill Path Description}}</maml:para>
-        </maml:Description>
-        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
-        <dev:type>
-          <maml:name>String</maml:name>
-          <maml:uri />
-        </dev:type>
-        <dev:defaultValue>None</dev:defaultValue>
-      </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
         <maml:name>object</maml:name>
         <maml:Description>
           <maml:para>{{Fill object Description}}</maml:para>
@@ -4511,27 +4527,21 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
+        <maml:name>Path</maml:name>
+        <maml:Description>
+          <maml:para>{{Fill Path Description}}</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
-    <command:inputTypes>
-      <command:inputType>
-        <dev:type>
-          <maml:name>Keine</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:inputType>
-    </command:inputTypes>
-    <command:returnValues>
-      <command:returnValue>
-        <dev:type>
-          <maml:name>System.Object</maml:name>
-        </dev:type>
-        <maml:description>
-          <maml:para></maml:para>
-        </maml:description>
-      </command:returnValue>
-    </command:returnValues>
+    <command:inputTypes />
+    <command:returnValues />
     <maml:alertSet>
       <maml:alert>
         <maml:para></maml:para>
@@ -4539,14 +4549,23 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- Example 1 --------------------------</maml:title>
-        <dev:code>PS C:\&gt; {{ Add example code here }}</dev:code>
+        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <dev:code>Get-DSM7NCPObjects -DSMNCP $NCP</dev:code>
         <dev:remarks>
-          <maml:para>{{ Add example description here }}</maml:para>
+          <maml:para></maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
-    <command:relatedLinks />
+    <command:relatedLinks>
+      <maml:navigationLink>
+        <maml:linkText>Get-DSM7NCPObjects</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+      <maml:navigationLink>
+        <maml:linkText>Get-DSM7NCP</maml:linkText>
+        <maml:uri></maml:uri>
+      </maml:navigationLink>
+    </command:relatedLinks>
   </command:command>
   <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
     <command:details>
