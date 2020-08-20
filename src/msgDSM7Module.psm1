@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.2.2
+	Version		: 1.0.2.3
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -1687,6 +1687,30 @@ function New-DSM7Object {
 	} 
 
 }
+function New-DSM7InfrastructureJob {
+	[CmdletBinding()] 
+	param (
+		[system.string]$SchemaTag,
+		$PropGroupList,
+		[system.string]$GroupType = "Object"
+	)
+	try {
+		$Webrequest = Get-DSM7RequestHeader -action "CreateInfrastructureJob"
+		$Webrequest.JobDefinition = New-Object $DSM7Types["MdsObject"]
+		$Webrequest.JobDefinition.SchemaTag = $SchemaTag
+		$Webrequest.JobDefinition.Name = $DSM7CreationSource
+		$Webrequest.JobDefinition.PropGroupList = $PropGroupList
+		$Webresult = $DSM7WebService.CreateInfrastructureJob($Webrequest)
+		Write-Log 0 "Job ($SchemaTag) erfolgreich." $MyInvocation.MyCommand
+		return $true
+	}
+	catch [system.exception] 
+	{
+		Write-Log 2 $_ $MyInvocation.MyCommand 
+		return $false 
+	} 
+
+}
 function Remove-DSM7Object {
 	[CmdletBinding()] 
 	param (
@@ -2329,7 +2353,7 @@ function Install-DSM7ReinstallComputer {
 		$Computer ,
 		[switch]$StartReinstallImmediately,
 		[switch]$WakeUp,
-		[DateTime]$WakeUpTime,
+		[System.String]$WakeUpTime,
 		[switch]$UpdatePolicyInstancesToPolicyStatus
 	)
 	try {
@@ -2339,8 +2363,18 @@ function Install-DSM7ReinstallComputer {
 		$Webrequest.Options.StartReinstallImmediately = $StartReinstallImmediately
 		if ($WakeUp) {
 			$Webrequest.Options.WakeUpForExecutionOptions = New-Object $DSM7Types["WakeUpForExecutionOptions"]
-			$Webrequest.Options.WakeUpForExecutionOptions.WakeUp = $WakeUp
-			$Webrequest.Options.WakeUpForExecutionOptions.ActivationStartDate = $WakeUpTime
+			$Webrequest.Options.WakeUpForExecutionOptions.WakeUpComputer = $WakeUp
+			if ($WakeUpTime) {
+				$StartDate = $(Get-Date($WakeUpTime)) 
+			}
+			else {
+				$StartDate = $(Get-Date) 
+			}
+			#$StartDate = $StartDate + [System.TimeZoneInfo]::Local.BaseUtcOffset
+			Write-Log 0 "Start Datum ist:($StartDate)" $MyInvocation.MyCommand
+			$Webrequest.Options.WakeUpForExecutionOptions.ExecutionStartDate = New-Object $DSM7Types["MdsDateTime"]
+			$Webrequest.Options.WakeUpForExecutionOptions.ExecutionStartDate.DateTime = $StartDate
+			$Webrequest.Options.WakeUpForExecutionOptions.ExecutionStartDate.IsLocalTime = $true
 		}
 		$Webrequest.Options.UpdatePolicyInstancesToPolicyStatus = $UpdatePolicyInstancesToPolicyStatus
 		$Webresult = $DSM7WebService.ReinstallComputer($Webrequest).ReinstallComputerResult
@@ -2361,6 +2395,8 @@ function Install-DSM7Computer {
 		Installiert den Computer neu.
 	.EXAMPLE
 		Install-DSM7Computer -Name "%Computername%" -UpgradePolicyInstances -RecalculateInstallationOrder -UpdatePolicyInstancesActive
+	.EXAMPLE
+		Install-DSM7Computer -Name "%Computername%" -WakeUp 
 	.NOTES
 	.LINK
 		Get-DSM7ComputerList
@@ -2383,7 +2419,9 @@ function Install-DSM7Computer {
 		[system.int32]$ID,
 		[switch]$RecalculateInstallationOrder,
 		[switch]$UpgradePolicyInstances,
-		[switch]$UpdatePolicyInstancesActive
+		[switch]$UpdatePolicyInstancesActive,
+		[switch]$WakeUp,
+		[System.string]$WakeupTime
 	)
 	if (Confirm-Connect) {
 		try {
@@ -2416,7 +2454,7 @@ function Install-DSM7Computer {
 						$result = Update-DSM7PolicyInstancesActive -ID $ID
 					}
 					if ($DSM7Version -gt "7.3.0") {
-						if (Install-DSM7ReinstallComputer -Computer $(Get-DSM7ObjectObject -ID $ID) -StartReinstallImmediately -UpdatePolicyInstancesToPolicyStatus) {
+						if (Install-DSM7ReinstallComputer -Computer $(Get-DSM7ObjectObject -ID $ID) -StartReinstallImmediately -UpdatePolicyInstancesToPolicyStatus -WakeUp:$WakeUp -WakeUpTime $WakeupTime) {
 							Write-Log 0 "Computer ($ID) auf Neuinstallation gesetzt." $MyInvocation.MyCommand
 							return $true
 						}
@@ -2441,6 +2479,81 @@ function Install-DSM7Computer {
 	}
 }
 Export-ModuleMember -Function Install-DSM7Computer 
+function WakeUp-DSM7Computer {
+	<#
+	.SYNOPSIS
+		WakeUP (WOL) den Computer.
+	.DESCRIPTION
+		WakeUP (WOL) den Computer.
+	.EXAMPLE
+		WakeUp-DSM7Computer -Name "%Computername%"
+	.NOTES
+	.LINK
+		Get-DSM7ComputerList
+	.LINK
+		Get-DSM7Computer
+	.LINK
+		Update-DSM7Computer
+	.LINK
+		Install-DSM7Computer
+	.LINK
+		New-DSM7Computer
+	.LINK
+		Remove-DSM7Computer
+	.LINK
+		Move-DSM7Computer
+	.LINK
+		WakeUp-DSM7Computer
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[system.string]$Name,
+		[system.int32]$ID
+	)
+	if (Confirm-Connect) {
+		try {
+			if ($Name -or $ID -gt 0) {
+				if ($ID -eq 0) {
+					$search = Get-DSM7Computer -Name $Name
+					if ($search) {
+						$ID = $search.ID
+					}
+					else {
+						return $false
+					}
+				}
+				if ($ID -gt 0) {
+					$PropGroupList = @()
+					$computerIdProperty = New-Object $DSM7Types["MdsTypedPropertyOfNullableOfInt32"]
+					$computerIdProperty.Tag = "ComputerId"
+					$computerIdProperty.Type = "ObjectLink"
+					$computerIdProperty.TypedValue = $ID
+
+					$computerRelatedJobPropGroup = New-Object $DSM7Types["MdsPropGroup"]
+					$computerRelatedJobPropGroup.Tag = "ComputerRelatedJob";
+					$computerRelatedJobPropGroup.PropertyList = @()
+					$computerRelatedJobPropGroup.PropertyList += $computerIdProperty;
+					$PropGroupList += $computerRelatedJobPropGroup
+
+					$result = New-DSM7InfrastructureJob -PropGroupList $PropGroupList -SchemaTag "WakeUpOnLanJob"
+					if ($result) {
+						Write-Log 0 "WOL erfolgreich versendet." $MyInvocation.MyCommand
+						return $true 
+					}
+				}
+			}
+			else {
+				Write-Log 1 "Name oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
+			}
+		} 
+		catch [system.exception] 
+		{
+			Write-Log 2 $_ $MyInvocation.MyCommand 
+			return $false 
+		} 
+	}
+}
+Export-ModuleMember -Function WakeUp-DSM7Computer 
 function New-DSM7Computer {
 	<#
 	.SYNOPSIS
@@ -5356,7 +5469,7 @@ function Remove-DSM7PolicyFromTarget {
 					$result = Remove-DSM7PolicyObject -Policy $Policy -ForceDelete
 				}
 				else {
-					$RemoveObject = Get-DSM7ObjectObject -ID $Target.TargetObjectID
+					$RemoveObject = Get-DSM7ObjectObject -ID $TargetObject.ID
 					$RemovePolicy = Get-DSM7PolicyObject -ID $ID
 					$result = Remove-DSM7TargetFromPolicyObject -Policy $RemovePolicy -PolicyTarget $RemoveObject -ForceRemove:$ForceRemove
 
@@ -5366,7 +5479,7 @@ function Remove-DSM7PolicyFromTarget {
 					return $true
 				}
 				else {
-					Write-Log 1 "Alte Ziele nicht entfernt." $MyInvocation.MyCommand
+					Write-Log 1 "Ziele nicht entfernt." $MyInvocation.MyCommand
 					return $false 
 				}
 			}

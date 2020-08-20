@@ -12,6 +12,20 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.2.3] - 2020-08-20
+
+### Added
+
+* function Wackup-DSM7Computer [issue #1](https://github.com/uwefranke/msgDSM7Module/issues/1)
+
+### Changed
+
+* funktion Install-DSM7Computer -Name "xxxxxx" -Wakeup
+
+### Fixed
+
+* function Remove-DSM7PolicyFromTarget [issue #2](https://github.com/uwefranke/msgDSM7Module/issues/2)
+
 ## [1.0.2.2] - 2020-08-19
 
 ### Fixed
