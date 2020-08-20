@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-* function Wakeup-DSM7Computer rename to Send-DSM7ComputerWakeUp (Get-Verb waring during import)
+* function Wakeup-DSM7Computer rename to Send-DSM7ComputerWakeUp (Alias: Wakeup-DSM7Computer) (Get-Verb waring during import)
 
 
 ## [1.0.2.3] - 2020-08-20
