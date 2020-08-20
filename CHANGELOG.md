@@ -14,9 +14,16 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.2.3] - 2020-08-20
 
+### Changed
+
+* function Wakeup-DSM7Computer rename to Send-DSM7ComputerWakeUp (Get-Verb waring during import)
+
+
+## [1.0.2.3] - 2020-08-20
+
 ### Added
 
-* function Wackup-DSM7Computer [issue #1](https://github.com/uwefranke/msgDSM7Module/issues/1)
+* function Wakeup-DSM7Computer [issue #1](https://github.com/uwefranke/msgDSM7Module/issues/1)
 
 ### Changed
 

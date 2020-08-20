@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# WakeUp-DSM7Computer
+# Send-DSM7ComputerWakeUP
 
 ## SYNOPSIS
 WakeUP (WOL) den Computer.
@@ -13,7 +13,7 @@ WakeUP (WOL) den Computer.
 ## SYNTAX
 
 ```
-WakeUp-DSM7Computer [[-Name] <String>] [[-ID] <Int32>] [<CommonParameters>]
+Send-DSM7ComputerWakeUP [[-Name] <String>] [[-ID] <Int32>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION

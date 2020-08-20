@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.2.3
+	Version		: 1.0.2.4
     Requires	: PowerShell V3 CTP3  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -2479,7 +2479,7 @@ function Install-DSM7Computer {
 	}
 }
 Export-ModuleMember -Function Install-DSM7Computer 
-function WakeUp-DSM7Computer {
+function Send-DSM7ComputerWakeUP {
 	<#
 	.SYNOPSIS
 		WakeUP (WOL) den Computer.
@@ -2553,7 +2553,8 @@ function WakeUp-DSM7Computer {
 		} 
 	}
 }
-Export-ModuleMember -Function WakeUp-DSM7Computer 
+Set-Alias WakeUp-DSM7Computer Send-DSM7ComputerWakeUP
+Export-ModuleMember -Function Send-DSM7ComputerWakeUP -Alias WakeUp-DSM7Computer 
 function New-DSM7Computer {
 	<#
 	.SYNOPSIS
@@ -7304,6 +7305,7 @@ function Get-DSM7SoftwareIDs {
 		} 
 	}
 }
+Set-Alias Get-DSM7SoftwarebyIDs Get-DSM7SoftwareIDs
 Export-ModuleMember -Function Get-DSM7SoftwareIDs -Alias Get-DSM7SoftwarebyIDs
 function Get-DSM7Software {
 	<#

@@ -1,18 +1,21 @@
 #
-# Modulmanifest für das Modul "msgDSM7Module"
+# Modulmanifest für das Modul "PSGet_msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 14.08.2018
+# Generiert am: 20.08.2020
 #
 
 @{
 
-# Die diesem Manifest zugeordnete Skript- oder Binï¿½rmoduldatei.
+# Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.2.3'
+ModuleVersion = '1.0.2.4'
+
+# Unterstützte PSEditions
+# CompatiblePSEditions = @()
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
 GUID = '02b5fc9c-4429-4012-9456-cb8a5a87b0ca'
@@ -23,37 +26,37 @@ Author = 'Uwe Franke'
 # Unternehmen oder Hersteller dieses Moduls
 CompanyName = 'msg services AG'
 
-# Urheberrechtserklï¿½rung fï¿½r dieses Modul
+# Urheberrechtserklärung für dieses Modul
 Copyright = 'msg services AG (c) 2013-2020. All rights reserved.'
 
 # Beschreibung der von diesem Modul bereitgestellten Funktionen
 Description = 'powershell Module for SOAP interface Ivanti (https://www.ivanti.com) DSM'
 
-# Die fï¿½r dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
+# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
 PowerShellVersion = '5.1'
 
-# Der Name des fï¿½r dieses Modul erforderlichen Windows PowerShell-Hosts
+# Der Name des für dieses Modul erforderlichen Windows PowerShell-Hosts
 # PowerShellHostName = ''
 
-# Die fï¿½r dieses Modul mindestens erforderliche Version des Windows PowerShell-Hosts
+# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Hosts
 # PowerShellHostVersion = ''
 
-# Die fï¿½r dieses Modul mindestens erforderliche Microsoft .NET Framework-Version
+# Die für dieses Modul mindestens erforderliche Microsoft .NET Framework-Version. Diese erforderliche Komponente ist nur für die PowerShell Desktop-Edition gültig.
 DotNetFrameworkVersion = '2.0'
 
-# Die fï¿½r dieses Modul mindestens erforderliche Version der CLR (Common Language Runtime)
+# Die für dieses Modul mindestens erforderliche Version der CLR (Common Language Runtime). Diese erforderliche Komponente ist nur für die PowerShell Desktop-Edition gültig.
 CLRVersion = '2.0.50727'
 
-# Die fï¿½r dieses Modul erforderliche Prozessorarchitektur ("Keine", "X86", "Amd64").
+# Die für dieses Modul erforderliche Prozessorarchitektur ("Keine", "X86", "Amd64").
 # ProcessorArchitecture = ''
 
-# Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden mï¿½ssen
+# Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden müssen
 # RequiredModules = @()
 
-# Die Assemblys, die vor dem Importieren dieses Moduls geladen werden mï¿½ssen
+# Die Assemblys, die vor dem Importieren dieses Moduls geladen werden müssen
 # RequiredAssemblies = @()
 
-# Die Skriptdateien (PS1-Dateien), die vor dem Importieren dieses Moduls in der Umgebung des Aufrufers ausgefï¿½hrt werden.
+# Die Skriptdateien (PS1-Dateien), die vor dem Importieren dieses Moduls in der Umgebung des Aufrufers ausgeführt werden.
 # ScriptsToProcess = @()
 
 # Die Typdateien (.ps1xml), die beim Importieren dieses Moduls geladen werden sollen
@@ -65,56 +68,58 @@ CLRVersion = '2.0.50727'
 # Die Module, die als geschachtelte Module des in "RootModule/ModuleToProcess" angegebenen Moduls importiert werden sollen.
 # NestedModules = @()
 
-# Aus diesem Modul zu exportierende Funktionen
-FunctionsToExport = 'Write-Log', 'Remove-Log', 'Convert-ArrayToHash', 'Confirm-Creds', 
-               'Connect-DSM7Web', 'Connect-DSM7WebRandom', 'DisConnect-DSM7Web', 
-               'Get-DSM7ObjectList', 'Get-DSM7ObjectObject', 'Get-DSM7Object', 
-               'Get-DSM7Objects', 'Get-DSM7LDAPPath', 'Get-DSM7AssociationList', 
-               'Get-DSM7AssociationschemaList', 'New-DSM7Association', 
-               'Get-DSM7DisplayNameLists', 'Get-DSM7ComputerList', 
-               'Get-DSM7Computer', 'Update-DSM7Computer', 'Install-DSM7Computer', 
-               'New-DSM7Computer', 'Remove-DSM7Computer', 'Move-DSM7Computer',
-			   'WakeUp-DSM7Computer',
-               'Get-DSM7OrgTreeContainer', 'Get-DSM7OrgTreeContainers', 
-               'New-DSM7OrgTreeContainer', 'Move-DSM7OrgTreeContainer', 
-               'Update-DSM7OrgTreeContainer', 'Remove-DSM7OrgTreeContainer', 
-               'Get-DSM7Group', 'Get-DSM7GroupList', 'New-DSM7Group', 'Update-DSM7Group', 'Move-DSM7Group', 
-               'Remove-DSM7Group', 'Get-DSM7ComputerGroupMembers', 
-               'Get-DSM7ComputerInGroups', 'Get-DSM7ExternalGroupMembers', 
-               'Get-DSM7GroupMembers', 'Get-DSM7ListOfMemberships', 
-               'Update-DSM7MembershipInGroups', 'Update-DSM7MemberListOfGroup', 
-               'Add-DSM7ComputerToGroup', 'Remove-DSM7ComputerFromGroup', 
-               'Get-DSM7Policy', 'Update-DSM7Policy', 'Get-DSM7PolicyList', 
-               'Move-DSM7PolicyToTarget', 'Remove-DSM7PolicyFromTarget', 
-               'Add-DSM7PolicyToTarget', 'New-DSM7Policy', 'Copy-DSM7Policy', 
-               'Remove-DSM7Policy', 'Get-DSM7PolicyListByAssignedSoftware', 
-               'Get-DSM7PolicyListByTarget','Copy-DSM7PolicyListNewTarget', 
-               'Get-DSM7PolicyStatisticsByTarget', 'Get-DSM7PolicyStatistics', 
-               'Get-DSM7PolicyStatisticsByPolicies', 
-               'Get-DSM7ComputerMissingPatch', 
+# Aus diesem Modul zu exportierende Funktionen. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Funktionen vorhanden sind.
+FunctionsToExport = 'Get-DSM7SoftwareList', 'New-DSM7Computer', 'Get-DSM7ComputerList', 
+               'Get-DSM7Software', 'Get-DSM7NCPObjects', 'Get-DSM7LDAPPath', 
+               'Update-DSM7MemberListOfGroup', 'Get-DSM7Group', 
+               'Get-DSM7PolicyListByAssignedSoftware', 'Remove-DSM7PolicyInstance', 
+               'Remove-DSM7Group', 'Update-DSM7SoftwareCategory', 
+               'Get-DSM7SoftwareCategoryList', 'Get-DSM7ComputerInGroups', 
+               'Get-DSM7UserList', 'Update-DSM7Policy', 
+               'Remove-DSM7PolicyFromTarget', 'Update-DSM7MembershipInGroups', 
+               'Write-Log', 'Get-DSM7ComputerMissingPatch', 
+               'Get-DSM7PolicyListByTarget', 'Get-DSM7ObjectList', 
+               'Update-DSM7Group', 'Move-DSM7Group', 'Update-DSM7OrgTreeContainer', 
+               'Connect-DSM7Web', 'Get-DSM7OrgTreeContainers', 
+               'Get-DSM7ResolveVariablesForTarget', 'DisConnect-DSM7Web', 
+               'Get-DSM7ComputerGroupMembers', 'New-DSM7Group', 
+               'Get-DSM7ComputerToUser', 'Get-DSM7DisplayNameLists', 
+               'Update-DSM7Computer', 'Get-DSM7SoftwareIDs', 
+               'Get-DSM7OrgTreeContainer', 'Remove-DSM7VariablesOnTarget', 
+               'Get-DSM7Policy', 'Remove-Log', 'Move-DSM7Software', 
+               'Remove-DSM7ComputerFromGroup', 'Get-DSM7PolicyStatisticsByTarget', 
+               'Get-DSM7PolicyStatistics', 'Get-DSM7VariableGroups', 
+               'Remove-DSM7SoftwareCategory', 'Remove-DSM7OrgTreeContainer', 
+               'Get-DSM7User', 'Get-DSM7ComputerToUserList', 'Install-DSM7Computer', 
+               'Confirm-Creds', 'Get-DSM7Object', 'Get-DSM7PolicyList', 
+               'Get-DSM7PolicyInstanceListByPolicy', 'Update-DSM7PolicyInstances', 
                'Get-DSM7PolicyInstanceCountByPolicy', 
-			   'Get-DSM7SwInstallationParamDefinitions',
-               'Get-DSM7PolicyInstanceListByNode','Get-DSM7PolicyInstanceListByPolicy', 'Update-DSM7PolicyInstances', 
-               'Remove-DSM7PolicyInstance', 
-               'Get-DSM7SwInstallationConfigurationsObject', 'Get-DSM7SoftwareIDs', 
-               'Get-DSM7Software', 'Move-DSM7Software', 'Update-DSM7Software', 
-               'Get-DSM7SoftwareList', 'Get-DSM7SoftwareCategoryList', 
-               'Get-DSM7SoftwareCategory', 'New-DSM7SoftwareCategory', 
-               'Update-DSM7SoftwareCategory', 'Remove-DSM7SoftwareCategory', 
-               'Get-DSM7ResolveVariablesForTarget', 'Get-DSM7VariableGroups', 
-               'Set-DSM7VariablesOnTarget', 'Remove-DSM7VariablesOnTarget', 
-               'Add-DSM7ComputerToUser', 'Remove-DSM7ComputerToUser','Get-DSM7ComputerToUser',
-               'Get-DSM7ComputerToUserList', 'Get-DSM7User','Get-DSM7UserList',
-               'Get-DSM7NCP','Get-DSM7NCPObjects'
+               'Get-DSM7SwInstallationParamDefinitions', 
+               'Move-DSM7OrgTreeContainer', 'Get-DSM7Computer', 'Get-DSM7GroupList', 
+               'Send-DSM7ComputerWakeUP', 'Get-DSM7NCP', 'Move-DSM7PolicyToTarget', 
+               'Get-DSM7GroupMembers', 'Get-DSM7ExternalGroupMembers', 
+               'Add-DSM7PolicyToTarget', 'New-DSM7Association', 
+               'Set-DSM7VariablesOnTarget', 'Get-DSM7AssociationList', 
+               'Get-DSM7ListOfMemberships', 'Remove-DSM7Computer', 
+               'Add-DSM7ComputerToGroup', 'Connect-DSM7WebRandom', 
+               'Get-DSM7SwInstallationConfigurationsObject', 
+               'Get-DSM7AssociationschemaList', 'New-DSM7SoftwareCategory', 
+               'Add-DSM7ComputerToUser', 'Copy-DSM7PolicyListNewTarget', 
+               'Copy-DSM7Policy', 'Get-DSM7PolicyStatisticsByPolicies', 
+               'Convert-ArrayToHash', 'Get-DSM7SoftwareCategory', 
+               'Remove-DSM7Policy', 'New-DSM7OrgTreeContainer', 
+               'Remove-DSM7ComputerToUser', 'Update-DSM7Software', 
+               'Get-DSM7PolicyInstanceListByNode', 'Get-DSM7Objects', 
+               'New-DSM7Policy', 'Move-DSM7Computer'
 
-# Aus diesem Modul zu exportierende Cmdlets
+# Aus diesem Modul zu exportierende Cmdlets. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Cmdlets vorhanden sind.
 CmdletsToExport = '*'
 
 # Die aus diesem Modul zu exportierenden Variablen
 VariablesToExport = '*'
 
-# Aus diesem Modul zu exportierende Aliase
-AliasesToExport = 'Get-DSM7SoftwarebyIDs'
+# Aus diesem Modul zu exportierende Aliase. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Aliase vorhanden sind.
+AliasesToExport = 'Get-DSM7SoftwarebyIDs', 'WakeUp-DSM7Computer'
 
 # Aus diesem Modul zu exportierende DSC-Ressourcen
 # DscResourcesToExport = @()
@@ -125,7 +130,7 @@ AliasesToExport = 'Get-DSM7SoftwarebyIDs'
 # Liste aller Dateien in diesem Modulpaket
 # FileList = @()
 
-# Die privaten Daten, die an das in "RootModule/ModuleToProcess" angegebene Modul ï¿½bergeben werden sollen. Diese kï¿½nnen auch eine PSData-Hashtabelle mit zusï¿½tzlichen von PowerShell verwendeten Modulmetadaten enthalten.
+# Die privaten Daten, die an das in "RootModule/ModuleToProcess" angegebene Modul übergeben werden sollen. Diese können auch eine PSData-Hashtabelle mit zusätzlichen von PowerShell verwendeten Modulmetadaten enthalten.
 PrivateData = @{
 
     PSData = @{
@@ -148,7 +153,7 @@ PrivateData = @{
         # Prerelease string of this module
         # Prerelease = ''
 
-        # Flag to indicate whether the module requires explicit user acceptance for install/update
+        # Flag to indicate whether the module requires explicit user acceptance for install/update/save
         # RequireLicenseAcceptance = $false
 
         # External dependent modules of this module
@@ -161,9 +166,8 @@ PrivateData = @{
 # HelpInfo-URI dieses Moduls
 HelpInfoURI = 'https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md'
 
-# Standardprï¿½fix fï¿½r Befehle, die aus diesem Modul exportiert werden. Das Standardprï¿½fix kann mit "Import-Module -Prefix" ï¿½berschrieben werden.
+# Standardpräfix für Befehle, die aus diesem Modul exportiert werden. Das Standardpräfix kann mit "Import-Module -Prefix" überschrieben werden.
 # DefaultCommandPrefix = ''
 
 }
-
 
