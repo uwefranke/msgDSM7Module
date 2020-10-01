@@ -9,8 +9,11 @@ powershell Module SOAP interface [Ivanti](https://www.ivanti.com) DSM
 
 ## Usage
 
-* Import-Module msgDSM7Module
-* Connect-DSM7Web -WebServer "BLSServer" -UseDefaultCredential
+```powershell
+Import-Module msgDSM7Module
+Connect-DSM7Web -WebServer "BLSServer" -UseDefaultCredential
+```
+
 * [read more](https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md)
 
 ## Contributing
