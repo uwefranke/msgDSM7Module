@@ -12,6 +12,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.2.5] - 2020-10-29
+
+### Fixed
+
+* Workaround error with MdsObjectSchema in version 7.4.3.0
+* error in function Get-DSM7GroupList not recieved ExternalGroup
+
 ## [1.0.2.4] - 2020-08-21
 
 ### Changed

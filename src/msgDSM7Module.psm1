@@ -6,8 +6,8 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.2.4
-    Requires	: PowerShell V3 CTP3  
+	Version		: 1.0.2.5
+    Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
 .LINK  
@@ -1819,10 +1819,20 @@ function Get-DSM7AssociationList {
 		[switch]$resolvedName = $false
 	)
 	if (Confirm-Connect) {
-		if (!$DSM7AssociationSchemaList) {
-			$global:DSM7AssociationSchemaList = Get-DSM7AssociationschemaList|select -ExpandProperty Tag
+		#workaround not work SchemaList with version 7.4.3
+		$DSM7AssociationSchemaListCheck = $true
+		if ($DSM7Version -ne "7.4.3.0") {
+			if (!$DSM7AssociationSchemaList) {
+				$global:DSM7AssociationSchemaList = Get-DSM7AssociationschemaList|select -ExpandProperty Tag
+			}
+			if ($DSM7AssociationSchemaList.Contains($SchemaTag)) {
+				$DSM7AssociationSchemaListCheck = $true
+			}
+			else {
+				$DSM7AssociationSchemaListCheck = $false
+			}
 		}
-		if ($DSM7AssociationSchemaList.Contains($SchemaTag)) {
+		if ($DSM7AssociationSchemaListCheck) {
 			$result = Get-DSM7AssociationListObject -SchemaTag $SchemaTag -SourceObjectID $SourceObjectID -TargetObjectID $TargetObjectID -TargetSchemaTag $TargetSchemaTag
 			if ($result) {
 				$result = Convert-DSM7AssociationListtoPSObject -ObjectList $result -resolvedName:$resolvedName
@@ -1839,7 +1849,6 @@ function Get-DSM7AssociationList {
 Export-ModuleMember -Function Get-DSM7AssociationList
 function Get-DSM7AssociationschemaListObject {
 	try {
-		$IDs = $IDs|Sort-Object|Get-Unique
 		$Webrequest = Get-DSM7RequestHeader -action "GetAssociationSchemaList"
 		$Webrequest.SchemaTags = @()
 		$Webresult = $DSM7WebService.GetAssociationSchemaList($Webrequest).SchemaList
@@ -1989,10 +1998,20 @@ function New-DSM7Association {
 		[System.Int32]$TargetObjectID
 	)
 	if (Confirm-Connect) {
-		if (!$DSM7AssociationSchemaList) {
-			$global:DSM7AssociationSchemaList = Get-DSM7AssociationsObjectchemaList|select -ExpandProperty Tag
+		#workaround not work GetAssociationSchemaList with version 7.4.3
+		$DSM7AssociationSchemaListCheck = $true
+		if ($DSM7Version -ne "7.4.3.0") {
+			if (!$DSM7AssociationSchemaList) {
+				$global:DSM7AssociationSchemaList = Get-DSM7AssociationschemaList|select -ExpandProperty Tag
+			}
+			if ($DSM7AssociationSchemaList.Contains($SchemaTag)) {
+				$DSM7AssociationSchemaListCheck = $true
+			}
+			else {
+				$DSM7AssociationSchemaListCheck = $false
+			}
 		}
-		if ($DSM7AssociationSchemaList.Contains($SchemaTag) -and $SourceObjectID -gt 0 -and $TargetObjectID -0 -and $TargetSchemaTag) {
+		if ($DSM7AssociationSchemaListCheck -and $SourceObjectID -gt 0 -and $TargetObjectID -0 -and $TargetSchemaTag) {
 			$result = New-DSM7AssociationObject -SchemaTag $SchemaTag -SourceObjectID $SourceObjectID -TargetObjectID $TargetObjectID -TargetSchemaTag $TargetSchemaTag
 			if ($result) {
 				$result = Convert-DSM7AssociationtoPSObject($result)
@@ -3454,18 +3473,19 @@ function Get-DSM7GroupList {
 		if ($SchemaTag) {
 			$Filter = "(SchemaTag=$SchemaTag)$Filter"
 		}
+		$Filter = "(&(|(BasePropGroupTag=Group)(BasePropGroupTag=ExternalGroup))$Filter)"
 		$Attributes = "$Attributes,DynamicGroupProps.Filter,DynamicGroupProps.IsComplex,DynamicGroupProps.ParentDynGroupId,Group.TargetCategory"
 		$Attributes = $Attributes.TrimStart(",")
 		if ($recursive) {
 			if ($ParentContID -gt 0) {
 				$result = @()
-				$resultComputer = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+				$resultComputer = Get-DSM7ObjectList -Attributes $Attributes -Filter $Filter -ParentContID $ParentContID -GenTypeData:$GenTypeData
 				if ($resultComputer) {
 					$result += $resultComputer
 				} 
 				$resultContainer = Get-DSM7ObjectList -Filter $DSM7Container -ParentContID $ParentContID -recursive
 				foreach ($Container in $resultContainer) {
-					$FilterContainer = "(&(ParentContID=$($Container.ID))(BasePropGroupTag=Group)$filter)"
+					$FilterContainer = "(&(ParentContID=$($Container.ID))$filter)"
 					$resultComputer = Get-DSM7ObjectList -Attributes $Attributes -Filter $FilterContainer 
 					if ($resultComputer) {
 						$result += $resultComputer
@@ -3473,15 +3493,15 @@ function Get-DSM7GroupList {
 				} 
 			}
 			else {
-				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter $Filter -ParentContID $ParentContID -GenTypeData:$GenTypeData
 			}
 		}
 		else {
 			if ($ParentContID -gt 0) {
-				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -ParentContID $ParentContID -GenTypeData:$GenTypeData
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter $Filter -ParentContID $ParentContID -GenTypeData:$GenTypeData
 			}
 			else {
-				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter "(&(BasePropGroupTag=Group)$Filter)" -GenTypeData:$GenTypeData
+				$result = Get-DSM7ObjectList -Attributes $Attributes -Filter $Filter -GenTypeData:$GenTypeData
 			}
 		}
 		if ($result) {
