@@ -12,11 +12,17 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.2.6] - 2020-11-12
+
+### Fixed
+
+* Workaround error with MdsObjectSchema in DSM version 7.4.3.0 - Update-DSM7Object [issue #3](https://github.com/uwefranke/msgDSM7Module/issues/3)
+
 ## [1.0.2.5] - 2020-10-29
 
 ### Fixed
 
-* Workaround error with MdsObjectSchema in version 7.4.3.0
+* Workaround error with MdsObjectSchema in DSN version 7.4.3.0 - Get-DSM7AssociationList
 * error in function Get-DSM7GroupList not recieved ExternalGroup
 
 ## [1.0.2.4] - 2020-08-21

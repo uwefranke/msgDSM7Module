@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.2.5
+	Version		: 1.0.2.6
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -1502,9 +1502,11 @@ function Update-DSM7Object {
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "UpdateObject"
 		$WebrequestState = Get-DSM7RequestHeader -action "UpdateStateInfoOfObject"
+		if ($DSM7Version -ne "7.4.3.0"){
 		if (!$DSM7PropGroupDefList){
 			$global:DSM7PropGroupDefList = Convert-ArrayToHash -myArray (Get-DSM7PropGroupDefListObject) -myKey "Tag" 
 
+		}
 		}
 		$groupkey = @{}
 		$valueskey = @{}
@@ -1542,7 +1544,7 @@ function Update-DSM7Object {
 				Write-Log 0 "aendere $Groupname.$Valuename = $Value" $MyInvocation.MyCommand
 				$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
 				$PropertyListObject.Tag = $Valuename
-				$PropertyListObject.Type = ($DSM7PropGroupDefList.$groupname.PropertyDefList|where Tag -EQ $Valuename).propertytype
+				$PropertyListObject.Type = ((($Object.PropGroupList|Where Tag -EQ $Groupname).propertyList)|where Tag -EQ $Valuename).Type
 				$PropertyListObject.TypedValue = $Value
 				$PropertyList += $PropertyListObject
 			}
