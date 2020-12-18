@@ -1,12 +1,12 @@
 <#  
 .SYNOPSIS  
-    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.1)  
+    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.2)  
 .DESCRIPTION
- 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.1)  
+ 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.2)  
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.2.6
+	Version		: 1.0.2.7
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -22,7 +22,7 @@
 ###############################################################################
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benoetigte DSM Version 7.0 oder hoeher
-$DSM7testedVersion = "7.4.3.0" # hoechste getestet DSM Version mit diesem Modul
+$DSM7testedVersion = "7.4.4.0" # hoechste getestet DSM Version mit diesem Modul
 $DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=ExternalGroup)(SchemaTag=DynamicGroup))"
 $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
@@ -1503,10 +1503,10 @@ function Update-DSM7Object {
 		$Webrequest = Get-DSM7RequestHeader -action "UpdateObject"
 		$WebrequestState = Get-DSM7RequestHeader -action "UpdateStateInfoOfObject"
 		if ($DSM7Version -ne "7.4.3.0"){
-		if (!$DSM7PropGroupDefList){
-			$global:DSM7PropGroupDefList = Convert-ArrayToHash -myArray (Get-DSM7PropGroupDefListObject) -myKey "Tag" 
+			if (!$DSM7PropGroupDefList){
+				$global:DSM7PropGroupDefList = Convert-ArrayToHash -myArray (Get-DSM7PropGroupDefListObject) -myKey "Tag" 
 
-		}
+			}
 		}
 		$groupkey = @{}
 		$valueskey = @{}

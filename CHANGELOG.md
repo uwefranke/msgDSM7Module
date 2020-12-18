@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.2.7] - 2020-12-18
+### Added
+
+* Test ivanti version DSM 2020.2 (7.4.4.0)
 ## [1.0.2.6] - 2020-11-12
 
 ### Fixed
