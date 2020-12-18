@@ -6519,16 +6519,16 @@ function Copy-DSM7PolicyListNewTarget {
 				[Array]$SourcePolicy = Get-DSM7PolicyListByTarget -ID $SourceObject.ID
 				if ($SourcePolicy) {
 					Write-Log 0 "($Name) -> ($LDAPPath) erfolgreich." $MyInvocation.MyCommand
-					if ($TargetLDAPPath -or $TargetParentContID) {
-						if (!$TargetParentContID) {
-							$TargetParentContID = Get-DSM7LDAPPathID -LDAPPath $TargetLDAPPath
-						}
-					}
-					else {
-						$TargetParentContID = $SourceObject.ParentContID
-					}
 					$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 					if (!$TargetObject) {
+						if ($TargetLDAPPath -or $TargetParentContID) {
+							if (!$TargetParentContID) {
+								$TargetParentContID = Get-DSM7LDAPPathID -LDAPPath $TargetLDAPPath
+							}
+						}
+						else {
+							$TargetParentContID = $SourceObject.ParentContID
+						}
 						$TargetObject = New-DSM7Object -Name $TargetName -ParentContID $TargetParentContID -SchemaTag $SourceObject.SchemaTag -GroupType $SourceObject.GroupType -PropGroupList $SourceObject.PropGroupList
 						Write-Log 0 "($TargetName) -> ($LDAPPath) erfolgreich erstellt." $MyInvocation.MyCommand
 					}

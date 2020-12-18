@@ -16,26 +16,23 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 * Test ivanti version DSM 2020.2 (7.4.4.0)
+### Fixed
+
+* logic error in function Copy-DSM7PolicyListNewTarget
 ## [1.0.2.6] - 2020-11-12
 
 ### Fixed
 
 * Workaround error with MdsObjectSchema in DSM version 7.4.3.0 - Update-DSM7Object [issue #3](https://github.com/uwefranke/msgDSM7Module/issues/3)
-
 ## [1.0.2.5] - 2020-10-29
-
 ### Fixed
 
 * Workaround error with MdsObjectSchema in DSN version 7.4.3.0 - Get-DSM7AssociationList
 * error in function Get-DSM7GroupList not recieved ExternalGroup
-
 ## [1.0.2.4] - 2020-08-21
-
 ### Changed
 
 * function Wakeup-DSM7Computer rename to Send-DSM7ComputerWakeUp (Alias: Wakeup-DSM7Computer) (Get-Verb waring during import)
-
-
 ## [1.0.2.3] - 2020-08-20
 
 ### Added
