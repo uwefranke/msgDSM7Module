@@ -29,7 +29,7 @@ Connect-DSM7Web -WebServer "DSM7 BLS" -UseDefaultCredential
 
 ### BEISPIEL 2
 ```
-Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domäne\Benutzer" -UserPW "******"
+Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domuene\Benutzer" -UserPW "******"
 ```
 
 ### BEISPIEL 3
@@ -130,7 +130,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

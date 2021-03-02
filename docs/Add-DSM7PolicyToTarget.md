@@ -8,17 +8,17 @@ schema: 2.0.0
 # Add-DSM7PolicyToTarget
 
 ## SYNOPSIS
-Fügt eine Policy einem Object zu.
+Fuegt eine Policy einem Object zu.
 
 ## SYNTAX
 
 ```
 Add-DSM7PolicyToTarget [-ID] <Int32> [[-TargetID] <Int32>] [[-TargetName] <String>]
- [[-TargetLDAPPath] <String>] [<CommonParameters>]
+ [[-TargetLDAPPath] <String>] [[-TargetParentContID] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Fügt eine Policy einem Object zu.
+Fuegt eine Policy einem Object zu.
 
 ## EXAMPLES
 
@@ -94,8 +94,24 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -TargetParentContID
+{{Fill TargetParentContID Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

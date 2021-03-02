@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7AssociationList
 
 ## SYNOPSIS
-Gibt eine Liste von Association zurück.
+Gibt eine Liste von Association zurueck.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Get-DSM7AssociationList [-SchemaTag] <String> [-SourceObjectID <String>] [-Targe
 ```
 
 ## DESCRIPTION
-Gibt eine Liste von Association zurück.
+Gibt eine Liste von Association zurueck.
 
 ## EXAMPLES
 
@@ -105,7 +105,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

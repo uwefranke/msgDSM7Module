@@ -8,7 +8,7 @@ schema: 2.0.0
 # Update-DSM7OrgTreeContainer
 
 ## SYNOPSIS
-Ändert ein Containerobjekt.
+aendert ein Containerobjekt.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Update-DSM7OrgTreeContainer [[-Name] <String>] [[-ID] <Int32>] [[-Description] <
 ```
 
 ## DESCRIPTION
-Ändert ein Containerobjekt.
+aendert ein Containerobjekt.
 
 ## EXAMPLES
 
@@ -90,7 +90,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgdsm7module
+Module Name: msgDSM7Module
 online version:
 schema: 2.0.0
 ---
@@ -8,7 +8,7 @@ schema: 2.0.0
 # Update-DSM7Policy
 
 ## SYNOPSIS
-Ändert ein Policy Object aus.
+aendert ein Policy Object aus.
 
 ## SYNTAX
 
@@ -22,7 +22,7 @@ Update-DSM7Policy [[-ID] <Int32>] [[-SwName] <String>] [[-SwUniqueID] <String>] 
 ```
 
 ## DESCRIPTION
-Ändert ein Policy Object aus.
+aendert ein Policy Object aus.
 
 ## EXAMPLES
 

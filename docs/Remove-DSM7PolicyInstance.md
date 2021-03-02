@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-DSM7PolicyInstance
 
 ## SYNOPSIS
-Löscht eine PolicyInstance.
+Loescht eine PolicyInstance.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Remove-DSM7PolicyInstance [-ID] <Object> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Löscht eine PolicyInstance.
+Loescht eine PolicyInstance.
 
 ## EXAMPLES
 
@@ -44,7 +44,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

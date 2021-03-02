@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7VariableGroups
 
 ## SYNOPSIS
-Gibt eine Liste von Variablen Gruppen und deren Variablen zurück.
+Gibt eine Liste von Variablen Gruppen und deren Variablen zurueck.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-DSM7VariableGroups [[-Names] <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Gibt eine Liste von Variablen Gruppen und deren Variablen zurück.
+Gibt eine Liste von Variablen Gruppen und deren Variablen zurueck.
 
 ## EXAMPLES
 
@@ -44,7 +44,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

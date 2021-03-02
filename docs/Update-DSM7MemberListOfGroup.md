@@ -8,7 +8,7 @@ schema: 2.0.0
 # Update-DSM7MemberListOfGroup
 
 ## SYNOPSIS
-Ändert eine oder mehrere Objekte zu einer Gruppe.
+aendert eine oder mehrere Objekte zu einer Gruppe.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Update-DSM7MemberListOfGroup [[-Name] <String>] [[-ID] <Int32>] [[-LDAPPath] <St
 ```
 
 ## DESCRIPTION
-Ändert eine oder mehrere Objekte zu einer Gruppe.
+aendert eine oder mehrere Objekte zu einer Gruppe.
 
 ## EXAMPLES
 
@@ -135,7 +135,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

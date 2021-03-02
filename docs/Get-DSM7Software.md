@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgdsm7module
+Module Name: msgDSM7Module
 online version:
 schema: 2.0.0
 ---
@@ -8,17 +8,17 @@ schema: 2.0.0
 # Get-DSM7Software
 
 ## SYNOPSIS
-Gibt ein Software Objekt zurück.
+Gibt ein Software Objekt zurueck.
 
 ## SYNTAX
 
 ```
-Get-DSM7Software [[-Name] <String>] [[-ID] <String>] [[-UniqueID] <String>] [[-LDAPPath] <String>]
- [-IsLastReleasedRev] [<CommonParameters>]
+Get-DSM7Software [[-ID] <Int32>] [[-Name] <String>] [[-UniqueID] <String>] [[-UpdateID] <String>]
+ [[-LDAPPath] <String>] [-IsLastReleasedRev] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Gibt ein Software Objekt zurück.
+Gibt ein Software Objekt zurueck.
 
 ## EXAMPLES
 
@@ -29,23 +29,23 @@ Get-DSM7Software -Name "Software" -LDAPPath ""Global Software Library/SWF1"
 
 ## PARAMETERS
 
-### -Name
-{{Fill Name Description}}
+### -ID
+{{Fill ID Description}}
 
 ```yaml
-Type: String
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 1
-Default value: None
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ID
-{{Fill ID Description}}
+### -Name
+{{Fill Name Description}}
 
 ```yaml
 Type: String
@@ -61,6 +61,21 @@ Accept wildcard characters: False
 
 ### -UniqueID
 {{Fill UniqueID Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UpdateID
+{{Fill UpdateID Description}}
 
 ```yaml
 Type: String
@@ -98,7 +113,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 5
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False

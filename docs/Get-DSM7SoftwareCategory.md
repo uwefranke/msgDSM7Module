@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7SoftwareCategory
 
 ## SYNOPSIS
-Gibt ein Softwarekategorie zurück.
+Gibt ein Softwarekategorie zurueck.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Get-DSM7SoftwareCategory [[-Name] <String>] [[-ID] <Int32>] [[-LDAPPath] <String
 ```
 
 ## DESCRIPTION
-Gibt ein Softwarekategorie zurück.
+Gibt ein Softwarekategorie zurueck.
 
 ## EXAMPLES
 
@@ -125,7 +125,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -137,11 +138,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [Get-DSM7SoftwareList]()
 
-[Get-DSM7SoftwarebyIDs]()
+[Get-DSM7SoftwareIDs]()
 
 [Get-DSM7Software]()
 
 [Update-DSM7Software]()
+
+[Move-DSM7Software]()
 
 [Get-DSM7SoftwareCategoryList]()
 

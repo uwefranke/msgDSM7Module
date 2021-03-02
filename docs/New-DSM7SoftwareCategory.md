@@ -15,7 +15,7 @@ Erstellt eine Softwarekategorie.
 ```
 New-DSM7SoftwareCategory [-Name] <String> [[-Description] <String>] [[-SchemaTag] <String>]
  [[-LDAPPath] <String>] [[-ParentContID] <String>] [[-ParentDynGroup] <String>] [[-Filter] <String>]
- [-resolvedName] [-PatchLink] [<CommonParameters>]
+ [-resolvedName] [-lastCat] [-PatchLink] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -165,6 +165,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -lastCat
+{{Fill lastCat Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -PatchLink
 {{Fill PatchLink Description}}
 
@@ -181,7 +196,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -193,11 +209,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [Get-DSM7SoftwareList]()
 
-[Get-DSM7SoftwarebyIDs]()
+[Get-DSM7SoftwareIDs]()
 
 [Get-DSM7Software]()
 
 [Update-DSM7Software]()
+
+[Move-DSM7Software]()
 
 [Get-DSM7SoftwareCategoryList]()
 

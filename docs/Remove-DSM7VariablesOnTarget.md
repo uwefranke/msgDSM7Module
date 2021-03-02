@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-DSM7VariablesOnTarget
 
 ## SYNOPSIS
-Lösche eine Liste von Variablen an einem Objektes.
+Loesche eine Liste von Variablen an einem Objektes.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Remove-DSM7VariablesOnTarget [-TargetID <Int32>] [-TargetName <String>] [-LDAPPa
 ```
 
 ## DESCRIPTION
-Lösche eine Liste von Variablen an eimem Objektes.
+Loesche eine Liste von Variablen an eimem Objektes.
 
 ## EXAMPLES
 
@@ -92,7 +92,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

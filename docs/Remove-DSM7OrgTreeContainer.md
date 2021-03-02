@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-DSM7OrgTreeContainer
 
 ## SYNOPSIS
-Löscht ein Containerobjekt.
+Loescht ein Containerobjekt.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Remove-DSM7OrgTreeContainer [[-Name] <String>] [[-ID] <Int32>] [[-LDAPPath] <Str
 ```
 
 ## DESCRIPTION
-Löscht ein Containerobjekt.
+Loescht ein Containerobjekt.
 
 ## EXAMPLES
 
@@ -74,7 +74,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

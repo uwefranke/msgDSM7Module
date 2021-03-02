@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7PolicyInstanceListByNode
 
 ## SYNOPSIS
-Gibt eine Liste PolicyInstances von Objekten zurück.
+Gibt eine Liste PolicyInstances von Objekten zurueck.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Get-DSM7PolicyInstanceListByNode [[-Name] <String>] [[-ID] <String>] [[-LDAPPath
 ```
 
 ## DESCRIPTION
-Gibt eine Liste PolicyInstances von Objekten zurück.
+Gibt eine Liste PolicyInstances von Objekten zurueck.
 
 ## EXAMPLES
 
@@ -90,7 +90,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7ResolveVariablesForTarget
 
 ## SYNOPSIS
-Gibt eine Liste von Variablen eines Objektes zurück.
+Gibt eine Liste von Variablen eines Objektes zurueck.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Get-DSM7ResolveVariablesForTarget [[-TargetID] <Int32>] [[-TargetName] <String>]
 ```
 
 ## DESCRIPTION
-Gibt eine Liste von Variablen eines Objektes zurück.
+Gibt eine Liste von Variablen eines Objektes zurueck.
 
 ## EXAMPLES
 
@@ -77,7 +77,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

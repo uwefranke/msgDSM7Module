@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7AssociationschemaList
 
 ## SYNOPSIS
-Gibt eine Liste von Association Schemas zurück.
+Gibt eine Liste von Association Schemas zurueck.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-DSM7AssociationschemaList [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Gibt eine Liste von Association Schemas zurück.
+Gibt eine Liste von Association Schemas zurueck.
 
 ## EXAMPLES
 
@@ -29,7 +29,8 @@ Get-DSM7AssociationList
 ## PARAMETERS
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

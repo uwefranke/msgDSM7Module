@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7ComputerMissingPatch
 
 ## SYNOPSIS
-Gibt die festgestellten Sicherheitslücken zurück.
+Gibt die festgestellten Sicherheitsluecken zurueck.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Get-DSM7ComputerMissingPatch [[-ID] <Int32>] [[-Name] <String>] [<CommonParamete
 ```
 
 ## DESCRIPTION
-Gibt die festgestellten Sicherheitslücken zurück.
+Gibt die festgestellten Sicherheitsluecken zurueck.
 
 ## EXAMPLES
 
@@ -59,7 +59,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

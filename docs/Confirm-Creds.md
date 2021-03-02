@@ -8,7 +8,7 @@ schema: 2.0.0
 # Confirm-Creds
 
 ## SYNOPSIS
-Überprüft die Benutzerinformationen und ggf.
+ueberprueft die Benutzerinformationen und ggf.
 Passwortabfrage
 
 ## SYNTAX
@@ -18,7 +18,7 @@ Confirm-Creds [[-Domain] <Object>] [[-User] <Object>] [[-Password] <Object>] [<C
 ```
 
 ## DESCRIPTION
-Überprüft die Benutzerinformationen und ggf.
+ueberprueft die Benutzerinformationen und ggf.
 Passwortabfrage
 
 ## EXAMPLES
@@ -76,7 +76,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

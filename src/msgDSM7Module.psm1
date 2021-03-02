@@ -5608,6 +5608,8 @@ function New-DSM7Policy {
 	.EXAMPLE
 		New-DSM7Policy -SwName "Microsoft Windows Update Agent (x64)" -TargetName "Ziel" -IsActiv
 	.EXAMPLE
+		New-DSM7Policy -UpdateID "ARDC-210215:AcroRdrDCUpd2100120138.msp:Adobe Acrobat Reader DC 21:0407" -TargetName "Ziel" -IsActiv
+	.EXAMPLE
 		New-DSM7Policy -swid 12345 -TargetID 54321 -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
 	.EXAMPLE
 		New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{4F3BB3DB-F1F3-4ACA-A7B6-F8CA57FD20F1}" -JobPolicy -JobPolicyTrigger 10
@@ -5647,6 +5649,8 @@ function New-DSM7Policy {
 		[system.int32]$SwID,
 		[Parameter(Position=1, Mandatory=$false)]
 		[system.string]$SwUniqueID,
+		[Parameter(Position=1, Mandatory=$false)]
+		[system.string]$SwUpdateID,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$SwLDAPPath,
 		[Parameter(Position=2, Mandatory=$false)]
@@ -5710,10 +5714,18 @@ function New-DSM7Policy {
 			}
 			if ($SwUniqueID) {
 				if ($Pilot) {
-					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath
+					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID
 				}
 				else {
-					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -LDAPPath $SwLDAPPath -IsLastReleasedRev
+					$AssignedObject = Get-DSM7Software -UniqueID $SwUniqueID -IsLastReleasedRev
+				}
+			}
+			if ($SwUpdateID) {
+				if ($Pilot) {
+					$AssignedObject = Get-DSM7Software -UpdateID $SwUpdateID
+				}
+				else {
+					$AssignedObject = Get-DSM7Software -UpdateID $SwUpdateID -IsLastReleasedRev
 				}
 			}
 			if ($SwID) {
@@ -5802,6 +5814,7 @@ function New-DSM7Policy {
 				}
 				if ($AssignedObject -and $TargetObject) {
 					switch ($AssignedObject.Schematag) {
+						"VMWPPatchPackage" {$SchemaTag = "PatchPolicy"}
 						"MSWUV6Package" {$SchemaTag = "PatchPolicy"}
 						"LPRPatchPackage" {$SchemaTag = "PatchPolicy"}
 						"PnpPackage" {$SchemaTag = "PnpPolicy"}
@@ -5839,6 +5852,9 @@ function New-DSM7Policy {
 							$PropGroupList += $PropGroupListObject
 							$Policy.PropGroupList = $PropGroupList
 							$Policy.InstallationOrder = $AssignedObject.'Software.InstallationOrder'
+						}
+						if ($SchemaTag = "PatchPolicy") {
+							$Policy.ShopForAllUsers = $true
 						}
 						if ($DenyPolicy) {
 							$Policy.SchemaTag = "DenyPolicy"
@@ -7375,6 +7391,8 @@ function Get-DSM7Software {
 		[system.string]$Name,
 		[Parameter(Position=2, Mandatory=$false)]
 		[system.string]$UniqueID,
+		[Parameter(Position=2, Mandatory=$false)]
+		[system.string]$UpdateID,
 		[Parameter(Position=3, Mandatory=$false)]
 		[system.string]$LDAPPath,
 		[Parameter(Position=4, Mandatory=$false)]
@@ -7394,10 +7412,19 @@ function Get-DSM7Software {
 			}
 			if ($UniqueID) {
 				if ($IsLastReleasedRev) {
-					$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastReleasedRev=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastReleasedRev=1)(BasePropGroupTag=Software))"
 				}
 				else {
-					$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastRevision=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(UniqueID:IgnoreCase=$UniqueID)(Software.IsLastRevision=1)(BasePropGroupTag=Software))"
+				}
+				$SoftwareListID = $SoftwareList.ID
+			}
+			if ($UpdateID) {
+				if ($IsLastReleasedRev) {
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(PatchPackage.UpdateId:IgnoreCase=$UpdateID)(Software.IsLastReleasedRev=1)(BasePropGroupTag=Software))"
+				}
+				else {
+					$SoftwareList = Get-DSM7ObjectList -Filter "(&(PatchPackage.UpdateId:IgnoreCase=$UpdateID)(Software.IsLastRevision=1)(BasePropGroupTag=Software))"
 				}
 				$SoftwareListID = $SoftwareList.ID
 			}

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Remove-DSM7Group
 
 ## SYNOPSIS
-Löscht ein Gruppenobjekt.
+Loescht ein Gruppenobjekt.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Remove-DSM7Group [[-Name] <String>] [[-ID] <Int32>] [[-LDAPPath] <String>] [[-Pa
 ```
 
 ## DESCRIPTION
-Löscht ein Gruppenobjekt.
+Loescht ein Gruppenobjekt.
 
 ## EXAMPLES
 
@@ -140,7 +140,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

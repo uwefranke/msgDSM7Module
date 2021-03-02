@@ -8,7 +8,7 @@ schema: 2.0.0
 # Connect-DSM7WebRandom
 
 ## SYNOPSIS
-Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufällig ausgewählt wird.
+Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufoallig ausgewaehlt wird.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Connect-DSM7WebRandom [[-WebServer] <String>] [[-Port] <String>] [-UseDefaultCre
 ```
 
 ## DESCRIPTION
-Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufällig ausgewählt wird.
+Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen BSL Server der zufaellig ausgewaehlt wird.
 
 ## EXAMPLES
 
@@ -29,7 +29,7 @@ Connect-DSM7WebRandom -WebServer "DSM7 BLS" -UseDefaultCredential
 
 ### BEISPIEL 2
 ```
-Connect-DSM7WebRandom -WebServer "DSM7 BLS" -Port 8080 -User "Domäne\Benutzer" -UserPW "******"
+Connect-DSM7WebRandom -WebServer "DSM7 BLS" -Port 8080 -User "Domaene\Benutzer" -UserPW "******"
 ```
 
 ### BEISPIEL 3
@@ -130,7 +130,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

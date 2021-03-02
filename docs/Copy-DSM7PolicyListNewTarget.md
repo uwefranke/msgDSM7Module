@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgdsm7module
+Module Name: msgDSM7Module
 online version:
 schema: 2.0.0
 ---

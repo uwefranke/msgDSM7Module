@@ -14,7 +14,8 @@ Installiert den Computer neu.
 
 ```
 Install-DSM7Computer [[-Name] <String>] [[-ID] <Int32>] [-RecalculateInstallationOrder]
- [-UpgradePolicyInstances] [-UpdatePolicyInstancesActive] [<CommonParameters>]
+ [-UpgradePolicyInstances] [-UpdatePolicyInstancesActive] [-WakeUp] [[-WakeupTime] <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -25,6 +26,11 @@ Installiert den Computer neu.
 ### BEISPIEL 1
 ```
 Install-DSM7Computer -Name "%Computername%" -UpgradePolicyInstances -RecalculateInstallationOrder -UpdatePolicyInstancesActive
+```
+
+### BEISPIEL 2
+```
+Install-DSM7Computer -Name "%Computername%" -WakeUp
 ```
 
 ## PARAMETERS
@@ -104,8 +110,39 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -WakeUp
+{{Fill WakeUp Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WakeupTime
+{{Fill WakeupTime Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

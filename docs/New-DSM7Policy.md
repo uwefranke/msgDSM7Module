@@ -13,13 +13,14 @@ Erstellt eine neue Policy.
 ## SYNTAX
 
 ```
-New-DSM7Policy [[-SwName] <String>] [[-SwID] <Int32>] [[-SwUniqueID] <String>] [[-SwLDAPPath] <String>]
- [[-SwInstallationParams] <Array>] [[-TargetID] <Int32>] [[-TargetName] <String>] [[-TargetLDAPPath] <String>]
- [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>] [[-Priority] <Int32>]
- [[-MaintenanceBehavior] <Int32>] [[-WakeUpTimeSpan] <Int32>] [[-MaxPreStagingTime] <Int32>]
- [[-MinPreStagingTime] <Int32>] [-IsActiv] [-IsUserPolicy] [-IsUserPolicyCurrentComputer]
- [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [[-JobPolicyTrigger] <Int32>] [-DenyPolicy]
- [[-InstanceActivationOnCreate] <String>] [[-InstanceActivationMode] <String>] [-Stats] [<CommonParameters>]
+New-DSM7Policy [[-SwName] <String>] [[-SwID] <Int32>] [[-SwUniqueID] <String>] [[-SwUpdateID] <String>]
+ [[-SwLDAPPath] <String>] [[-SwInstallationParams] <Array>] [[-TargetID] <Int32>] [[-TargetName] <String>]
+ [[-TargetLDAPPath] <String>] [[-TargetParentContID] <Int32>] [[-ActivationStartDate] <String>]
+ [[-Priority] <Int32>] [[-MaintenanceBehavior] <Int32>] [[-WakeUpTimeSpan] <Int32>]
+ [[-MaxPreStagingTime] <Int32>] [[-MinPreStagingTime] <Int32>] [-IsActiv] [-IsUserPolicy]
+ [-IsUserPolicyCurrentComputer] [-IsUserPolicyAllassociatedComputer] [-JobPolicy] [[-JobPolicyTrigger] <Int32>]
+ [-DenyPolicy] [-Pilot] [[-InstanceActivationOnCreate] <String>] [[-InstanceActivationMode] <String>] [-Stats]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -34,15 +35,20 @@ New-DSM7Policy -SwName "Microsoft Windows Update Agent (x64)" -TargetName "Ziel"
 
 ### BEISPIEL 2
 ```
-New-DSM7Policy -swid 12345 -TargetID 54321 -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
+New-DSM7Policy -UpdateID "ARDC-210215:AcroRdrDCUpd2100120138.msp:Adobe Acrobat Reader DC 21:0407" -TargetName "Ziel" -IsActiv
 ```
 
 ### BEISPIEL 3
 ```
-New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{4F3BB3DB-F1F3-4ACA-A7B6-F8CA57FD20F1}" -JobPolicy -JobPolicyTrigger 10
+New-DSM7Policy -swid 12345 -TargetID 54321 -IsActiv -SwInstallationParams ("BootEnvironmentType=1234","UILanguage=en-us")
 ```
 
 ### BEISPIEL 4
+```
+New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{4F3BB3DB-F1F3-4ACA-A7B6-F8CA57FD20F1}" -JobPolicy -JobPolicyTrigger 10
+```
+
+### BEISPIEL 5
 ```
 New-DSM7Policy -IsActiv -TargetID 54321 -SwUniqueID "{D4128974-088B-4395-B326-5A9DBBCE9DFD}" -DenyPolicy
 ```
@@ -81,6 +87,21 @@ Accept wildcard characters: False
 
 ### -SwUniqueID
 {{Fill SwUniqueID Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SwUpdateID
+{{Fill SwUpdateID Description}}
 
 ```yaml
 Type: String
@@ -379,6 +400,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Pilot
+{{Fill Pilot Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 11
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -InstanceActivationOnCreate
 {{Fill InstanceActivationOnCreate Description}}
 
@@ -389,7 +425,7 @@ Aliases:
 
 Required: False
 Position: 12
-Default value: 0
+Default value: CreateActive
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

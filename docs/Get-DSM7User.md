@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7User
 
 ## SYNOPSIS
-Gibt das Benutzerobjekt zurück.
+Gibt das Benutzerobjekt zurueck.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Get-DSM7User [[-ID] <Int32>] [[-Name] <String>] [[-UniqueID] <String>] [[-LDAPPa
 ```
 
 ## DESCRIPTION
-Gibt das Benutzerobjekt zurück.
+Gibt das Benutzerobjekt zurueck.
 
 ## EXAMPLES
 
@@ -39,7 +39,7 @@ Get-DSM7User -UniqueID %SID%
 
 ### BEISPIEL 4
 ```
-Get-DSM7User -Name "%Benutzer%" -LDAPPath "Managed Users & Computers/domäne/loc/Benutzer"
+Get-DSM7User -Name "%Benutzer%" -LDAPPath "Managed Users & Computers/domaene/loc/Benutzer"
 ```
 
 ## PARAMETERS
@@ -120,7 +120,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -131,4 +132,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## RELATED LINKS
 
 [Get-DSM7User]()
+
+[Get-DSM7UserList]()
 

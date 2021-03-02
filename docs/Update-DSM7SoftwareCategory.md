@@ -8,17 +8,18 @@ schema: 2.0.0
 # Update-DSM7SoftwareCategory
 
 ## SYNOPSIS
-Ändert eine Softwarekategorie.
+aendert eine Softwarekategorie.
 
 ## SYNTAX
 
 ```
 Update-DSM7SoftwareCategory [[-Name] <String>] [[-Description] <String>] [[-ID] <Int32>] [[-LDAPPath] <String>]
- [[-ParentContID] <String>] [[-Filter] <String>] [-resolvedName] [[-NewName] <String>] [<CommonParameters>]
+ [[-ParentContID] <String>] [[-Filter] <String>] [-resolvedName] [-lastCat] [[-NewName] <String>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Ändert eine Softwarekategorie.
+aendert eine Softwarekategorie.
 
 ## EXAMPLES
 
@@ -134,6 +135,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -lastCat
+{{Fill lastCat Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 8
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -NewName
 {{Fill NewName Description}}
 
@@ -143,14 +159,15 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 8
+Position: 9
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
@@ -162,11 +179,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [Get-DSM7SoftwareList]()
 
-[Get-DSM7SoftwarebyIDs]()
+[Get-DSM7SoftwareIDs]()
 
 [Get-DSM7Software]()
 
 [Update-DSM7Software]()
+
+[Move-DSM7Software]()
 
 [Get-DSM7SoftwareCategoryList]()
 

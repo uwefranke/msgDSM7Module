@@ -1,9 +1,9 @@
 #
-# Modulmanifest fï¿½r das Modul "PSGet_msgDSM7Module"
+# Modulmanifest für das Modul "PSGet_msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 20.08.2020
+# Generiert am: 02.03.2021
 #
 
 @{
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.2.7'
+ModuleVersion = '1.0.2.8'
 
 # Unterstï¿½tzte PSEditions
 # CompatiblePSEditions = @()

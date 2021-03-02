@@ -1,6 +1,6 @@
 ---
 external help file: msgDSM7Module-help.xml
-Module Name: msgdsm7module
+Module Name: msgDSM7Module
 online version:
 schema: 2.0.0
 ---
@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-DSM7SwInstallationParamDefinitions
 
 ## SYNOPSIS
-Gibt von einem Softwarepaket die Parameter Definition zurück.
+Gibt von einem Softwarepaket die Parameter Definition zurueck.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Get-DSM7SwInstallationParamDefinitions [[-Name] <String>] [[-UniqueID] <String>]
 ```
 
 ## DESCRIPTION
-Gibt von einem Softwarepaket die Parameter Definition zurück.
+Gibt von einem Softwarepaket die Parameter Definition zurueck.
 
 ## EXAMPLES
 

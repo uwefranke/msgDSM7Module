@@ -12,6 +12,13 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.2.8] - 2021-03-02
+### Added
+
+* Get-DSM7Software -UpdateId  "UpdateID"
+### Fixed
+
+* add schema tag (VMWPPatchPackage) in function New-DSM7Policy
 ## [1.0.2.7] - 2020-12-18
 ### Added
 
