@@ -908,7 +908,7 @@
       </command:example>
       <command:example>
         <maml:title>-------------------------- BEISPIEL 2 --------------------------</maml:title>
-        <dev:code>Connect-DSM7Web -WebServer "DSM7 BLS" -Port 443 -UseSSL -UseDefaultCredential</dev:code>
+        <dev:code>Connect-DSM7Web -WebServer "DSM7 BLS" -UseSSL -UseDefaultCredential</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
         </dev:remarks>

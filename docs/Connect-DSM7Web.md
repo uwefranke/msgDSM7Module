@@ -29,7 +29,7 @@ Connect-DSM7Web -WebServer "DSM7 BLS" -UseDefaultCredential
 
 ### BEISPIEL 2
 ```
-Connect-DSM7Web -WebServer "DSM7 BLS" -Port 443 -UseSSL -UseDefaultCredential
+Connect-DSM7Web -WebServer "DSM7 BLS" -UseSSL -UseDefaultCredential
 ```
 
 ### BEISPIEL 3

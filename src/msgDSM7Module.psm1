@@ -341,7 +341,7 @@ function Connect-DSM7Web {
 	.EXAMPLE
 		Connect-DSM7Web -WebServer "DSM7 BLS" -UseDefaultCredential
 	.EXAMPLE
-		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 443 -UseSSL -UseDefaultCredential
+		Connect-DSM7Web -WebServer "DSM7 BLS" -UseSSL -UseDefaultCredential
 	.EXAMPLE
 		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domuene\Benutzer" -UserPW "******"
 	.EXAMPLE
