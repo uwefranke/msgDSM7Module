@@ -12,7 +12,11 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-## [1.0.2.9] - 2021-03-03
+## [1.0.3.0] - 2021-03-03 
+### Fixed
+
+* function Connect-DSM7Web -UseSSL 
+## [1.0.2.9] - 2021-03-03 (Test)
 ### Fixed
 
 * function Connect-DSM7Web -UseSSL 

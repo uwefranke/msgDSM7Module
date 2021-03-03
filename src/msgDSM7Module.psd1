@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.2.9'
+ModuleVersion = '1.0.3.0'
 
 # Unterst�tzte PSEditions
 # CompatiblePSEditions = @()

@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.2.7
+	Version		: 1.0.3.0
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -364,11 +364,15 @@ function Connect-DSM7Web {
 	)
 	if ($UseSSL) {
 		$Protocol = "https://"
-		$Port = "443"
+		if (!$Port) { 
+			$Port = "443"
+		}
 	}
 	else {
 		$Protocol = "http://"
-		$Port = "8080"
+		if (!$Port) { 
+			$Port = "8080"
+		}
 	}
 	$DSM7wsdlURL = $Protocol + $WebServer + ":" + $Port + "/blsAdministration/AdministrationService.asmx?WSDL" 
 	$global:DSM7Types = @{} 
