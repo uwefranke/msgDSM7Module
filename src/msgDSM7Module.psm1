@@ -341,6 +341,8 @@ function Connect-DSM7Web {
 	.EXAMPLE
 		Connect-DSM7Web -WebServer "DSM7 BLS" -UseDefaultCredential
 	.EXAMPLE
+		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 443 -UseSSL -UseDefaultCredential
+	.EXAMPLE
 		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domuene\Benutzer" -UserPW "******"
 	.EXAMPLE
 		Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -Credential PSCredential
@@ -353,13 +355,22 @@ function Connect-DSM7Web {
 	[CmdletBinding()] 
 	param (
 		[System.String]$WebServer = "localhost",
-		[System.String]$Port = "8080",
+		[System.String]$Port,
+		[switch]$UseSSL = $false,
 		[switch]$UseDefaultCredential = $false,
 		[System.String]$User,
 		[System.String]$UserPW,
 		$Credential
 	)
-	$DSM7wsdlURL = "http://" + $WebServer + ":" + $Port + "/blsAdministration/AdministrationService.asmx?WSDL" 
+	if ($UseSSL) {
+		$Protocol = "https://"
+		$Port = "443"
+	}
+	else {
+		$Protocol = "http://"
+		$Port = "8080"
+	}
+	$DSM7wsdlURL = $Protocol + $WebServer + ":" + $Port + "/blsAdministration/AdministrationService.asmx?WSDL" 
 	$global:DSM7Types = @{} 
 	try {
 		Write-Log 0 "Verbinde zu $DSM7wsdlURL." $MyInvocation.MyCommand
@@ -453,13 +464,14 @@ function Connect-DSM7WebRandom {
 	param (
 		[System.String]$WebServer = "localhost",
 		[System.String]$Port = "8080",
+		[switch]$UseSSL = $false,
 		[switch]$UseDefaultCredential = $false,
 		[System.String]$User,
 		[System.String]$UserPW,
 		$Credential
 	)
 	if ($UseDefaultCredential) {
-		$SOAP = Connect-DSM7Web -WebServer $WebServer -UseDefaultCredential
+		$SOAP = Connect-DSM7Web -WebServer $WebServer -Port $Port -UseSSL:$UseSSL -UseDefaultCredential
 	}
 	else { 
 		if (!$Credential) {
@@ -470,7 +482,7 @@ function Connect-DSM7WebRandom {
 				return $false
 			}
 		} 
-		$SOAP = Connect-DSM7Web -WebServer $WebServer -Credential $Credential
+		$SOAP = Connect-DSM7Web -WebServer $WebServer -Port $Port -UseSSL:$UseSSL -Credential $Credential
 	}
 	if ($SOAP) {
 		$AllBLS = Get-DSM7ComputerList -Filter "(BasicInventory.InfrastructureRole:IgnoreCase=BLS)" -Attributes "BasicInventory.FullQualifiedName"
@@ -481,10 +493,10 @@ function Connect-DSM7WebRandom {
 			$BLSServer = $AllBLS[$BLSrandom]."BasicInventory.FullQualifiedName"
 			Write-Log 0 "Neuer BLS Server = $BLSServer" $MyInvocation.MyCommand 
 			if ($User) {
-				$SOAP = Connect-DSM7Web -WebServer $BLSServer -Credential $Credential
+				$SOAP = Connect-DSM7Web -WebServer $BLSServer -Port $Port -UseSSL:$UseSSL -Credential $Credential
 			}
 			else {
-				$SOAP = Connect-DSM7Web -WebServer $BLSServer -UseDefaultCredential
+				$SOAP = Connect-DSM7Web -WebServer $BLSServer -Port $Port -UseSSL:$UseSSL -UseDefaultCredential
 			}
 		} 
 	}
@@ -7400,6 +7412,7 @@ function Get-DSM7Software {
 	)
 	if (Confirm-Connect) {
 		try {
+			$SoftwareListID = $ID
 			if ($Name) {
 				$Name = Convert-StringtoLDAPString($Name)
 				if ($IsLastReleasedRev) {
@@ -7407,6 +7420,10 @@ function Get-DSM7Software {
 				}
 				else {
 					$SoftwareList = Get-DSM7ObjectList -Filter "(&(Name:IgnoreCase=$Name)(Software.IsLastRevision=1)(BasePropGroupTag=Software))" -LDAPPath $LDAPPath
+				}
+				if ($SoftwareList.count -gt 1) {
+					Write-Log 1 "($Name) nicht eindeutig. Bitte LDAPPath nutzen!" $MyInvocation.MyCommand
+					return $false
 				}
 				$SoftwareListID = $SoftwareList.ID
 			}
@@ -7428,14 +7445,7 @@ function Get-DSM7Software {
 				}
 				$SoftwareListID = $SoftwareList.ID
 			}
-			if ($ID) {
-				$SoftwareListID = $ID
-			}
-			if ($SoftwareListID -lt 1) {
-				Write-Log 1 "($Name) nicht eindeutig. Bitte LDAPPath nutzen!" $MyInvocation.MyCommand
-				return $false
-			}
-			else {
+			if ($SoftwareListID) {
 				$Software = Get-DSM7ObjectObject -ID $SoftwareListID
 				$Software = Convert-Dsm7ObjecttoPSObject($Software)
 				if ($Software) {

@@ -13,7 +13,7 @@ Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her.
 ## SYNTAX
 
 ```
-Connect-DSM7Web [[-WebServer] <String>] [[-Port] <String>] [-UseDefaultCredential] [[-User] <String>]
+Connect-DSM7Web [[-WebServer] <String>] [[-Port] <String>] [-UseSSL] [-UseDefaultCredential] [[-User] <String>]
  [[-UserPW] <String>] [[-Credential] <Object>] [<CommonParameters>]
 ```
 
@@ -29,10 +29,15 @@ Connect-DSM7Web -WebServer "DSM7 BLS" -UseDefaultCredential
 
 ### BEISPIEL 2
 ```
-Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domuene\Benutzer" -UserPW "******"
+Connect-DSM7Web -WebServer "DSM7 BLS" -Port 443 -UseSSL -UseDefaultCredential
 ```
 
 ### BEISPIEL 3
+```
+Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -User "Domuene\Benutzer" -UserPW "******"
+```
+
+### BEISPIEL 4
 ```
 Connect-DSM7Web -WebServer "DSM7 BLS" -Port 8080 -Credential PSCredential
 ```
@@ -64,7 +69,22 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: 8080
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UseSSL
+{{Fill UseSSL Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

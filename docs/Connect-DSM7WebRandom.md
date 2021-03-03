@@ -13,8 +13,8 @@ Stellt Verbindung zur SOAP Schnittstelle von HEAT Software DSM7 her, mit einen B
 ## SYNTAX
 
 ```
-Connect-DSM7WebRandom [[-WebServer] <String>] [[-Port] <String>] [-UseDefaultCredential] [[-User] <String>]
- [[-UserPW] <String>] [[-Credential] <Object>] [<CommonParameters>]
+Connect-DSM7WebRandom [[-WebServer] <String>] [[-Port] <String>] [-UseSSL] [-UseDefaultCredential]
+ [[-User] <String>] [[-UserPW] <String>] [[-Credential] <Object>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -65,6 +65,21 @@ Aliases:
 Required: False
 Position: 2
 Default value: 8080
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UseSSL
+{{Fill UseSSL Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

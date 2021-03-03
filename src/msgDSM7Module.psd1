@@ -3,7 +3,7 @@
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 02.03.2021
+# Generiert am: 03.03.2021
 #
 
 @{
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.2.8'
+ModuleVersion = '1.0.2.9'
 
 # Unterst�tzte PSEditions
 # CompatiblePSEditions = @()
