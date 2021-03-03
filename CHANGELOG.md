@@ -12,7 +12,12 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-## [1.0.3.0] - 2021-03-03 
+## [1.0.3.1] - 2021-03-03
+### Fixed
+
+* function Connect-DSM7Web -UseSSL 
+* version .0 not work in powershellgallery
+## [1.0.3.0] - 2021-03-03 (Test)
 ### Fixed
 
 * function Connect-DSM7Web -UseSSL 
