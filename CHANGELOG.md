@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.3.2] - 2021-03-05
+### Fixed
+
+* function Get-DSM7Software (convert to LDAP string UpdateID)
 ## [1.0.3.1] - 2021-03-03
 ### Fixed
 

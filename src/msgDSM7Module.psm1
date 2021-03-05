@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.3.1
+	Version		: 1.0.3.2
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -7441,6 +7441,7 @@ function Get-DSM7Software {
 				$SoftwareListID = $SoftwareList.ID
 			}
 			if ($UpdateID) {
+				$UpdateID = Convert-StringtoLDAPString($UpdateID)
 				if ($IsLastReleasedRev) {
 					$SoftwareList = Get-DSM7ObjectList -Filter "(&(PatchPackage.UpdateId:IgnoreCase=$UpdateID)(Software.IsLastReleasedRev=1)(BasePropGroupTag=Software))"
 				}
