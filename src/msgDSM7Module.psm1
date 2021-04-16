@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.3.2
+	Version		: 1.0.3.3
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -2191,10 +2191,10 @@ function Get-DSM7ComputerList {
 				if ($resultComputer) {
 					$result += $resultComputer
 				} 
-				$resultContainer = Get-DSM7ObjectList -Filter $DSM7Container -ParentContID $ParentContID -recursive
+				$resultContainer = Get-DSM7ObjectList -Filter $DSM7Container -ParentContID $ParentContID -recursive -GenTypeData:$GenTypeData
 				foreach ($Container in $resultContainer) {
 					$FilterContainer = "(&(ParentContID=$($Container.ID))(SchemaTag=Computer)$filter)"
-					$resultComputer = Get-DSM7ObjectList -Attributes $Attributes -Filter $FilterContainer 
+					$resultComputer = Get-DSM7ObjectList -Attributes $Attributes -Filter $FilterContainer -GenTypeData:$GenTypeData
 					if ($resultComputer) {
 						$result += $resultComputer
 					}
