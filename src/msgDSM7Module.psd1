@@ -1,9 +1,9 @@
 #
-# Modulmanifest für das Modul "PSGet_msgDSM7Module"
+# Modulmanifest fï¿½r das Modul "PSGet_msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
-# Generiert am: 03.03.2021
+# Generiert am: 07.07.2021
 #
 
 @{
@@ -12,7 +12,7 @@
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.3.3'
+ModuleVersion = '1.0.3.4'
 
 # Unterstï¿½tzte PSEditions
 # CompatiblePSEditions = @()
@@ -87,7 +87,8 @@ FunctionsToExport = 'Get-DSM7SoftwareList', 'New-DSM7Computer', 'Get-DSM7Compute
                'Update-DSM7Computer', 'Get-DSM7SoftwareIDs', 
                'Get-DSM7OrgTreeContainer', 'Remove-DSM7VariablesOnTarget', 
                'Get-DSM7Policy', 'Remove-Log', 'Move-DSM7Software', 
-               'Remove-DSM7ComputerFromGroup', 'Get-DSM7PolicyStatisticsByTarget', 
+               'Remove-DSM7ComputerFromGroup', 'Get-DSM7PolicyStatisticsByTarget',
+			   'Get-DSM7PolicyInstances',
                'Get-DSM7PolicyStatistics', 'Get-DSM7VariableGroups', 
                'Remove-DSM7SoftwareCategory', 'Remove-DSM7OrgTreeContainer', 
                'Get-DSM7User', 'Get-DSM7ComputerToUserList', 'Install-DSM7Computer', 

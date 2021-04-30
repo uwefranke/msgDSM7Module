@@ -12,10 +12,18 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.3.4] - 2021-07-07
+### Added
+
+* function Get-DSM7PolicyInstances
+
+### Changed
+
+* function Update-DSM7PolicyInstances (ActivationStartDate)
 ## [1.0.3.3] - 2021-04-16
 ### Fixed
 
-* function Get-Get-DSM7ComputerList (GenTypeData -recursive not work)
+* function Get-DSM7ComputerList (GenTypeData -recursive not work)
 ## [1.0.3.2] - 2021-03-05
 ### Fixed
 

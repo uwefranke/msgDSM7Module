@@ -7106,6 +7106,45 @@ function Get-DSM7PolicyInstancesObject {
 		return $false 
 	} 
 }
+function Get-DSM7PolicyInstances {
+	<#
+	.SYNOPSIS
+		Liste PolicyInstances.
+	.DESCRIPTION
+		Liste PolicyInstances.
+	.EXAMPLE
+		Get-DSM7PolicyInstances -IDs 123456,123457
+	.NOTES
+	.LINK
+		Get-DSM7PolicyInstances
+	.LINK
+		Get-DSM7PolicyInstanceCountByPolicy
+	.LINK
+		Get-DSM7PolicyInstanceListByNode
+	.LINK
+		Update-DSM7PolicyInstances
+	.LINK
+		Remove-DSM7PolicyInstance
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[Parameter(Position=0, Mandatory=$true)]
+		[system.array]$IDs
+	)
+	if (Confirm-Connect) {
+		$result = Get-DSM7PolicyInstancesObject -IDs $IDs
+		if ($result) {
+			Write-Log 0 "PolicyInstances $IDs!" $MyInvocation.MyCommand 
+			$result = Convert-DSM7PolicyInstanceListtoPSObject -resolvedName:$resolvedName $result 
+			return $result
+		}
+		else {
+			Write-Log 1 "Keine PolicyInstances vorhanden!" $MyInvocation.MyCommand 
+			return $false
+		}
+	}
+}
+Export-ModuleMember -Function Get-DSM7PolicyInstances
 function Remove-DSM7PolicyInstanceListObject {
 	[CmdletBinding()] 
 	param ( 
@@ -7139,6 +7178,8 @@ function Update-DSM7PolicyInstances {
 		Update-DSM7PolicyInstances -ID 123456,65141 -active 
 	.EXAMPLE
 		Update-DSM7PolicyInstances -ID 123456,65141 -reinstall
+	.EXAMPLE
+		Update-DSM7PolicyInstances -ID 123456,65141	-ActivationStartDate %date%
 	.NOTES
 	.LINK
 		Get-DSM7PolicyInstanceCountByPolicy
@@ -7151,7 +7192,11 @@ function Update-DSM7PolicyInstances {
 	param ( 
 		[Parameter(Position=0, Mandatory=$true)]
 		$IDs,
+        [Parameter(Position=1, Mandatory=$false)]
+		[system.string]$ActivationStartDate,
+        [Parameter(Position=2, Mandatory=$false)]
 		[switch]$active,
+        [Parameter(Position=3, Mandatory=$false)]
 		[switch]$reinstall
 	)
 	if (Confirm-Connect) {
@@ -7176,7 +7221,14 @@ function Update-DSM7PolicyInstances {
 					}
 					Write-Log 0 "Policy Instance reinstall ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
 				} 
-
+                if ($ActivationStartDate) {
+				    $StartDate = $(Get-Date($ActivationStartDate)) 
+                    $StartDate = $StartDate + [System.TimeZoneInfo]::Local.BaseUtcOffset
+			        if ([System.TimeZoneInfo]::Local.IsDaylightSavingTime($StartDate)) {
+				        $StartDate = $StartDate + 36000000000
+			        }
+                    $PolicyInstance.ActivationStartDate = $StartDate
+                }
 			} 
 			$result = Update-DSM7PolicyInstanceListObject $PolicyInstanceList
 			if ($result) {
