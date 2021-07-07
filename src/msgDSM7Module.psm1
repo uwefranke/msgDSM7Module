@@ -7175,11 +7175,11 @@ function Update-DSM7PolicyInstances {
 	.DESCRIPTION
 		aendert eine PolicyInstances.
 	.EXAMPLE
-		Update-DSM7PolicyInstances -ID 123456,65141 -active 
+		Update-DSM7PolicyInstances -ID 12345,65141 -active 
 	.EXAMPLE
-		Update-DSM7PolicyInstances -ID 123456,65141 -reinstall
+		Update-DSM7PolicyInstances -ID 12345,65141 -reinstall
 	.EXAMPLE
-		Update-DSM7PolicyInstances -ID 123456,65141	-ActivationStartDate %date%
+		Update-DSM7PolicyInstances -ID 12345,65141 -ActivationStartDate %date%
 	.NOTES
 	.LINK
 		Get-DSM7PolicyInstanceCountByPolicy
