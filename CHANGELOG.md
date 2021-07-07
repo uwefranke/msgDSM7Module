@@ -12,14 +12,15 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-## [1.0.3.4] - 2021-07-07
+## [1.0.3.5] - 2021-07-07
+### Changed
+
+* function Update-DSM7PolicyInstances (ActivationStartDate)
+## [1.0.3.4] - 2021-04-16
 ### Added
 
 * function Get-DSM7PolicyInstances
 
-### Changed
-
-* function Update-DSM7PolicyInstances (ActivationStartDate)
 ## [1.0.3.3] - 2021-04-16
 ### Fixed
 
