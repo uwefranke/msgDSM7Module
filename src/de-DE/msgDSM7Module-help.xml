@@ -16059,7 +16059,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
           <maml:name>IDs</maml:name>
           <maml:description>
-            <maml:para>{{Fill IDs Description}}</maml:para>
+            <maml:para>{{ Fill IDs Description }}</maml:para>
           </maml:description>
           <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
           <dev:type>
@@ -16068,10 +16068,22 @@
           </dev:type>
           <dev:defaultValue>None</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>ActivationStartDate</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill ActivationStartDate Description }}</maml:para>
+          </maml:description>
+          <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+          <dev:type>
+            <maml:name>String</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
           <maml:name>active</maml:name>
           <maml:description>
-            <maml:para>{{Fill active Description}}</maml:para>
+            <maml:para>{{ Fill active Description }}</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -16079,10 +16091,21 @@
           </dev:type>
           <dev:defaultValue>False</dev:defaultValue>
         </command:parameter>
-        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+          <maml:name>deactivateuntilreinsall</maml:name>
+          <maml:description>
+            <maml:para>{{ Fill deactivateuntilreinsall Description }}</maml:para>
+          </maml:description>
+          <dev:type>
+            <maml:name>SwitchParameter</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>False</dev:defaultValue>
+        </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
           <maml:name>reinstall</maml:name>
           <maml:description>
-            <maml:para>{{Fill reinstall Description}}</maml:para>
+            <maml:para>{{ Fill reinstall Description }}</maml:para>
           </maml:description>
           <dev:type>
             <maml:name>SwitchParameter</maml:name>
@@ -16096,7 +16119,7 @@
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
         <maml:name>IDs</maml:name>
         <maml:description>
-          <maml:para>{{Fill IDs Description}}</maml:para>
+          <maml:para>{{ Fill IDs Description }}</maml:para>
         </maml:description>
         <command:parameterValue required="true" variableLength="false">Object</command:parameterValue>
         <dev:type>
@@ -16105,10 +16128,22 @@
         </dev:type>
         <dev:defaultValue>None</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>ActivationStartDate</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill ActivationStartDate Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="true" variableLength="false">String</command:parameterValue>
+        <dev:type>
+          <maml:name>String</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="3" aliases="none">
         <maml:name>active</maml:name>
         <maml:description>
-          <maml:para>{{Fill active Description}}</maml:para>
+          <maml:para>{{ Fill active Description }}</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -16117,10 +16152,22 @@
         </dev:type>
         <dev:defaultValue>False</dev:defaultValue>
       </command:parameter>
-      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="4" aliases="none">
+        <maml:name>deactivateuntilreinsall</maml:name>
+        <maml:description>
+          <maml:para>{{ Fill deactivateuntilreinsall Description }}</maml:para>
+        </maml:description>
+        <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+        <dev:type>
+          <maml:name>SwitchParameter</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>False</dev:defaultValue>
+      </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="5" aliases="none">
         <maml:name>reinstall</maml:name>
         <maml:description>
-          <maml:para>{{Fill reinstall Description}}</maml:para>
+          <maml:para>{{ Fill reinstall Description }}</maml:para>
         </maml:description>
         <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
         <dev:type>
@@ -16140,14 +16187,28 @@
     <command:examples>
       <command:example>
         <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
-        <dev:code>Update-DSM7PolicyInstances -ID 123456,65141 -active</dev:code>
+        <dev:code>Update-DSM7PolicyInstances -ID 12345,65141 -active</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
         <maml:title>-------------------------- BEISPIEL 2 --------------------------</maml:title>
-        <dev:code>Update-DSM7PolicyInstances -ID 123456,65141 -reinstall</dev:code>
+        <dev:code>Update-DSM7PolicyInstances -ID 12345,65141 -reinstall</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- BEISPIEL 3 --------------------------</maml:title>
+        <dev:code>Update-DSM7PolicyInstances -ID 12345,65141 -ActivationStartDate %date%</dev:code>
+        <dev:remarks>
+          <maml:para></maml:para>
+        </dev:remarks>
+      </command:example>
+      <command:example>
+        <maml:title>-------------------------- BEISPIEL 4 --------------------------</maml:title>
+        <dev:code>Update-DSM7PolicyInstances -ID 12345,65141 -deactivateuntilreinsall</dev:code>
         <dev:remarks>
           <maml:para></maml:para>
         </dev:remarks>

@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+## [1.0.3.6] - 2021-07-29
+### Changed
+
+* function Update-DSM7PolicyInstances (deactivateuntilreinsall)
 ## [1.0.3.5] - 2021-07-07
 ### Changed
 

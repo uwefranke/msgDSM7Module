@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.3.5
+	Version		: 1.0.3.6
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -7180,6 +7180,8 @@ function Update-DSM7PolicyInstances {
 		Update-DSM7PolicyInstances -ID 12345,65141 -reinstall
 	.EXAMPLE
 		Update-DSM7PolicyInstances -ID 12345,65141 -ActivationStartDate %date%
+	.EXAMPLE
+		Update-DSM7PolicyInstances -ID 12345,65141 -deactivateuntilreinsall
 	.NOTES
 	.LINK
 		Get-DSM7PolicyInstanceCountByPolicy
@@ -7197,16 +7199,23 @@ function Update-DSM7PolicyInstances {
         [Parameter(Position=2, Mandatory=$false)]
 		[switch]$active,
         [Parameter(Position=3, Mandatory=$false)]
+		[switch]$deactivateuntilreinsall,
+        [Parameter(Position=4, Mandatory=$false)]
 		[switch]$reinstall
 	)
 	if (Confirm-Connect) {
 		$PolicyInstanceList = Get-DSM7PolicyInstancesObject -IDs $IDs
 		if ($PolicyInstanceList) {
 			foreach ($PolicyInstance in $PolicyInstanceList) {
-				if ($active) {
-					$PolicyInstance.IsActive = $active
-					Write-Log 0 "Policy Instance aktiviert ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
-				}
+				$PolicyInstance.IsActive = $active
+                if ($active) {
+				    Write-Log 0 "Policy Instance aktiviert ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
+                }
+                if ($deactivateuntilreinsall) {
+                    $PolicyInstance.IsActive = $false
+                    $PolicyInstance.InstanceActivationMode = "AutoactivateOnce"
+    				Write-Log 0 "Policy Instance deaktiviert bis zur Neuinstallation ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
+                }
 				if ($reinstall) {
 					if ($DSM7Version -gt "7.3.0") {
 						$PolicyInstance.ReinstallRequestNumber++ 

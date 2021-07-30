@@ -1,5 +1,5 @@
 #
-# Modulmanifest f�r das Modul "PSGet_msgDSM7Module"
+# Modulmanifest für das Modul "msgDSM7Module"
 #
 # Generiert von: Uwe Franke
 #
@@ -8,11 +8,11 @@
 
 @{
 
-# Die diesem Manifest zugeordnete Skript- oder Bin�rmoduldatei.
+# Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
 RootModule = 'msgDSM7Module.psm1'
 
 # Die Versionsnummer dieses Moduls
-ModuleVersion = '1.0.3.5'
+ModuleVersion = '1.0.3.6'
 
 # Unterst�tzte PSEditions
 # CompatiblePSEditions = @()

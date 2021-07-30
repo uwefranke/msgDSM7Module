@@ -13,7 +13,8 @@ aendert eine PolicyInstances.
 ## SYNTAX
 
 ```
-Update-DSM7PolicyInstances [-IDs] <Object> [-active] [-reinstall] [<CommonParameters>]
+Update-DSM7PolicyInstances [-IDs] <Object> [[-ActivationStartDate] <String>] [-active]
+ [-deactivateuntilreinsall] [-reinstall] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,18 +24,28 @@ aendert eine PolicyInstances.
 
 ### BEISPIEL 1
 ```
-Update-DSM7PolicyInstances -ID 123456,65141 -active
+Update-DSM7PolicyInstances -ID 12345,65141 -active
 ```
 
 ### BEISPIEL 2
 ```
-Update-DSM7PolicyInstances -ID 123456,65141 -reinstall
+Update-DSM7PolicyInstances -ID 12345,65141 -reinstall
+```
+
+### BEISPIEL 3
+```
+Update-DSM7PolicyInstances -ID 12345,65141 -ActivationStartDate %date%
+```
+
+### BEISPIEL 4
+```
+Update-DSM7PolicyInstances -ID 12345,65141 -deactivateuntilreinsall
 ```
 
 ## PARAMETERS
 
 ### -IDs
-{{Fill IDs Description}}
+{{ Fill IDs Description }}
 
 ```yaml
 Type: Object
@@ -48,8 +59,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ActivationStartDate
+{{ Fill ActivationStartDate Description }}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -active
-{{Fill active Description}}
+{{ Fill active Description }}
 
 ```yaml
 Type: SwitchParameter
@@ -57,14 +83,29 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 3
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -deactivateuntilreinsall
+{{ Fill deactivateuntilreinsall Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -reinstall
-{{Fill reinstall Description}}
+{{ Fill reinstall Description }}
 
 ```yaml
 Type: SwitchParameter
@@ -72,15 +113,14 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 5
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
-For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
