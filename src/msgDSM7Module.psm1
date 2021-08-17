@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.3.6
+	Version		: 1.0.3.7
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -7182,6 +7182,8 @@ function Update-DSM7PolicyInstances {
 		Update-DSM7PolicyInstances -ID 12345,65141 -ActivationStartDate %date%
 	.EXAMPLE
 		Update-DSM7PolicyInstances -ID 12345,65141 -deactivateuntilreinsall
+	.EXAMPLE
+		Update-DSM7PolicyInstances -ID 12345,65141 -uninstall
 	.NOTES
 	.LINK
 		Get-DSM7PolicyInstanceCountByPolicy
@@ -7201,7 +7203,8 @@ function Update-DSM7PolicyInstances {
         [Parameter(Position=3, Mandatory=$false)]
 		[switch]$deactivateuntilreinsall,
         [Parameter(Position=4, Mandatory=$false)]
-		[switch]$reinstall
+		[switch]$reinstall,
+        [switch]$uninstall
 	)
 	if (Confirm-Connect) {
 		$PolicyInstanceList = Get-DSM7PolicyInstancesObject -IDs $IDs
@@ -7229,6 +7232,13 @@ function Update-DSM7PolicyInstances {
 						}
 					}
 					Write-Log 0 "Policy Instance reinstall ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
+				}
+                if ($uninstall) {
+                    $PolicyInstance.RequestType = "UninstalledOnPurpose"
+                    $PolicyInstance.IsActive = $true
+                    $PolicyInstance.DesiredConfiguration = $null
+
+					Write-Log 0 "Policy Instance uninstall ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
 				} 
                 if ($ActivationStartDate) {
 				    $StartDate = $(Get-Date($ActivationStartDate)) 
@@ -7285,11 +7295,11 @@ function Remove-DSM7PolicyInstance {
 
 		$result = Remove-DSM7PolicyInstanceListObject -Policy $Policy -PolicyInstance $PolicyInstance 
 		if ($result) {
-			Write-Log 0 "Alle Policyinstancen geloescht." $MyInvocation.MyCommand
+			Write-Log 0 "Policyinstance geloescht." $MyInvocation.MyCommand
 			$result = $true
 		}
 		else {
-			Write-Log 1 "Fehler beim Policyinstancen geloeschen!" $MyInvocation.MyCommand
+			Write-Log 1 "Fehler beim Policyinstance geloeschen!" $MyInvocation.MyCommand
 			$result = $false
 		}
 		return $result
