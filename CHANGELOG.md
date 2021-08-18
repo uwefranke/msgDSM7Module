@@ -11,8 +11,12 @@ All notable changes to this project will be documented in this file.
 * function New-DSM7Policy (create ShopPolicy)
 
 ### Fixed
+## [1.0.3.8] - 2021-08-18
+### Add
 
-## [1.0.3.6] - 2021-07-29
+* function FastInstall-DSM7Computer
+
+## [1.0.3.7] - 2021-08-17
 ### Changed
 
 * function Update-DSM7PolicyInstances (uninstall)

@@ -5,70 +5,80 @@ online version:
 schema: 2.0.0
 ---
 
-# Update-DSM7PolicyInstances
+# Send-DSM7ComputerFastInstall
 
 ## SYNOPSIS
-aendert eine PolicyInstances.
+FastInstall f ¼r den Computer oder PolicyInstanzen.
 
 ## SYNTAX
 
 ```
-Update-DSM7PolicyInstances [-IDs] <Object> [[-ActivationStartDate] <String>] [-active]
- [-deactivateuntilreinsall] [-reinstall] [-uninstall] [<CommonParameters>]
+Send-DSM7ComputerFastInstall [[-Name] <String>] [[-ID] <Int32>] [[-PolicyInstanceIDs] <Array>]
+ [[-ExecutionContext] <String>] [-IgnoreMaintenanceWindow] [-ShutdownAfterInstallation] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-aendert eine PolicyInstances.
+FastInstall f ¼r den Computer oder PolicyInstanzen.
 
 ## EXAMPLES
 
 ### BEISPIEL 1
 ```
-Update-DSM7PolicyInstances -ID 12345,65141 -active
+Send-DSM7ComputerFastInstall -Name "%Computername%"
 ```
 
 ### BEISPIEL 2
 ```
-Update-DSM7PolicyInstances -ID 12345,65141 -reinstall
+Send-DSM7ComputerFastInstall -Name "%Computername%" -PolicyInstanceIDs 1,2,3,4
 ```
 
 ### BEISPIEL 3
 ```
-Update-DSM7PolicyInstances -ID 12345,65141 -ActivationStartDate %date%
+Send-DSM7ComputerFastInstall -Name "%Computername%" -IgnoreMaintenanceWindow
 ```
 
 ### BEISPIEL 4
 ```
-Update-DSM7PolicyInstances -ID 12345,65141 -deactivateuntilreinsall
-```
-
-### BEISPIEL 5
-```
-Update-DSM7PolicyInstances -ID 12345,65141 -uninstall
+Send-DSM7ComputerFastInstall -Name "%Computername%" -ShutdownAfterInstallation
 ```
 
 ## PARAMETERS
 
-### -IDs
-{{ Fill IDs Description }}
+### -Name
+{{ Fill Name Description }}
 
 ```yaml
-Type: Object
+Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ActivationStartDate
-{{ Fill ActivationStartDate Description }}
+### -ID
+{{ Fill ID Description }}
 
 ```yaml
-Type: String
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 1
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PolicyInstanceIDs
+{{ Fill PolicyInstanceIDs Description }}
+
+```yaml
+Type: Array
 Parameter Sets: (All)
 Aliases:
 
@@ -79,23 +89,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -active
-{{ Fill active Description }}
+### -ExecutionContext
+{{ Fill ExecutionContext Description }}
 
 ```yaml
-Type: SwitchParameter
+Type: String
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 3
-Default value: False
+Default value: Auto
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -deactivateuntilreinsall
-{{ Fill deactivateuntilreinsall Description }}
+### -IgnoreMaintenanceWindow
+{{ Fill IgnoreMaintenanceWindow Description }}
 
 ```yaml
 Type: SwitchParameter
@@ -109,8 +119,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -reinstall
-{{ Fill reinstall Description }}
+### -ShutdownAfterInstallation
+{{ Fill ShutdownAfterInstallation Description }}
 
 ```yaml
 Type: SwitchParameter
@@ -119,21 +129,6 @@ Aliases:
 
 Required: False
 Position: 5
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -uninstall
-{{ Fill uninstall Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -150,9 +145,21 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[Get-DSM7PolicyInstanceCountByPolicy]()
+[Get-DSM7ComputerList]()
 
-[Get-DSM7PolicyInstanceListByNode]()
+[Get-DSM7Computer]()
 
-[Update-DSM7PolicyInstances]()
+[Update-DSM7Computer]()
+
+[Install-DSM7Computer]()
+
+[New-DSM7Computer]()
+
+[Remove-DSM7Computer]()
+
+[Move-DSM7Computer]()
+
+[WakeUp-DSM7Computer]()
+
+[Send-DSM7ComputerFastInstall]()
 

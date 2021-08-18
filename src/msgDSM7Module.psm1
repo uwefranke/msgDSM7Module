@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.3.7
+	Version		: 1.0.3.8
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -31,15 +31,15 @@ $DSM7StructureSoftware = "(|(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=
 $global:DSM7GenTypeData = "ModifiedBy,CreatedBy,Modified,Created"
 $DSM7RegPath = "HKEY_LOCAL_MACHINE\SOFTWARE\NetSupport\NetInstall"
 $DSM7ExportNCP = "NcpExport.exe"
-$DSM7ExportNCPXML ="NcpExport.xml"
+$DSM7ExportNCPXML = "NcpExport.xml"
 $DSM7NCPfile = "NiCfgSrv.ncp"
 ###############################################################################
 # Allgemeine interne Funktionen
 function Get-PSCredential {
 	[CmdletBinding()] 
-	param ($User,$Password)
+	param ($User, $Password)
 	$SecPass = convertto-securestring -asplaintext -string $Password -force
-	$Creds = new-object System.Management.Automation.PSCredential -argumentlist $User,$SecPass
+	$Creds = new-object System.Management.Automation.PSCredential -argumentlist $User, $SecPass
 	return $Creds
 }
 ###############################################################################
@@ -60,7 +60,7 @@ function Write-Log {
 	#>
 	[CmdletBinding()] 
 	param ([int]$typ, [system.String]$message, [system.String]$Name)
-	$typs = @("Info   ","Warning","Error  ")
+	$typs = @("Info   ", "Warning", "Error  ")
 	$dt = Get-Date -format "yyyy-MM-dd HH:mm:ss"
 	$strtyp = $typs[$typ]
 	$global:LogMessage = "[$Name] - $message"
@@ -69,16 +69,16 @@ function Write-Log {
 	if (!$Ochestrator) {
 		if (!$DSM) {
 			switch ($typ) {
-				0 {Write-Host $LogMessageStr}
-				1 {Write-Host $LogMessageStr -ForegroundColor Yellow}
-				2 {Write-Host $LogMessageStr -ForegroundColor Red}
+				0 { Write-Host $LogMessageStr }
+				1 { Write-Host $LogMessageStr -ForegroundColor Yellow }
+				2 { Write-Host $LogMessageStr -ForegroundColor Red }
 			}
 		}
 		else {
 			switch ($typ) {
-				0 {write-nireport $LogMessage}
-				1 {write-nireport $LogMessage}
-				2 {Set-NIError $LogMessage}
+				0 { write-nireport $LogMessage }
+				1 { write-nireport $LogMessage }
+				2 { Set-NIError $LogMessage }
 			}
 		}
 	}
@@ -103,9 +103,9 @@ function Remove-Log {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.String]$Logpath, 
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		[system.String]$Logname,
 		[int]$CountLogFiles = 0, 
 		[int]$DaysLogFilesAge = 0
@@ -113,22 +113,21 @@ function Remove-Log {
 	$DateLogFiles = (Get-Date).AddDays(-$DaysLogFilesAge)
 	Write-Log 0 "Loesche alle Datei(en), behalte die letzen $CountLogFiles,aelter $DaysLogFilesAge und enthaelt im Namen $Logname befindet sich im Path $Logpath" $MyInvocation.MyCommand
 	try { 
-		$filestodelete = Get-ChildItem $logpath -Recurse| Where-Object {$_.Name -like "$Logname*"} 
+		$filestodelete = Get-ChildItem $logpath -Recurse | Where-Object { $_.Name -like "$Logname*" } 
 		if ($DaysLogFilesAge -gt 0) {
-			$filestodelete = $filestodelete| Where-Object {$_.LastWriteTime -lt $DateLogFiles}
+			$filestodelete = $filestodelete | Where-Object { $_.LastWriteTime -lt $DateLogFiles }
 			Write-Log 0 "Loesche $($filestodelete.count) Datei(en) die aelter als $DaysLogFilesAge Tage sind." $MyInvocation.MyCommand
-			$filestodelete |Remove-Item -Force -Verbose
-			$filestodelete = Get-ChildItem $logpath -Recurse| Where-Object {$_.Name -like "$Logname*"} 
+			$filestodelete | Remove-Item -Force -Verbose
+			$filestodelete = Get-ChildItem $logpath -Recurse | Where-Object { $_.Name -like "$Logname*" } 
 		}
 		if ($filestodelete.Count -gt $CountLogFiles -and $CountLogFiles -gt 0) {
-			$filestodelete = $filestodelete|sort LastWriteTime -Descending|select -Last ($filestodelete.Count - $CountLogFiles)
+			$filestodelete = $filestodelete | sort LastWriteTime -Descending | select -Last ($filestodelete.Count - $CountLogFiles)
 			Write-Log 0 "Loesche $($filestodelete.count) Datei(en) ueber der Anzahl $CountLogFiles." $MyInvocation.MyCommand
-			$filestodelete |Remove-Item -Force -Verbose
+			$filestodelete | Remove-Item -Force -Verbose
 		}
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -138,17 +137,17 @@ function Convert-ToFilename {
 	param(
 		$filename
 	)
-	$filename = $filename.Replace("/","_")
-	$filename = $filename.Replace("\","_")
-	$filename = $filename.Replace(";","_")
-	$filename = $filename.Replace(",","_")
+	$filename = $filename.Replace("/", "_")
+	$filename = $filename.Replace("\", "_")
+	$filename = $filename.Replace(";", "_")
+	$filename = $filename.Replace(",", "_")
 	return $filename
 }
 function Test-RegistryValue {
 	param (
-		[parameter(Mandatory=$true)]
+		[parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]$Path,
-		[parameter(Mandatory=$true)]
+		[parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]$Value
 	)
 	try {
@@ -177,9 +176,9 @@ function Remove-Files {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.String]$Filepath, 
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		[system.String]$Filename,
 		[int]$CountFiles = 0, 
 		[int]$DaysFilesAge = 0
@@ -187,22 +186,21 @@ function Remove-Files {
 	$DateFiles = (Get-Date).AddDays(-$DaysFilesAge)
 	Write-Log 0 "Delete all file(s), keep the last $CountFiles, older then $DaysFilesAge and file name contains ($filename) in path ($Filepath)." $MyInvocation.MyCommand
 	try { 
-		$filestodelete = Get-ChildItem $Filepath -Recurse| Where-Object {$_.Name -like "$filename*"} 
+		$filestodelete = Get-ChildItem $Filepath -Recurse | Where-Object { $_.Name -like "$filename*" } 
 		if ($DaysFilesAge -gt 0) {
-			$filestodelete = $filestodelete| Where-Object {$_.LastWriteTime -lt $DateFiles}
+			$filestodelete = $filestodelete | Where-Object { $_.LastWriteTime -lt $DateFiles }
 			Write-Log 0 "Delete $($filestodelete.count) file(s), older then $DaysFilesAge day(s)." $MyInvocation.MyCommand
-			$filestodelete |Remove-Item -Force -Verbose:$Verbose
-			$filestodelete = Get-ChildItem $Filepath -Recurse| Where-Object {$_.Name -like "$filename*"} 
+			$filestodelete | Remove-Item -Force -Verbose:$Verbose
+			$filestodelete = Get-ChildItem $Filepath -Recurse | Where-Object { $_.Name -like "$filename*" } 
 		}
 		if ($filestodelete.Count -gt $CountFiles -and $CountFiles -gt 0) {
-			$filestodelete = $filestodelete|Sort-Object LastWriteTime -Descending|select-object -Last ($filestodelete.Count - $CountFiles)
+			$filestodelete = $filestodelete | Sort-Object LastWriteTime -Descending | select-object -Last ($filestodelete.Count - $CountFiles)
 			Write-Log 0 "Delete $($filestodelete.count) file(s) more then count ($CountFiles)." $MyInvocation.MyCommand
-			$filestodelete |Remove-Item -Force -Verbose:$Verbose
+			$filestodelete | Remove-Item -Force -Verbose:$Verbose
 		}
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -212,7 +210,7 @@ function remove-XMLSpecialChar {
 		$file
 	)
 	$temp = (Get-Content -path $file ) -join "`r"
-	$temp = $temp |foreach { $_ -replace "`n|`r" }
+	$temp = $temp | foreach { $_ -replace "`n|`r" }
 	#	$temp = $temp -replace "[^\u0000-\u007F]+"
 	$temp = $temp -replace "\x04"
 	$temp = $temp -replace "\x05"
@@ -225,13 +223,13 @@ function remove-XMLSpecialChar {
 }
 function Get-RegistryValue {
 	param (
-		[parameter(Mandatory=$true)]
+		[parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]$Path,
-		[parameter(Mandatory=$true)]
+		[parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]$Value
 	)
 	try {
-		$Item = (Get-ItemProperty -Path $Path| Select-Object $Value).$Value
+		$Item = (Get-ItemProperty -Path $Path | Select-Object $Value).$Value
 		Write-Log 0 "Value ($Value): ($Item)" $MyInvocation.MyCommand 
 		return $Item
 	}
@@ -245,12 +243,12 @@ function Convert-StringtoPSRegKey {
 		$KeyPath,
 		[switch]$is32Bit
 	)
-	$KeyPath = $KeyPath -replace ("HKLM\\","HKLM:\\")
-	$KeyPath = $KeyPath -replace ("HKU\\","HKU:\\")
-	$KeyPath = $KeyPath -replace ("HKEY_LOCAL_MACHINE\\","HKLM:\\")
-	$KeyPath = $KeyPath -replace ("HKEY_USERS\\","HKU:\\")
-	if ($is32Bit -and [Environment]::Is64BitProcess -and $KeyPath -like "HKLM:\\SOFTWARE*") 	{
-		$KeyPath = $KeyPath -replace ("HKLM:\\\\SOFTWARE","HKLM:\\SOFTWARE\WOW6432Node")
+	$KeyPath = $KeyPath -replace ("HKLM\\", "HKLM:\\")
+	$KeyPath = $KeyPath -replace ("HKU\\", "HKU:\\")
+	$KeyPath = $KeyPath -replace ("HKEY_LOCAL_MACHINE\\", "HKLM:\\")
+	$KeyPath = $KeyPath -replace ("HKEY_USERS\\", "HKU:\\")
+	if ($is32Bit -and [Environment]::Is64BitProcess -and $KeyPath -like "HKLM:\\SOFTWARE*") {
+		$KeyPath = $KeyPath -replace ("HKLM:\\\\SOFTWARE", "HKLM:\\SOFTWARE\WOW6432Node")
 
 	}
 	return $KeyPath
@@ -392,7 +390,8 @@ function Connect-DSM7Web {
 					return $false
 				}
 			} 
-			else { if (!($Credential -is [PSCredential])) {
+			else {
+				if (!($Credential -is [PSCredential])) {
 					$Credential = Confirm-Creds -User $Credential 
 				}
 			}
@@ -445,7 +444,7 @@ function Connect-DSM7Web {
 		$global:DSM7WebService = $false
 	}
 }
-Export-ModuleMember -Function Connect-DSM7Web -Variable DSM7WebService,DSM7Types
+Export-ModuleMember -Function Connect-DSM7Web -Variable DSM7WebService, DSM7Types
 function Connect-DSM7WebRandom {
 	<#
 	.SYNOPSIS
@@ -530,7 +529,7 @@ function DisConnect-DSM7Web {
 Export-ModuleMember -Function DisConnect-DSM7Web
 
 function Get-DSM7RequestHeader ($action) {
-	$action = $action +"Request" 
+	$action = $action + "Request" 
 	$Webrequest = New-Object $DSM7Types[$action] 
 	if ($DSM7Version -gt "7.3.2" -and $Webrequest.MaxResults -eq 0) {
 		$Webrequest.MaxResults = -1
@@ -541,7 +540,7 @@ function Get-DSM7RequestHeader ($action) {
 	$Webrequest.Header.ClientInfo.Name = $Host.Name 
 	$Webrequest.Header.ClientInfo.Version = $Host.Version 
 	$Webrequest.ServerInfo = New-Object $DSM7Types["ServerInfo"] 
-	$Webrequest.ServerInfo.CmdbGuid = {0000000 - 0000 - 0000 - 0000 - 000000000000} 
+	$Webrequest.ServerInfo.CmdbGuid = { 0000000 - 0000 - 0000 - 0000 - 000000000000 } 
 	$Webrequest.ServerInfo.MetaModelVersion = 203 
 	return $Webrequest 
 } 
@@ -561,13 +560,11 @@ function Get-DSM7ServerInfo {
 			return $false
 		}
 	}
-	catch [System.Web.Services.Protocols.SoapException] 
-	{
+	catch [System.Web.Services.Protocols.SoapException] {
 		Write-Log 2 $_.Exception.Detail.Message.'#text' $MyInvocation.MyCommand 
 		return $false 
 	} 
-	catch
-	{
+	catch {
 		Write-Log 2 $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -589,8 +586,7 @@ function Get-DSM7IdentifiedUser {
 			return $false
 		}
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -643,21 +639,21 @@ function Find-DSM7Target {
 # DSM7 Funktionen - Convert
 ###############################################################################
 function Convert-StringtoLDAPString ($String) {
-	if ($String.contains("\")) { $String = $String.Replace("\","\\")}
+	if ($String.contains("\")) { $String = $String.Replace("\", "\\") }
 	if ($String.Contains("(") -or $String.Contains(")") ) {
-		$String = $String.Replace("(","\(")
-		$String = $String.Replace(")","\)")
+		$String = $String.Replace("(", "\(")
+		$String = $String.Replace(")", "\)")
 	}
 	return $String
 }
 function Convert-LDAPStringToReplaceString ($String) {
-	if ($String.contains("\(")) {$String = $String.Replace("\(","\+")}
-	if ($String.Contains("\)")) {$String = $String.Replace("\)","\-")}
+	if ($String.contains("\(")) { $String = $String.Replace("\(", "\+") }
+	if ($String.Contains("\)")) { $String = $String.Replace("\)", "\-") }
 	return $String
 }
 function Convert-ReplaceStringToLDAPString ($String) {
-	if ($String.contains("\+")) {$String = $String.Replace("\+","\(")}
-	if ($String.Contains("\-")) {$String = $String.Replace("\-","\)")}
+	if ($String.contains("\+")) { $String = $String.Replace("\+", "\(") }
+	if ($String.Contains("\-")) { $String = $String.Replace("\-", "\)") }
 	return $String
 }
 
@@ -667,7 +663,7 @@ function Convert-DSM7ObjectListtoPSObject {
 		$ObjectList,
 		[switch]$LDAP = $false
 	)
-	$DSM7ObjectMembers = ($ObjectList[0]|Get-Member -MemberType Properties).Name
+	$DSM7ObjectMembers = ($ObjectList[0] | Get-Member -MemberType Properties).Name
 	foreach ($DSM7Object in $ObjectList) {
 		$Raw = Convert-DSM7ObjecttoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -LDAP:$LDAP
 		$DSM7ObjectList += @($Raw)
@@ -681,10 +677,10 @@ function Convert-DSM7ObjectListtoPSObjectID {
 		[switch]$LDAP = $false
 	)
 	$DSM7ObjectList = @{}
-	$DSM7ObjectMembers = ($ObjectList|Get-Member -MemberType Properties).Name
+	$DSM7ObjectMembers = ($ObjectList | Get-Member -MemberType Properties).Name
 	foreach ($DSM7Object in $ObjectList) {
 		$Raw = Convert-DSM7ObjecttoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -LDAP:$LDAP
-		$DSM7ObjectList[$DSM7Object.ID]= @($Raw)
+		$DSM7ObjectList[$DSM7Object.ID] = @($Raw)
 	}
 	return $DSM7ObjectList
 }
@@ -696,19 +692,19 @@ function Convert-DSM7ObjecttoPSObject {
 		[switch]$LDAP = $false
 	)
 	if (!$DSM7ObjectMembers) {
-		$DSM7ObjectMembers = ($DSM7Object|Get-Member -MemberType Properties).Name
+		$DSM7ObjectMembers = ($DSM7Object | Get-Member -MemberType Properties).Name
 	}
 	$Raw = New-Object PSObject
 	foreach ($DSM7ObjectMember in $DSM7ObjectMembers) {
 		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "PropGroupList") {
 			if ($DSM7ObjectMember -like "*List") {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
-				if ($DSM7ObjectMemberLists.Count -gt 0){
-					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists|Get-Member -MemberType Properties).Name
-					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers){
-						for ($I = 0;$I -lt $($DSM7ObjectMemberLists.Count)-1; $I++){
+				if ($DSM7ObjectMemberLists.Count -gt 0) {
+					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists | Get-Member -MemberType Properties).Name
+					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers) {
+						for ($I = 0; $I -lt $($DSM7ObjectMemberLists.Count) - 1; $I++) {
 							if ($DSM7ObjectMemberListsMember -eq "GenTypeData") {
-								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData|get-member -membertype properties)) { 
+								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData | get-member -membertype properties)) { 
 									add-member -inputobject $Raw -MemberType NoteProperty -name "$DSM7ObjectMember.$I.GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 								}
 							} 
@@ -731,7 +727,7 @@ function Convert-DSM7ObjecttoPSObject {
 	}
 
 	if ($DSM7Object.GenTypeData) {
-		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
+		foreach ($GenTypeData in $($DSM7Object.GenTypeData | get-member -membertype properties)) { 
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
@@ -766,9 +762,9 @@ function Convert-DSM7AssociationListtoPSObject {
 		[switch]$resolvedName = $false
 	)
 	$IDs = @()
-	$IDs += ($ObjectList|Select-Object -ExpandProperty SourceObjectID)
-	$IDs += ($ObjectList|Select-Object -ExpandProperty TargetObjectID)
-	$IDs = $IDs|Get-Unique
+	$IDs += ($ObjectList | Select-Object -ExpandProperty SourceObjectID)
+	$IDs += ($ObjectList | Select-Object -ExpandProperty TargetObjectID)
+	$IDs = $IDs | Get-Unique
 	$DSM7Objects = Get-DSM7ObjectsObject -IDs $IDs
 	$DSM7Objects += Get-DSM7ObjectsObject -IDs $IDs -ObjectGroupType "Catalog"
 	$DSM7Objects = Convert-DSM7ObjectListtoPSObjectID ($DSM7Objects)
@@ -819,16 +815,16 @@ function Convert-DSM7PolicyListtoPSObject {
 	) 
 	if ($resolvedName) {
 		$IDs = @() 
-		$IDs += ($ObjectList|Select-Object -ExpandProperty AssignedObjectID)
+		$IDs += ($ObjectList | Select-Object -ExpandProperty AssignedObjectID)
 		$DSM7Objects = Get-DSM7ObjectsObject -IDs $IDs
-		$DSM7ObjectsTargetIDs = $ObjectList|Select-Object -ExpandProperty TargetObjectList|Select-Object -ExpandProperty TargetObjectID -Unique
+		$DSM7ObjectsTargetIDs = $ObjectList | Select-Object -ExpandProperty TargetObjectList | Select-Object -ExpandProperty TargetObjectID -Unique
 		foreach ($DSM7ObjectsTargetID in $DSM7ObjectsTargetIDs) {
 			$filter = "$filter(ObjectID=$DSM7ObjectsTargetID)"
 		}
 		$filter = "(|$filter)"
 		$DSM7ObjectsTargets = Get-DSM7ObjectList -Filter $filter
 	}
-	$DSM7ObjectMembers = ($ObjectList[0]|Get-Member -MemberType Properties).Name
+	$DSM7ObjectMembers = ($ObjectList[0] | Get-Member -MemberType Properties).Name
 	foreach ($DSM7Object in $ObjectList) {
 		$DSM7Object = Convert-DSM7PolicytoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -DSM7Objects $DSM7Objects -DSM7ObjectsTargets $DSM7ObjectsTargets -resolvedName:$resolvedName
 		$DSM7ObjectList += @($DSM7Object)
@@ -845,15 +841,15 @@ function Convert-DSM7PolicytoPSObject {
 		[switch]$resolvedName = $false
 	)
 	$AssignedObjectNameOld = "###"
-	if (!$DSM7ObjectMembers) {$DSM7ObjectMembers = ($DSM7Object|Get-Member -MemberType Properties).Name}
+	if (!$DSM7ObjectMembers) { $DSM7ObjectMembers = ($DSM7Object | Get-Member -MemberType Properties).Name }
 	if ($resolvedName) {
 		if (!$DSM7Objects) {
 			$IDs = @() 
-			$IDs += ($DSM7Object|Select-Object -ExpandProperty AssignedObjectID)
+			$IDs += ($DSM7Object | Select-Object -ExpandProperty AssignedObjectID)
 			$DSM7Objects = Get-DSM7ObjectsObject -IDs $IDs
 		}
 		if (!$DSM7ObjectsTargets) {
-			$DSM7ObjectsTargetIDs = $DSM7Object|Select-Object -ExpandProperty TargetObjectList|Select-Object -ExpandProperty TargetObjectID -Unique
+			$DSM7ObjectsTargetIDs = $DSM7Object | Select-Object -ExpandProperty TargetObjectList | Select-Object -ExpandProperty TargetObjectID -Unique
 			foreach ($DSM7ObjectsTargetID in $DSM7ObjectsTargetIDs) {
 				$filter = "$filter(ObjectID=$DSM7ObjectsTargetID)"
 			}
@@ -867,12 +863,12 @@ function Convert-DSM7PolicytoPSObject {
 		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList" -and $DSM7ObjectMember -ne "PropGroupList" -and $DSM7ObjectMember -ne "PolicyRestrictionList" -and $DSM7ObjectMember -ne "SwInstallationParameters") {
 			if ($DSM7ObjectMember -like "*List") {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
-				if ($DSM7ObjectMemberLists.Count -gt 0){
-					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists|Get-Member -MemberType Properties).Name
-					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers){
-						for ($I = 0;$I -lt $($DSM7ObjectMemberLists.Count)-1; $I++){
+				if ($DSM7ObjectMemberLists.Count -gt 0) {
+					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists | Get-Member -MemberType Properties).Name
+					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers) {
+						for ($I = 0; $I -lt $($DSM7ObjectMemberLists.Count) - 1; $I++) {
 							if ($DSM7ObjectMemberListsMember -eq "GenTypeData") {
-								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData|get-member -membertype properties)) { 
+								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData | get-member -membertype properties)) { 
 									add-member -inputobject $Raw -MemberType NoteProperty -name "$DSM7ObjectMember.$I.GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 								}
 							} 
@@ -893,7 +889,7 @@ function Convert-DSM7PolicytoPSObject {
 		} 
 	}
 	if ($DSM7Object.GenTypeData) {
-		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
+		foreach ($GenTypeData in $($DSM7Object.GenTypeData | get-member -membertype properties)) { 
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
@@ -901,9 +897,9 @@ function Convert-DSM7PolicytoPSObject {
 
 	if ($resolvedName) {
 		if ($AssignedObjectName -ne $AssignedObjectNameOld) {
-			$AssignedObjectName = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).Name 
-			$AssignedObjectUniqueId = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).UniqueId 
-			$AssignedObjectSchemaTag = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).SchemaTag
+			$AssignedObjectName = $($DSM7Objects | where { $_.ID -eq $Raw.AssignedObjectID }).Name 
+			$AssignedObjectUniqueId = $($DSM7Objects | where { $_.ID -eq $Raw.AssignedObjectID }).UniqueId 
+			$AssignedObjectSchemaTag = $($DSM7Objects | where { $_.ID -eq $Raw.AssignedObjectID }).SchemaTag
 		}
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectName -Value $AssignedObjectName
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectSchemaTag -Value $AssignedObjectSchemaTag
@@ -915,10 +911,10 @@ function Convert-DSM7PolicytoPSObject {
 		$SwInstallationParameterList = @()
 		foreach ($SwInstallationParameter in $DSM7Object.SwInstallationParameters) {
 			$SwInstallationParameterPSObject = New-Object PSObject
-			$DSM7ObjectMemberListsMembers = ($DSM7Object.SwInstallationParameters|Get-Member -MemberType Properties).Name
-			foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers){
+			$DSM7ObjectMemberListsMembers = ($DSM7Object.SwInstallationParameters | Get-Member -MemberType Properties).Name
+			foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers) {
 				if ($DSM7ObjectMemberListsMember -eq "GenTypeData") {
-					foreach ($GenTypeData in $($SwInstallationParameter.GenTypeData|get-member -membertype properties)) { 
+					foreach ($GenTypeData in $($SwInstallationParameter.GenTypeData | get-member -membertype properties)) { 
 						add-member -inputobject $SwInstallationParameterPSObject -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $SwInstallationParameter.GenTypeData.$($GenTypeData.Name)
 					}
 				} 
@@ -952,7 +948,7 @@ function Convert-DSM7PolicytoPSObject {
 		foreach ($TargetObject in $DSM7Object.TargetObjectList) {
 			$TargetPSObject = New-Object PSObject
 			if ($resolvedName) {
-				$TargetObjectName = $($DSM7ObjectsTargets|where {$_.ID -eq $TargetObject.TargetObjectID}).Name 
+				$TargetObjectName = $($DSM7ObjectsTargets | where { $_.ID -eq $TargetObject.TargetObjectID }).Name 
 				add-member -inputobject $TargetPSObject -MemberType NoteProperty -name TargetObjectName -Value $TargetObjectName
 			}
 			add-member -inputobject $TargetPSObject -MemberType NoteProperty -name TargetObjectID -Value $TargetObject.TargetObjectID
@@ -977,12 +973,12 @@ function Convert-DSM7PolicyInstancetoPSObject {
 		if ($DSM7ObjectMember -ne "GenTypeData" -and $DSM7ObjectMember -ne "TargetObjectList") {
 			if ($DSM7ObjectMember -like "*List") {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
-				if ($DSM7ObjectMemberLists.Count -gt 0){
-					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists|Get-Member -MemberType Properties).Name
-					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers){
-						for ($I = 0;$I -lt $($DSM7ObjectMemberLists.Count)-1; $I++){
+				if ($DSM7ObjectMemberLists.Count -gt 0) {
+					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists | Get-Member -MemberType Properties).Name
+					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers) {
+						for ($I = 0; $I -lt $($DSM7ObjectMemberLists.Count) - 1; $I++) {
 							if ($DSM7ObjectMemberListsMember -eq "GenTypeData") {
-								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData|get-member -membertype properties)) { 
+								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData | get-member -membertype properties)) { 
 									add-member -inputobject $Raw -MemberType NoteProperty -name "$DSM7ObjectMember.$I.GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 								}
 							} 
@@ -1003,27 +999,27 @@ function Convert-DSM7PolicyInstancetoPSObject {
 		} 
 	}
 	if ($DSM7Version -gt "7.3.0") {
-		$AssignedObjectID = $($DSM7Configs|where {$_.ID -eq $Raw.AssignedConfiguration}).SoftwareObjectID
+		$AssignedObjectID = $($DSM7Configs | where { $_.ID -eq $Raw.AssignedConfiguration }).SoftwareObjectID
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectID -Value $AssignedObjectID
 	} 
 
 	if ($resolvedName) {
 		if ($AssignedObjectName -ne $AssignedObjectNameOld) {
-			$AssignedObjectName = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).Name 
-			$AssignedObjectSchemaTag = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).SchemaTag 
-			$AssignedObjectUniqueId = $($DSM7Objects|where {$_.ID -eq $Raw.AssignedObjectID}).UniqueId 
+			$AssignedObjectName = $($DSM7Objects | where { $_.ID -eq $Raw.AssignedObjectID }).Name 
+			$AssignedObjectSchemaTag = $($DSM7Objects | where { $_.ID -eq $Raw.AssignedObjectID }).SchemaTag 
+			$AssignedObjectUniqueId = $($DSM7Objects | where { $_.ID -eq $Raw.AssignedObjectID }).UniqueId 
 		}
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectName -Value $AssignedObjectName
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectSchemaTag -Value $AssignedObjectSchemaTag
 		add-member -inputobject $Raw -MemberType NoteProperty -name AssignedObjectUniqueId -Value $AssignedObjectUniqueId 
 		$AssignedObjectNameOld = $AssignedObjectName
 		if ($DSM7Object.TargetObjectID) {
-			$TargetObjectName = $($DSM7Objects|where {$_.ID -eq $DSM7Object.TargetObjectID}).Name 
+			$TargetObjectName = $($DSM7Objects | where { $_.ID -eq $DSM7Object.TargetObjectID }).Name 
 			add-member -inputobject $Raw -MemberType NoteProperty -name TargetObjectName -Value $TargetObjectName
 		}
 	}
 	if ($DSM7Object.GenTypeData) {
-		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
+		foreach ($GenTypeData in $($DSM7Object.GenTypeData | get-member -membertype properties)) { 
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
@@ -1043,7 +1039,7 @@ function Convert-DSM7PolicyInstancetoPSObject {
 		$TargetObjectList = @()
 		foreach ($TargetObject in $DSM7Object.TargetObjectList) {
 			$TargetPSObject = New-Object PSObject
-			$TargetObjectName = $($DSM7Objects|where {$_.ID -eq $TargetObject.TargetObjectID}).Name 
+			$TargetObjectName = $($DSM7Objects | where { $_.ID -eq $TargetObject.TargetObjectID }).Name 
 			add-member -inputobject $TargetPSObject -MemberType NoteProperty -name TargetObjectName -Value $TargetObjectName
 			add-member -inputobject $TargetPSObject -MemberType NoteProperty -name TargetObjectID -Value $TargetObject.TargetObjectID
 			$TargetObjectList += $TargetPSObject
@@ -1054,10 +1050,10 @@ function Convert-DSM7PolicyInstancetoPSObject {
 }
 function Convert-DSM7PolicyInstanceListtoPSObject {
 	[CmdletBinding()] 
-	param ( $ObjectList,[switch]$resolvedName = $false)
+	param ( $ObjectList, [switch]$resolvedName = $false)
 	$DSM7ConfigIDs = @()
 	if ($DSM7Version -gt "7.3.0") {
-		$DSM7ConfigIDs += ($ObjectList|where {$_.AssignedConfiguration}|Select-Object -ExpandProperty AssignedConfiguration)
+		$DSM7ConfigIDs += ($ObjectList | where { $_.AssignedConfiguration } | Select-Object -ExpandProperty AssignedConfiguration)
 		if ($DSM7ConfigIDs.count -gt 0) { 
 			$DSM7Configs = Get-DSM7SwInstallationConfigurationsObject $DSM7ConfigIDs
 		}
@@ -1065,15 +1061,15 @@ function Convert-DSM7PolicyInstanceListtoPSObject {
 	if ($resolvedName) {
 		$IDs = @() 
 		if ($DSM7Version -gt "7.3.0") {
-			$IDs += ($DSM7Configs|where {$_.SoftwareObjectID}|Select-Object -ExpandProperty SoftwareObjectID)
+			$IDs += ($DSM7Configs | where { $_.SoftwareObjectID } | Select-Object -ExpandProperty SoftwareObjectID)
 		}
 		else {
-			$IDs += ($ObjectList|Select-Object -ExpandProperty AssignedObjectID)
+			$IDs += ($ObjectList | Select-Object -ExpandProperty AssignedObjectID)
 		}
-		$IDs += ($ObjectList|Select-Object -ExpandProperty TargetObjectID)
+		$IDs += ($ObjectList | Select-Object -ExpandProperty TargetObjectID)
 		$DSM7Objects = Get-DSM7ObjectsObject -IDs $IDs
 	} 
-	$DSM7ObjectMembers = ($ObjectList|Get-Member -MemberType Properties).Name
+	$DSM7ObjectMembers = ($ObjectList | Get-Member -MemberType Properties).Name
 	foreach ($DSM7Object in $ObjectList) {
 		$DSM7Object = Convert-DSM7PolicyInstancetoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -DSM7Objects $DSM7Objects -DSM7Configs $DSM7Configs -resolvedName:$resolvedName
 		$DSM7ObjectList += @($DSM7Object)
@@ -1112,11 +1108,11 @@ function Convert-DSM7VariableGrouptoPSObject {
 			add-member -inputobject $Raw -MemberType NoteProperty -name AvailableOnClient -Value $Variable.AvailableOnClient
 			add-member -inputobject $Raw -MemberType NoteProperty -name VariableType -Value $Variable.VariableType
 			if ($Variable.GenTypeData) {
-				foreach ($GenTypeData in $($Variable.GenTypeData|get-member -membertype properties)) { 
+				foreach ($GenTypeData in $($Variable.GenTypeData | get-member -membertype properties)) { 
 					add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $Variable.GenTypeData.$($GenTypeData.Name)
 				}
 			}
-			$AllVariable +=@($Raw)
+			$AllVariable += @($Raw)
 		} 
 	}
 	return $AllVariable
@@ -1139,7 +1135,7 @@ function Convert-DSM7VariabletoPSObject {
 	add-member -inputobject $Raw -MemberType NoteProperty -name GroupID -Value $DSM7VariableGroups.Item($DSM7Object.VariableID).GroupID
 	add-member -inputobject $Raw -MemberType NoteProperty -name GroupName -Value $DSM7VariableGroups.Item($DSM7Object.VariableID).GroupTag
 	if ($DSM7Object.GenTypeData) {
-		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
+		foreach ($GenTypeData in $($DSM7Object.GenTypeData | get-member -membertype properties)) { 
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
@@ -1171,22 +1167,22 @@ function Convert-DSM7SwInstallationParamDefinitionstoPSObject {
 		if ($DSM7ObjectMember -ne "GenTypeData") {
 			if ($DSM7ObjectMember -like "*List" -or $DSM7ObjectMember -like "*Category" ) {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
-				$RawListArray =@()
+				$RawListArray = @()
 				foreach ($DSM7ObjectMemberList in $DSM7ObjectMemberLists) {
-					$DSM7ObjectMemberListMembers = ($DSM7ObjectMemberList|Get-Member -MemberType Properties).Name
+					$DSM7ObjectMemberListMembers = ($DSM7ObjectMemberList | Get-Member -MemberType Properties).Name
 
 					$RawList = New-Object PSObject
-					$RawListArrayListArray =@()
-					foreach ($DSM7ObjectMemberListMember in $DSM7ObjectMemberListMembers){
+					$RawListArrayListArray = @()
+					foreach ($DSM7ObjectMemberListMember in $DSM7ObjectMemberListMembers) {
 						$value = $DSM7ObjectMemberList.$DSM7ObjectMemberListMember
 						if ($DSM7ObjectMemberListMember -like "*List") {
 							$DSM7ObjectMemberListMemberLists = $DSM7ObjectMemberList.$DSM7ObjectMemberListMember
 							foreach ($DSM7ObjectMemberListMemberList in $DSM7ObjectMemberListMemberLists) {
 								$RawListList = New-Object PSObject
-								$DSM7ObjectMemberListMemberListMembers = ($DSM7ObjectMemberListMemberList|Get-Member -MemberType Properties).Name
+								$DSM7ObjectMemberListMemberListMembers = ($DSM7ObjectMemberListMemberList | Get-Member -MemberType Properties).Name
 								foreach ($DSM7ObjectMemberListMemberListMember in $DSM7ObjectMemberListMemberListMembers) {
 									if ($DSM7ObjectMemberListMemberListMember -eq "GenTypeData") {
-										foreach ($GenTypeData in $($DSM7ObjectMemberListMemberList.GenTypeData|get-member -membertype properties)) { 
+										foreach ($GenTypeData in $($DSM7ObjectMemberListMemberList.GenTypeData | get-member -membertype properties)) { 
 											add-member -inputobject $RawListList -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7ObjectMemberListMemberList.GenTypeData.$($GenTypeData.Name)
 										}
 									} 
@@ -1199,7 +1195,7 @@ function Convert-DSM7SwInstallationParamDefinitionstoPSObject {
 							$value = $RawListArrayListArray
 						}
 						if ($DSM7ObjectMemberListMember -eq "GenTypeData") {
-							foreach ($GenTypeData in $($DSM7ObjectMemberList.GenTypeData|get-member -membertype properties)) { 
+							foreach ($GenTypeData in $($DSM7ObjectMemberList.GenTypeData | get-member -membertype properties)) { 
 								add-member -inputobject $RawList -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7ObjectMemberList.GenTypeData.$($GenTypeData.Name)
 							}
 						} 
@@ -1217,7 +1213,7 @@ function Convert-DSM7SwInstallationParamDefinitionstoPSObject {
 		} 
 	}
 	if ($DSM7Object.GenTypeData) {
-		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
+		foreach ($GenTypeData in $($DSM7Object.GenTypeData | get-member -membertype properties)) { 
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
@@ -1237,7 +1233,7 @@ function Convert-DSM7SwInstallationParamDefinitionstoPSObjects {
 		$DSM7Objects,
 		[switch]$resolvedName = $false
 	)
-	$DSM7ObjectMembers = ($DSM7Objects[0]|Get-Member -MemberType Properties).Name
+	$DSM7ObjectMembers = ($DSM7Objects[0] | Get-Member -MemberType Properties).Name
 	foreach ($DSM7Object in $DSM7Objects) {
 		$DSM7Object = Convert-DSM7SwInstallationParamDefinitionstoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers -resolvedName:$resolvedName
 		$DSM7ObjectList += @($DSM7Object)
@@ -1256,12 +1252,12 @@ function Convert-DSM7AssociationSchemaListtoPSObject {
 		if ($DSM7ObjectMember -ne "GenTypeData") {
 			if ($DSM7ObjectMember -like "*List") {
 				$DSM7ObjectMemberLists = $DSM7Object.$DSM7ObjectMember
-				if ($DSM7ObjectMemberLists.Count -gt 0){
-					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists|Get-Member -MemberType Properties).Name
-					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers){
-						for ($I = 0;$I -lt $DSM7ObjectMemberLists.Count; $I++){
+				if ($DSM7ObjectMemberLists.Count -gt 0) {
+					$DSM7ObjectMemberListsMembers = ($DSM7ObjectMemberLists | Get-Member -MemberType Properties).Name
+					foreach ($DSM7ObjectMemberListsMember in $DSM7ObjectMemberListsMembers) {
+						for ($I = 0; $I -lt $DSM7ObjectMemberLists.Count; $I++) {
 							if ($DSM7ObjectMemberListsMember -eq "GenTypeData") {
-								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData|get-member -membertype properties)) { 
+								foreach ($GenTypeData in $($DSM7ObjectMemberLists[$I].GenTypeData | get-member -membertype properties)) { 
 									add-member -inputobject $Raw -MemberType NoteProperty -name "$DSM7ObjectMember.$I.GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 								}
 							} 
@@ -1282,7 +1278,7 @@ function Convert-DSM7AssociationSchemaListtoPSObject {
 		} 
 	}
 	if ($DSM7Object.GenTypeData) {
-		foreach ($GenTypeData in $($DSM7Object.GenTypeData|get-member -membertype properties)) { 
+		foreach ($GenTypeData in $($DSM7Object.GenTypeData | get-member -membertype properties)) { 
 			add-member -inputobject $Raw -MemberType NoteProperty -name "GenTypeData.$($GenTypeData.Name)" -Value $DSM7Object.GenTypeData.$($GenTypeData.Name)
 		}
 	}
@@ -1307,7 +1303,7 @@ function Convert-DSM7AssociationSchemaListtoPSObjects {
 	param ( 
 		$DSM7Objects
 	)
-	$DSM7ObjectMembers = ($DSM7Objects|Get-Member -MemberType Properties).Name
+	$DSM7ObjectMembers = ($DSM7Objects | Get-Member -MemberType Properties).Name
 
 	foreach ($DSM7Object in $DSM7Objects) {
 		$DSM7Object = Convert-DSM7AssociationSchemaListtoPSObject -DSM7Object $DSM7Object -DSM7ObjectMembers $DSM7ObjectMembers
@@ -1363,7 +1359,7 @@ tegoryObject.RequiredLicense=DSM7_LUMENSION_PATCH))" -Attributes "PatchCategoryO
 			else {
 				$Filternew = $Filter
 			}
-			if ($GenTypeData){
+			if ($GenTypeData) {
 				if ($Attributes) {
 					$Attributes = $Attributes + "," + $DSM7GenTypeData
 				}
@@ -1396,8 +1392,7 @@ tegoryObject.RequiredLicense=DSM7_LUMENSION_PATCH))" -Attributes "PatchCategoryO
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -1407,7 +1402,7 @@ Export-ModuleMember -Function Get-DSM7ObjectList
 function Get-DSM7ObjectObject {
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int]$ID, 
 		[system.string]$ObjectGroupType = "Object"
 	)
@@ -1418,13 +1413,12 @@ function Get-DSM7ObjectObject {
 		$Webresult = $DSM7WebService.GetObject($Webrequest).RetrievedObject
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
 }
-if ($Dev) {Export-ModuleMember -Function Get-DSM7ObjectObject}
+if ($Dev) { Export-ModuleMember -Function Get-DSM7ObjectObject }
 function Get-DSM7Object {
 	<#
 	.SYNOPSIS
@@ -1438,7 +1432,7 @@ function Get-DSM7Object {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int]$ID, 
 		[system.string]$ObjectGroupType = "Object"
 	)
@@ -1459,20 +1453,19 @@ Export-ModuleMember -Function Get-DSM7Object
 function Get-DSM7ObjectsObject {
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs, 
 		[system.string]$ObjectGroupType = "Object"
 	)
 	try {
-		$IDs = $IDs|Sort-Object|Get-Unique
+		$IDs = $IDs | Sort-Object | Get-Unique
 		$Webrequest = Get-DSM7RequestHeader -action "GetObjects"
 		$Webrequest.ObjectIds = $IDs
 		$Webrequest.RequestedObjectGroupType = $ObjectGroupType
 		$Webresult = $DSM7WebService.GetObjects($Webrequest).ObjectList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1496,7 +1489,7 @@ function Get-DSM7Objects {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[System.Array]$IDs, 
 		[system.string]$ObjectGroupType = "Object"
 	)
@@ -1518,8 +1511,8 @@ function Update-DSM7Object {
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "UpdateObject"
 		$WebrequestState = Get-DSM7RequestHeader -action "UpdateStateInfoOfObject"
-		if ($DSM7Version -ne "7.4.3.0"){
-			if (!$DSM7PropGroupDefList){
+		if ($DSM7Version -ne "7.4.3.0") {
+			if (!$DSM7PropGroupDefList) {
 				$global:DSM7PropGroupDefList = Convert-ArrayToHash -myArray (Get-DSM7PropGroupDefListObject) -myKey "Tag" 
 
 			}
@@ -1527,8 +1520,8 @@ function Update-DSM7Object {
 		$groupkey = @{}
 		$valueskey = @{}
 		foreach ($Value in $Values) {
-			$ValueName = $Value.split("=",2)[0]
-			$ValueValue = $Value.split("=",2)[1]
+			$ValueName = $Value.split("=", 2)[0]
+			$ValueValue = $Value.split("=", 2)[1]
 			if ($ValueName.contains(".")) {
 				$PropGroup = $ValueName.split(".")[0]
 				$PropName = $ValueName.split(".")[1]
@@ -1560,7 +1553,7 @@ function Update-DSM7Object {
 				Write-Log 0 "aendere $Groupname.$Valuename = $Value" $MyInvocation.MyCommand
 				$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
 				$PropertyListObject.Tag = $Valuename
-				$PropertyListObject.Type = ((($Object.PropGroupList|Where Tag -EQ $Groupname).propertyList)|where Tag -EQ $Valuename).Type
+				$PropertyListObject.Type = ((($Object.PropGroupList | Where Tag -EQ $Groupname).propertyList) | where Tag -EQ $Valuename).Type
 				$PropertyListObject.TypedValue = $Value
 				$PropertyList += $PropertyListObject
 			}
@@ -1585,8 +1578,7 @@ function Update-DSM7Object {
 		Write-Log 0 "($($Object.Name)) erfolgreich." $MyInvocation.MyCommand
 		return $Object 
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1658,8 +1650,7 @@ function Get-DSM7LDAPPathID {
 		} 
 		return $ParentContID
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1683,7 +1674,7 @@ function New-DSM7Object {
 		if ($DSM7Version -gt "7.4.0") {
 			$Webrequest.NewObject.GenTypeData = new-object $DSM7Types["MdsGenType"]
 			$CreationSource = $MyInvocation.MyCommand.Module.Name
-			if ($DSM7CreationSource) {$CreationSource = $DSM7CreationSource}
+			if ($DSM7CreationSource) { $CreationSource = $DSM7CreationSource }
 			$Webrequest.NewObject.GenTypeData.CreationSource = $CreationSource
 		}
 		$Webrequest.NewObject.Description = $Description
@@ -1698,8 +1689,7 @@ function New-DSM7Object {
 		Write-Log 0 "($Name) erfolgreich." $MyInvocation.MyCommand
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1722,8 +1712,7 @@ function New-DSM7InfrastructureJob {
 		Write-Log 0 "Job ($SchemaTag) erfolgreich." $MyInvocation.MyCommand
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1741,8 +1730,7 @@ function Remove-DSM7Object {
 		Write-Log 0 "Loeschen Objekt $($Object.Name) ($($Object.ID)) erfolgreich." $MyInvocation.MyCommand
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1763,8 +1751,7 @@ function Move-DSM7Object {
 		Write-Log 0 "Verschieben von $($Object.Name) ($($Object.ID)) erfolgreich." $MyInvocation.MyCommand
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1776,7 +1763,7 @@ function Move-DSM7Object {
 function Get-DSM7AssociationListObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$SchemaTag,
 		[system.string]$SourceObjectID = "*",
 		[system.string]$TargetObjectID = "*",
@@ -1795,7 +1782,7 @@ function Get-DSM7AssociationListObject {
 				foreach ($DSM7Object in $Webresult) {
 					$IDs += $DSM7Object.ID
 				}
-				$IDs = $($IDs|sort -Unique)
+				$IDs = $($IDs | sort -Unique)
 				$Webresult = Get-DSM7AssociationsObject -IDs $IDs -SchemaTag $SchemaTag 
 				return $Webresult
 			}
@@ -1803,8 +1790,7 @@ function Get-DSM7AssociationListObject {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -1829,7 +1815,7 @@ function Get-DSM7AssociationList {
 
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$SchemaTag,
 		[system.string]$SourceObjectID = "*",
 		[system.string]$TargetObjectID = "*",
@@ -1841,7 +1827,7 @@ function Get-DSM7AssociationList {
 		$DSM7AssociationSchemaListCheck = $true
 		if ($DSM7Version -ne "7.4.3.0") {
 			if (!$DSM7AssociationSchemaList) {
-				$global:DSM7AssociationSchemaList = Get-DSM7AssociationschemaList|select -ExpandProperty Tag
+				$global:DSM7AssociationSchemaList = Get-DSM7AssociationschemaList | select -ExpandProperty Tag
 			}
 			if ($DSM7AssociationSchemaList.Contains($SchemaTag)) {
 				$DSM7AssociationSchemaListCheck = $true
@@ -1872,8 +1858,7 @@ function Get-DSM7AssociationschemaListObject {
 		$Webresult = $DSM7WebService.GetAssociationSchemaList($Webrequest).SchemaList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1916,9 +1901,9 @@ Export-ModuleMember -Function Get-DSM7AssociationschemaList
 function Get-DSM7AssociationObject {
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int]$ID, 
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		[system.string]$SchemaTag
 	)
 	if (Confirm-Connect) {
@@ -1929,8 +1914,7 @@ function Get-DSM7AssociationObject {
 			$Webresult = $DSM7WebService.GetAssociation($Webrequest).RetrievedAssociation
 			return $Webresult
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -1939,21 +1923,20 @@ function Get-DSM7AssociationObject {
 function Get-DSM7AssociationsObject {
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs ,
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		[system.string]$SchemaTag
 	)
 	try {
-		$IDs = $IDs|Sort-Object|Get-Unique
+		$IDs = $IDs | Sort-Object | Get-Unique
 		$Webrequest = Get-DSM7RequestHeader -action "GetAssociations"
 		$Webrequest.AssociationIds = $IDs
 		$Webrequest.SchemaTag = $SchemaTag
 		$Webresult = $DSM7WebService.GetAssociations($Webrequest).AssociationList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -1962,13 +1945,13 @@ function Get-DSM7AssociationsObject {
 function New-DSM7AssociationObject {
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$SchemaTag,
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		[Int]$SourceObjectID,
-		[Parameter(Position=2, Mandatory=$true)]
+		[Parameter(Position = 2, Mandatory = $true)]
 		[Int]$TargetObjectID,
-		[Parameter(Position=3, Mandatory=$true)]
+		[Parameter(Position = 3, Mandatory = $true)]
 		[system.string]$TargetSchemaTag
 	) 
 	try {
@@ -1981,8 +1964,7 @@ function New-DSM7AssociationObject {
 		$Webresult = $DSM7WebService.CreateAssociation($Webrequest).CreatedAssociation
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2006,13 +1988,13 @@ function New-DSM7Association {
 
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$SchemaTag,
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		[system.Int32]$SourceObjectID,
-		[Parameter(Position=2, Mandatory=$true)]
+		[Parameter(Position = 2, Mandatory = $true)]
 		[system.string]$TargetSchemaTag,
-		[Parameter(Position=3, Mandatory=$true)]
+		[Parameter(Position = 3, Mandatory = $true)]
 		[System.Int32]$TargetObjectID
 	)
 	if (Confirm-Connect) {
@@ -2020,7 +2002,7 @@ function New-DSM7Association {
 		$DSM7AssociationSchemaListCheck = $true
 		if ($DSM7Version -ne "7.4.3.0") {
 			if (!$DSM7AssociationSchemaList) {
-				$global:DSM7AssociationSchemaList = Get-DSM7AssociationschemaList|select -ExpandProperty Tag
+				$global:DSM7AssociationSchemaList = Get-DSM7AssociationschemaList | select -ExpandProperty Tag
 			}
 			if ($DSM7AssociationSchemaList.Contains($SchemaTag)) {
 				$DSM7AssociationSchemaListCheck = $true
@@ -2029,7 +2011,7 @@ function New-DSM7Association {
 				$DSM7AssociationSchemaListCheck = $false
 			}
 		}
-		if ($DSM7AssociationSchemaListCheck -and $SourceObjectID -gt 0 -and $TargetObjectID -0 -and $TargetSchemaTag) {
+		if ($DSM7AssociationSchemaListCheck -and $SourceObjectID -gt 0 -and $TargetObjectID - 0 -and $TargetSchemaTag) {
 			$result = New-DSM7AssociationObject -SchemaTag $SchemaTag -SourceObjectID $SourceObjectID -TargetObjectID $TargetObjectID -TargetSchemaTag $TargetSchemaTag
 			if ($result) {
 				$result = Convert-DSM7AssociationtoPSObject($result)
@@ -2060,12 +2042,11 @@ function New-DSM7AssociationListObject {
 			$ObjectMdsAssociation.TargetSchemaTag = $Object.TargetSchemaTag
 			$ObjectMdsAssociations += $ObjectMdsAssociation
 		}
-		$Webrequest.AssociationListToCreate= $ObjectMdsAssociations
+		$Webrequest.AssociationListToCreate = $ObjectMdsAssociations
 		$Webresult = $DSM7WebService.CreateAssociationList($Webrequest).CreatedListOfAssociations
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2081,8 +2062,7 @@ function Remove-DSM7AssociationObject {
 		$Webresult = $DSM7WebService.DeleteAssociation($Webrequest)
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2093,7 +2073,7 @@ function Remove-DSM7AssociationObject {
 function Get-DSM7DisplayNameListsObject {
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs
 	)
 	try {
@@ -2102,8 +2082,7 @@ function Get-DSM7DisplayNameListsObject {
 		$Webresult = $DSM7WebService.GetDisplayNameLists($Webrequest).DisplayNames
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2121,7 +2100,7 @@ function Get-DSM7DisplayNameLists {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs
 	)
 	if (Confirm-Connect) {
@@ -2136,8 +2115,7 @@ function Get-DSM7DisplayNameLists {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2288,8 +2266,7 @@ function Get-DSM7Computer {
 				Write-Log 1 "Name oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2359,8 +2336,7 @@ function Update-DSM7Computer {
 			}
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2378,8 +2354,7 @@ function Reset-DSM7ComputerInstallationOrder {
 		Write-Log 0 "Computer ($ID) neue Installationreihenfolge berechnet." $MyInvocation.MyCommand
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2418,8 +2393,7 @@ function Install-DSM7ReinstallComputer {
 		Write-Log 0 "Computer auf Reinstall gesetzt." $MyInvocation.MyCommand
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2508,8 +2482,7 @@ function Install-DSM7Computer {
 				Write-Log 1 "Name oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
 			}
 		} 
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2583,15 +2556,132 @@ function Send-DSM7ComputerWakeUP {
 				Write-Log 1 "Name oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
 			}
 		} 
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
 	}
 }
 Set-Alias WakeUp-DSM7Computer Send-DSM7ComputerWakeUP
-Export-ModuleMember -Function Send-DSM7ComputerWakeUP -Alias WakeUp-DSM7Computer 
+Export-ModuleMember -Function Send-DSM7ComputerWakeUP -Alias WakeUp-DSM7Computer
+function Send-DSM7ComputerFastInstall {
+	<#
+	.SYNOPSIS
+		FastInstall für den Computer oder PolicyInstanzen.
+	.DESCRIPTION
+		FastInstall für den Computer oder PolicyInstanzen.
+	.EXAMPLE
+		Send-DSM7ComputerFastInstall -Name "%Computername%"
+	.EXAMPLE
+		Send-DSM7ComputerFastInstall -Name "%Computername%" -PolicyInstanceIDs 1,2,3,4
+	.EXAMPLE
+		Send-DSM7ComputerFastInstall -Name "%Computername%" -IgnoreMaintenanceWindow
+	.EXAMPLE
+		Send-DSM7ComputerFastInstall -Name "%Computername%" -ShutdownAfterInstallation
+	.NOTES
+	.LINK
+		Get-DSM7ComputerList
+	.LINK
+		Get-DSM7Computer
+	.LINK
+		Update-DSM7Computer
+	.LINK
+		Install-DSM7Computer
+	.LINK
+		New-DSM7Computer
+	.LINK
+		Remove-DSM7Computer
+	.LINK
+		Move-DSM7Computer
+	.LINK
+		WakeUp-DSM7Computer
+	.LINK
+		Send-DSM7ComputerFastInstall
+	#>
+	[CmdletBinding()] 
+	param ( 
+		[Parameter(Position = 0, Mandatory = $false)]
+		[system.string]$Name,
+		[Parameter(Position = 0, Mandatory = $false)]
+		[system.int32]$ID,
+		[Parameter(Position = 1, Mandatory = $false)]
+		[System.Array]$PolicyInstanceIDs,
+		[Parameter(Position = 2, Mandatory = $false)]
+		[ValidateSet("User", "Service", "Auto")]
+		[System.String]$ExecutionContext = "Auto",
+		[Parameter(Position = 3, Mandatory = $false)]
+		[switch]$IgnoreMaintenanceWindow,
+		[Parameter(Position = 4, Mandatory = $false)]
+		[switch]$ShutdownAfterInstallation
+	)
+	if (Confirm-Connect) {
+		try {
+			if ($Name -or $ID -gt 0) {
+				if ($ID -eq 0) {
+					$search = Get-DSM7Computer -Name $Name
+					if ($search) {
+						$ID = $search.ID
+					}
+					else {
+						return $false
+					}
+				}
+				if ($ID -gt 0) {
+					$PropGroupList = @()
+					$computerIdProperty = New-Object $DSM7Types["MdsTypedPropertyOfNullableOfInt32"]
+					$computerIdProperty.Tag = "ComputerId"
+					$computerIdProperty.Type = "ObjectLink"
+					$computerIdProperty.TypedValue = $ID
+
+					$executionContextProperty = New-Object $DSM7Types["MdsTypedPropertyOfString"]
+					$executionContextProperty.Tag = "ExecutionContext"
+					$executionContextProperty.Type = "Option"
+					$executionContextProperty.TypedValue = $ExecutionContext
+					
+					$ignoreMaintenanceWindowProperty= New-Object $DSM7Types["MdsTypedPropertyOfNullableOfBoolean"]
+					$ignoreMaintenanceWindowProperty.Tag = "IgnoreMaintenanceWindow"
+					$ignoreMaintenanceWindowProperty.Type = "Bool"
+					$ignoreMaintenanceWindowProperty.TypedValue = $IgnoreMaintenanceWindow
+
+					$policyInstancesToExecuteProperty = New-Object $DSM7Types["MdsTypedPropertyOfMdsCollectionOfInt"]
+					$policyInstancesToExecuteProperty.Tag = "PolicyInstancesToExecute"
+					$policyInstancesToExecuteProperty.Type = "CollectionOfInt"
+					$policyInstancesToExecuteProperty.TypedValue = $policyInstancesToExecute
+
+					$computerRelatedJobPropGroup = New-Object $DSM7Types["MdsPropGroup"]
+					$computerRelatedJobPropGroup.Tag = "ComputerRelatedJob";
+					$computerRelatedJobPropGroup.PropertyList = @()
+					$computerRelatedJobPropGroup.PropertyList += $computerIdProperty
+
+					$fastInstallJobPropGroup = New-Object $DSM7Types["MdsPropGroup"]
+					$fastInstallJobPropGroup.Tag = "FastInstallJob"
+					$fastInstallJobPropGroup.PropertyList = @()
+					$fastInstallJobPropGroup.PropertyList += $executionContextProperty
+					$fastInstallJobPropGroup.PropertyList += $ignoreMaintenanceWindowProperty
+					$fastInstallJobPropGroup.PropertyList += $policyInstancesToExecuteProperty
+
+					$PropGroupList += $fastInstallJobPropGroup
+					$PropGroupList += $computerRelatedJobPropGroup
+					
+					$result = New-DSM7InfrastructureJob -PropGroupList $PropGroupList -SchemaTag "FastInstallJob"
+					if ($result) {
+						Write-Log 0 "Fastinstall erfolgreich versendet zu ID($ID)." $MyInvocation.MyCommand
+						return $true 
+					}
+				}
+			}
+			else {
+				Write-Log 1 "Name oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
+			}
+		} 
+		catch [system.exception] {
+			Write-Log 2 $_ $MyInvocation.MyCommand 
+			return $false 
+		} 
+	}
+}
+Set-Alias FastInstall-DSM7Computer Send-DSM7ComputerFastInstall
+Export-ModuleMember -Function Send-DSM7ComputerFastInstall -Alias FastInstall-DSM7Computer
 function New-DSM7Computer {
 	<#
 	.SYNOPSIS
@@ -2633,7 +2723,7 @@ function New-DSM7Computer {
 					$ParentContID = Get-DSM7LDAPPathID -LDAPPath $LDAPPath
 				} 
 				$result = New-DSM7Object -Name $Name -ParentContID $ParentContID -SchemaTag $SchemaTag
-				$Values += "BasicInventory.InitialMACAddress="+$InitialMACAddress
+				$Values += "BasicInventory.InitialMACAddress=" + $InitialMACAddress
 				$result = Update-DSM7Object -Object $result -Values $Values
 				if ($result) { 
 					$result = Convert-DSM7ObjecttoPSObject($result) -LDAP
@@ -2649,8 +2739,7 @@ function New-DSM7Computer {
 				return $false
 			}
 		} 
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2719,8 +2808,7 @@ function Remove-DSM7Computer {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2753,15 +2841,15 @@ function Move-DSM7Computer {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$toLDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[Int]$toLDAPPathID
 	)
 	if (Confirm-Connect) {
@@ -2813,8 +2901,7 @@ function Move-DSM7Computer {
 			}
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2834,8 +2921,7 @@ function Get-DSM7OrgTreeContainerObject {
 		$Webresult = $DSM7WebService.GetOrgTreeContainer($Webrequest).RetrievedOrgTreeContainer
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2882,8 +2968,7 @@ function Get-DSM7OrgTreeContainer {
 			}
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2901,8 +2986,7 @@ function Get-DSM7OrgTreeContainersObject {
 		$Webresult = $DSM7WebService.GetOrgTreeContainers($Webrequest).OrgTreeContainerList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -2945,8 +3029,7 @@ function Get-DSM7OrgTreeContainers {
 			}
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -2957,13 +3040,13 @@ Export-ModuleMember -Function Get-DSM7OrgTreeContainers
 function New-DSM7OrgTreeContainerObject {
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Description,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$SchemaTag = "OU",
-		[Parameter(Position=3, Mandatory=$true)]
+		[Parameter(Position = 3, Mandatory = $true)]
 		[system.string]$ParentContID
 	)
 	try {
@@ -2976,7 +3059,7 @@ function New-DSM7OrgTreeContainerObject {
 		if ($DSM7Version -gt "7.4.0") {
 			$Webrequest.NewOrgTreeContainer.GenTypeData = new-object $DSM7Types["MdsGenType"]
 			$CreationSource = $MyInvocation.MyCommand.Module.Name
-			if ($DSM7CreationSource) {$CreationSource = $DSM7CreationSource}
+			if ($DSM7CreationSource) { $CreationSource = $DSM7CreationSource }
 			$Webrequest.NewOrgTreeContainer.GenTypeData.CreationSource = $CreationSource
 		}
 		$Webresult = $DSM7WebService.CreateOrgTreeContainer($Webrequest).CreatedOrgTreeContainer
@@ -2984,8 +3067,7 @@ function New-DSM7OrgTreeContainerObject {
 		return $Webresult
 
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -3012,14 +3094,14 @@ function New-DSM7OrgTreeContainer {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true, HelpMessage = "Name der OU")]
+		[Parameter(Position = 0, Mandatory = $true, HelpMessage = "Name der OU")]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Description,
-		[Parameter(Position=2, Mandatory=$false)]
-		[ValidateSet("OU","Domain","CitrixFarm","CitrixZone","SwFolder")]
+		[Parameter(Position = 2, Mandatory = $false)]
+		[ValidateSet("OU", "Domain", "CitrixFarm", "CitrixZone", "SwFolder")]
 		[system.string]$SchemaTag = "OU",
-		[Parameter(Position=3, Mandatory=$true)]
+		[Parameter(Position = 3, Mandatory = $true)]
 		[system.string]$LDAPPath
 	)
 	if (Confirm-Connect) {
@@ -3035,8 +3117,7 @@ function New-DSM7OrgTreeContainer {
 				Write-Log 1 "Kein Objekt erzeugt!" $MyInvocation.MyCommand
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3060,8 +3141,7 @@ function Move-DSM7OrgTreeContainerObject {
 		return $Webresult
 
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -3088,13 +3168,13 @@ function Move-DSM7OrgTreeContainer {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$true)]
+		[Parameter(Position = 3, Mandatory = $true)]
 		[system.string]$toLDAPPath
 	)
 	if (Confirm-Connect) {
@@ -3139,8 +3219,7 @@ function Move-DSM7OrgTreeContainer {
 			}
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3160,8 +3239,7 @@ function Update-DSM7OrgTreeContainerObject {
 		return $Webresult
 
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -3188,13 +3266,13 @@ function Update-DSM7OrgTreeContainer {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$Description,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$LDAPPath
 	)
 	if (Confirm-Connect) {
@@ -3234,8 +3312,7 @@ function Update-DSM7OrgTreeContainer {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3256,8 +3333,7 @@ function Remove-DSM7OrgTreeContainerObject {
 		return $true
 
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -3284,11 +3360,11 @@ function Remove-DSM7OrgTreeContainer {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath
 	)
 	if (Confirm-Connect) {
@@ -3325,8 +3401,7 @@ function Remove-DSM7OrgTreeContainer {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3369,19 +3444,19 @@ function Get-DSM7Group {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ParentDynGroup,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$ParentDynGroupID,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[system.string]$ADSID
 	) 
 	if (Confirm-Connect) {
@@ -3435,8 +3510,7 @@ function Get-DSM7Group {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3475,7 +3549,7 @@ function Get-DSM7GroupList {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[ValidateSet("Group","DynamicGroup","ExternalGroup")]
+		[ValidateSet("Group", "DynamicGroup", "ExternalGroup")]
 		[system.string]$SchemaTag,
 		[system.string]$Attributes,
 		[system.string]$Filter,
@@ -3565,27 +3639,27 @@ function New-DSM7Group {
 #>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Description,
-		[Parameter(Position=2, Mandatory=$false)]
-		[ValidateSet("Group","DynamicGroup","ExternalGroup")]
+		[Parameter(Position = 2, Mandatory = $false)]
+		[ValidateSet("Group", "DynamicGroup", "ExternalGroup")]
 		[system.string]$SchemaTag = "Group",
-		[Parameter(Position=3, Mandatory=$false)]
-		[ValidateSet("Computer","User")]
+		[Parameter(Position = 3, Mandatory = $false)]
+		[ValidateSet("Computer", "User")]
 		[system.string]$Typ = "Computer",
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$ParentDynGroup,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[int]$ParentDynGroupID,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[system.string]$DynamicGroupFilter,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[system.string]$ADSID
 
 	) 
@@ -3599,7 +3673,7 @@ function New-DSM7Group {
 				$PropGroupList = @()
 				switch ($SchemaTag) {
 					"DynamicGroup" {
-						if ($DynamicGroupFilter) {$CreateGroup = $true}
+						if ($DynamicGroupFilter) { $CreateGroup = $true }
 						$PropertyList = @()
 						$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
 						$PropertyListObject.Tag = "TargetCategory"
@@ -3641,7 +3715,7 @@ function New-DSM7Group {
 						$PropGroupList += $PropGroupListObject
 					} 
 					"ExternalGroup" {
-						if ($ADSID) {$CreateGroup = $true}
+						if ($ADSID) { $CreateGroup = $true }
 					} 
 					"Group" {
 						$CreateGroup = $true
@@ -3680,8 +3754,7 @@ function New-DSM7Group {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3718,25 +3791,25 @@ function Update-DSM7Group {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Description,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ParentDynGroup,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[int]$ParentDynGroupID,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[system.string]$DynamicGroupFilter,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[system.string]$ADSID,
-		[Parameter(Position=8, Mandatory=$false)]
+		[Parameter(Position = 8, Mandatory = $false)]
 		[system.string]$NewName
 
 	) 
@@ -3758,7 +3831,7 @@ function Update-DSM7Group {
 					switch ($Group.SchemaTag) {
 						"DynamicGroup" {
 							if ($DynamicGroupFilter) {
-								$Values += "DynamicGroupProps.Filter="+$DynamicGroupFilter
+								$Values += "DynamicGroupProps.Filter=" + $DynamicGroupFilter
 							} 
 						} 
 						"ExternalGroup" {
@@ -3797,8 +3870,7 @@ function Update-DSM7Group {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3835,21 +3907,21 @@ function Move-DSM7Group {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$toLDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$toParentContID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ParentDynGroup,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[int]$ParentDynGroupID
 	) 
 	if (Confirm-Connect) {
@@ -3899,8 +3971,7 @@ function Move-DSM7Group {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -3939,19 +4010,19 @@ function Remove-DSM7Group {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ParentDynGroup,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$ParentDynGroupID,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[system.string]$ADSID
 	) 
 	if (Confirm-Connect) {
@@ -4005,8 +4076,7 @@ function Remove-DSM7Group {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -4029,11 +4099,11 @@ function Get-DSM7ComputerGroupMembers {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath
 	)
 	if (Confirm-Connect) {
@@ -4085,11 +4155,11 @@ function Get-DSM7ComputerInGroups {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath
 	)
 	if (Confirm-Connect) {
@@ -4128,11 +4198,11 @@ Export-ModuleMember -Function Get-DSM7ComputerInGroups
 function Get-DSM7ComputerInGroup {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		[system.string]$GroupName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$GroupLDAPPath
 	)
 	if (Confirm-Connect) {
@@ -4173,13 +4243,13 @@ function Get-DSM7ExternalGroupMembers {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[ValidateSet("User", "Computer")]
 		[system.string]$TargetSchemaTag
 	)
@@ -4245,8 +4315,7 @@ function Get-DSM7GroupMembersObject {
 			return $Webresult
 		}
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -4285,19 +4354,19 @@ function Get-DSM7GroupMembers {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$Filter
 	)
 	if (Confirm-Connect) {
 		if ($Name -or $ID -gt 0) {
 			if ($ID -le 1) {
-				if ($ParentContID){
+				if ($ParentContID) {
 					$ParentContID = Get-DSM7LDAPPathID -LDAPPath $LDAPPath
 				}
 				$searchFilter = "(&(Name:IgnoreCase=$Name)(|(BasePropGroupTag=SwCategory)(BasePropGroupTag=Group)))"
@@ -4356,8 +4425,7 @@ function Get-DSM7ListOfMembershipsObject {
 		Write-Log 0 "$($Webresult.ID) erfolgreich erstellt." $MyInvocation.MyCommand
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -4394,13 +4462,13 @@ function Get-DSM7ListOfMemberships {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[ValidateSet("None","Containers","HierarchicalObjects","DynamicGroups","StaticGroups","ExternalGroups","AllStaticGroups","AllGroups","All")]
+		[ValidateSet("None", "Containers", "HierarchicalObjects", "DynamicGroups", "StaticGroups", "ExternalGroups", "AllStaticGroups", "AllGroups", "All")]
 		[system.string]$MembershipTypes = "All",
 		[system.string]$Schematag = "*"
 
@@ -4467,8 +4535,7 @@ function Update-DSM7MembershipInGroupsObject {
 		Write-Log 0 "Objektmitgliedschaften erfolgreich geaendert." $MyInvocation.MyCommand
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -4505,11 +4572,11 @@ function Update-DSM7MembershipInGroups {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
 		$AddGroupIDs,
 		$AddGroupNames,
@@ -4539,7 +4606,7 @@ function Update-DSM7MembershipInGroups {
 							$filter = "(&(|$filter)(|(SchemaTag=Group)(SchemaTag=SwCategory)(SchemaTag=PatchMgmtRuleFilter)))"
 							$AddGroupList = Get-DSM7ObjectList -Filter $filter
 							if ($AddGroupList) {
-								$AddGroupIDs = $AddGroupList| select -ExpandProperty ID
+								$AddGroupIDs = $AddGroupList | select -ExpandProperty ID
 							}
 						}
 						if ($AddGroupIDs) {
@@ -4552,7 +4619,7 @@ function Update-DSM7MembershipInGroups {
 							$filter = "(&(|$filter)(|(SchemaTag=Group)(SchemaTag=SwCategory)(SchemaTag=PatchMgmtRuleFilter)))"
 							$RemoveGroupList = Get-DSM7ObjectList -Filter $filter
 							if ($RemoveGroupList) {
-								$RemoveGroupIDs = $RemoveGroupList| select -ExpandProperty ID
+								$RemoveGroupIDs = $RemoveGroupList | select -ExpandProperty ID
 							}
 						}
 						if ($RemoveGroupIDs) {
@@ -4561,8 +4628,8 @@ function Update-DSM7MembershipInGroups {
 						if ($RemoveGroupobjects -or $AddGroupobjects) {
 							$result = Update-DSM7MembershipInGroupsObject -Object $Object -AddGroupobjects $AddGroupobjects -RemoveGroupobjects $RemoveGroupobjects
 							if ($result) {
-								$AddGroupNames = $AddGroupobjects| select -ExpandProperty Name
-								$RemoveGroupNames = $RemoveGroupobjects| select -ExpandProperty Name
+								$AddGroupNames = $AddGroupobjects | select -ExpandProperty Name
+								$RemoveGroupNames = $RemoveGroupobjects | select -ExpandProperty Name
 								Write-Log 0 "Objekt: $($Object.Name) - Gruppe(n) hinzugefuegt: ($AddGroupNames) und Gruppe(n) entfernt: ($RemoveGroupNames)" $MyInvocation.MyCommand
 								return $true
 							}
@@ -4619,8 +4686,7 @@ function Update-DSM7MemberListOfGroupObject {
 		Write-Log 0 "Gruppenmitgliedschaften erfolgreich geaendert." $MyInvocation.MyCommand
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -4657,11 +4723,11 @@ function Update-DSM7MemberListOfGroup {
 #>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
 		$AddObjectIDs,
 		$AddObjectNames,
@@ -4691,7 +4757,7 @@ function Update-DSM7MemberListOfGroup {
 							$filter = "(|$filter)"
 							$AddObjectList = Get-DSM7ObjectList -Filter $filter
 							if ($AddObjectList) {
-								$AddObjectIDs = $AddObjectList| select -ExpandProperty ID
+								$AddObjectIDs = $AddObjectList | select -ExpandProperty ID
 							}
 						}
 						if ($AddObjectIDs) {
@@ -4702,7 +4768,7 @@ function Update-DSM7MemberListOfGroup {
 								$filter = "$filter(Name:IgnoreCase=$RemoveObjectName)"
 							}
 							$filter = "(|$filter)"
-							$RemoveObjectIDs = Get-DSM7ObjectList -Filter $filter| select -ExpandProperty ID
+							$RemoveObjectIDs = Get-DSM7ObjectList -Filter $filter | select -ExpandProperty ID
 						}
 						if ($RemoveObjectIDs) {
 							$RemoveObjectobjects = Get-DSM7ObjectsObject -IDs $RemoveObjectIDs
@@ -4710,8 +4776,8 @@ function Update-DSM7MemberListOfGroup {
 						if ($RemoveObjectobjects -or $AddObjectobjects) {
 							$result = Update-DSM7MemberListOfGroupObject -Group $Object -AddObjectobjects $AddObjectobjects -RemoveObjectobjects $RemoveObjectobjects
 							if ($result) {
-								$AddObjectNames = $AddObjectobjects| select -ExpandProperty Name
-								$RemoveObjectNames = $RemoveObjectobjects| select -ExpandProperty Name
+								$AddObjectNames = $AddObjectobjects | select -ExpandProperty Name
+								$RemoveObjectNames = $RemoveObjectobjects | select -ExpandProperty Name
 								Write-Log 0 "Gruppe: $($Object.Name) Objekt(e) hinzugefuegt: ($AddObjectNames) und Objekt(e) entfernt: ($RemoveObjectNames)" $MyInvocation.MyCommand
 								return $true
 							}
@@ -4756,13 +4822,13 @@ Export-ModuleMember -Function Update-DSM7MemberListOfGroup
 function Add-DSM7ComputerToGroup {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$GroupName,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$GroupLDAPPath
 	)
 	if (Confirm-Connect) {
@@ -4796,17 +4862,17 @@ Export-ModuleMember -Function Add-DSM7ComputerToGroup
 function Remove-DSM7ComputerFromGroup {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[int]$GroupID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$GroupName,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$GroupLDAPPath
 	)
 	if (Confirm-Connect) {
@@ -4876,7 +4942,7 @@ function Get-DSM7Policy {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[int]$ID,
 		[switch]$resolvedName = $false
 
@@ -4905,8 +4971,7 @@ function Get-DSM7PolicyObject {
 			$Webresult = $DSM7WebService.GetPolicy($Webrequest).RetrievedPolicy
 			return $Webresult
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -4924,8 +4989,7 @@ function Get-DSM7PoliciesObject {
 			$Webresult = $DSM7WebService.GetPolicies($Webrequest).PolicyList
 			return $Webresult
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -4943,8 +5007,7 @@ function Update-DSM7PolicyListObject {
 			$Webresult = $DSM7WebService.UpdatePolicyList($Webrequest).UpdatedPolicyList
 			return $Webresult
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -4966,7 +5029,7 @@ function Update-DSM7PolicyObject {
 			if ($InstallationParametersOfSwSetComponents) {
 				$i = 0
 				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
-					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents+= New-Object $DSM7Types["SwSetComponentInstallationParameters"]
+					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents += New-Object $DSM7Types["SwSetComponentInstallationParameters"]
 					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents[$i].SwInstallationParameters = $InstallationParametersOfSwSetComponents[$key]
 					$Webrequest.PolicyToUpdate.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
 					$i++
@@ -4981,7 +5044,7 @@ function Update-DSM7PolicyObject {
 			if ($InstallationParametersOfSwSetComponents) {
 				$i = 0
 				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
-					$Webrequest.InstallationParametersOfSwSetComponents+= New-Object $DSM7Types["SwSetComponentInstallationParameters"]
+					$Webrequest.InstallationParametersOfSwSetComponents += New-Object $DSM7Types["SwSetComponentInstallationParameters"]
 					$Webrequest.InstallationParametersOfSwSetComponents[$i].SwInstallationParameters = $InstallationParametersOfSwSetComponents[$key]
 					$Webrequest.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
 					$i++
@@ -4997,8 +5060,7 @@ function Update-DSM7PolicyObject {
 		$global:DSM7InfrastructureTaskGuid = $Webresult.InfrastructureTaskGuid
 		return $Webresult.UpdatedPolicy 
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -5050,52 +5112,52 @@ function Update-DSM7Policy {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$SwName,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$SwUniqueID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$SwLDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.array]$SwInstallationParams,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.int32]$TargetId,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.int32]$TargetParentContID,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$ActivationStartDate,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[switch]$IsActiv = $false,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[switch]$IsUserPolicy = $false,
-		[Parameter(Position=8, Mandatory=$false)]
+		[Parameter(Position = 8, Mandatory = $false)]
 		[system.string]$Parameter,
-		[ValidateSet("Include","Exclude","None")]
-		[Parameter(Position=9, Mandatory=$false)]
+		[ValidateSet("Include", "Exclude", "None")]
+		[Parameter(Position = 9, Mandatory = $false)]
 		[system.string]$PolicyRestrictionType,
-		[Parameter(Position=10, Mandatory=$false)]
+		[Parameter(Position = 10, Mandatory = $false)]
 		[system.array]$PolicyRestrictionList,
-		[Parameter(Position=11, Mandatory=$false)]
+		[Parameter(Position = 11, Mandatory = $false)]
 		[switch]$UpdatePackage,
-		[Parameter(Position=12, Mandatory=$false)]
+		[Parameter(Position = 12, Mandatory = $false)]
 		[switch]$CriticalUpdate,
-		[Parameter(Position=13, Mandatory=$false)]
+		[Parameter(Position = 13, Mandatory = $false)]
 		[switch]$DeactivateUpdatedInstances,
-		[Parameter(Position=14, Mandatory=$false)]
+		[Parameter(Position = 14, Mandatory = $false)]
 		[switch]$RemoveInstanceInstallationParameters,
-		[Parameter(Position=15, Mandatory=$false)]
-		[ValidateSet("CreateActive","CreateInactive")]
+		[Parameter(Position = 15, Mandatory = $false)]
+		[ValidateSet("CreateActive", "CreateInactive")]
 		[System.String]$InstanceActivationOnCreate = 0,
-		[Parameter(Position=16, Mandatory=$false)]
-		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
+		[Parameter(Position = 16, Mandatory = $false)]
+		[ValidateSet("AutoActivateAlways", "AutoActivateOnce", "DontAutoactivate")]
 		[system.string]$InstanceActivationMode = "DontAutoactivate",
-		[Parameter(Position=17, Mandatory=$false)]
+		[Parameter(Position = 17, Mandatory = $false)]
 		[switch]$Stats
 	)
 	if (Confirm-Connect) {
@@ -5111,11 +5173,11 @@ function Update-DSM7Policy {
 				$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 				if ($TargetObject -and $AssignedObject) {
 					Write-Log 0 "($($AssignedObject.Name)) und ($TargetName) gefunden." $MyInvocation.MyCommand
-					$Policys = Convert-DSM7PolicyListtoPSObject(Get-DSM7PolicyListByAssignedSoftwareObject -ID $AssignedObject.ID)|Select-Object ID -ExpandProperty TargetObjectList|where {$_.TargetObjectID -eq $TargetObject.ID}
+					$Policys = Convert-DSM7PolicyListtoPSObject(Get-DSM7PolicyListByAssignedSoftwareObject -ID $AssignedObject.ID) | Select-Object ID -ExpandProperty TargetObjectList | where { $_.TargetObjectID -eq $TargetObject.ID }
 					if ($Policys.count -gt 1) {
 						Write-Log 1 "Mehere Policys($($Policys.count)) gefunden!!! Bitte ID benutzen." $MyInvocation.MyCommand
 					}
-					else{ 
+					else { 
 						$ID = $Policys.ID
 					}
 				} 
@@ -5131,17 +5193,17 @@ function Update-DSM7Policy {
 						$SwSetComponentInstallationParameters = @{}
 						if ($AssignedObject.SchemaTag -eq "OSSoftwareSet" -or $AssignedObject.SchemaTag -eq "eScriptSoftwareSet" ) {
 							$PolicyList = Get-DSM7PolicyListByTarget -ID $policy.TargetObjectList[0].TargetObjectID
-							$PolicyListComponentIds = $PolicyList|where {$_.'SwSetComponentPolicy.ParentPolicyId' -eq $Policy.ID}|select -ExpandProperty ID
+							$PolicyListComponentIds = $PolicyList | where { $_.'SwSetComponentPolicy.ParentPolicyId' -eq $Policy.ID } | select -ExpandProperty ID
 							$PolicyListObjects = Get-DSM7PoliciesObject -IDs $PolicyListComponentIds
 							foreach ($PolicyListObject in $PolicyListObjects) {
 								$i = 0
 								foreach ($SwInstallationParam in $SwInstallationParams) {
-									$ValueName = $SwInstallationParam.split("=",2)[0]
-									$ValueValue = $SwInstallationParam.split("=",2)[1]
-									$policyparam = $PolicyListObject.swinstallationparameters|where {$_.Tag -eq $ValueName}
+									$ValueName = $SwInstallationParam.split("=", 2)[0]
+									$ValueValue = $SwInstallationParam.split("=", 2)[1]
+									$policyparam = $PolicyListObject.swinstallationparameters | where { $_.Tag -eq $ValueName }
 									if ($policyparam) {
 										$policyparam.Value = $ValueValue
-										$SwSetComponentInstallationParameters[$PolicyListObject.ID]+= $policyparam
+										$SwSetComponentInstallationParameters[$PolicyListObject.ID] += $policyparam
 										Write-Log 0 "Parameter ($ValueName=$ValueValue) geaendert." $MyInvocation.MyCommand
 										$i++
 									}
@@ -5150,9 +5212,9 @@ function Update-DSM7Policy {
 						}
 						else {
 							foreach ($SwInstallationParam in $SwInstallationParams) {
-								$ValueName = $SwInstallationParam.split("=",2)[0]
-								$ValueValue = $SwInstallationParam.split("=",2)[1]
-								$policyparam = $policy.swinstallationparameters|where {$_.Tag -eq $ValueName}
+								$ValueName = $SwInstallationParam.split("=", 2)[0]
+								$ValueValue = $SwInstallationParam.split("=", 2)[1]
+								$policyparam = $policy.swinstallationparameters | where { $_.Tag -eq $ValueName }
 								$policyparam.Value = $ValueValue
 								Write-Log 0 "Parameter ($ValueName=$ValueValue) geaendert." $MyInvocation.MyCommand
 
@@ -5236,8 +5298,7 @@ function Update-DSM7Policy {
 				return $false 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -5259,8 +5320,7 @@ function Add-DSM7TargetToPolicyObject {
 		Write-Log 0 "$($PolicyTarget.ID) erfolgreich hinzugefuegt." $MyInvocation.MyCommand
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -5283,8 +5343,7 @@ function Remove-DSM7TargetFromPolicyObject {
 		Write-Log 0 "$($PolicyTarget.ID) erfolgreich entfernt." $MyInvocation.MyCommand
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -5346,8 +5405,7 @@ function Get-DSM7PolicyList {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -5392,15 +5450,15 @@ function Move-DSM7PolicyToTarget {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.int32]$TargetID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.int32]$TargetParentContID,
 		[switch]$ForceRemove = $false
 
@@ -5425,7 +5483,7 @@ function Move-DSM7PolicyToTarget {
 						}
 					}
 				}
-				if ($result){
+				if ($result) {
 					Write-Log 0 "Policy erfolgreich nach ($TargetName) verschoben." $MyInvocation.MyCommand
 					return $true
 				}
@@ -5439,8 +5497,7 @@ function Move-DSM7PolicyToTarget {
 				return $false 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -5485,15 +5542,15 @@ function Remove-DSM7PolicyFromTarget {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.int32]$TargetID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.int32]$TargetParentContID,
 		[switch]$ForceRemove = $false
 
@@ -5513,7 +5570,7 @@ function Remove-DSM7PolicyFromTarget {
 					$result = Remove-DSM7TargetFromPolicyObject -Policy $RemovePolicy -PolicyTarget $RemoveObject -ForceRemove:$ForceRemove
 
 				}
-				if ($result){
+				if ($result) {
 					Write-Log 0 "Policy erfolgreich von ($($TargetObject.Name)) entfernt." $MyInvocation.MyCommand
 					return $true
 				}
@@ -5527,8 +5584,7 @@ function Remove-DSM7PolicyFromTarget {
 				return $false 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -5573,15 +5629,15 @@ function Add-DSM7PolicyToTarget {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.int32]$TargetID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetParentContID
 
 	)
@@ -5592,7 +5648,7 @@ function Add-DSM7PolicyToTarget {
 				$Policy = Get-DSM7PolicyObject -ID $ID
 				Write-Log 0 "($ID) und ($($TargetObject.Name)) gefunden." $MyInvocation.MyCommand
 				$result = Add-DSM7TargetToPolicyObject -Policy $Policy -PolicyTarget $TargetObject 
-				if ($result){
+				if ($result) {
 					Write-Log 0 "Policy Ziel ($TargetName) hinzugefuegt." $MyInvocation.MyCommand
 					return $true
 				}
@@ -5606,8 +5662,7 @@ function Add-DSM7PolicyToTarget {
 				return $false 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -5659,61 +5714,61 @@ function New-DSM7Policy {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$SwName,
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.int32]$SwID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$SwUniqueID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$SwUpdateID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$SwLDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.array]$SwInstallationParams,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.int32]$TargetID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.int32]$TargetParentContID,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$ActivationStartDate,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.int32]$Priority = 1000,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.int32]$MaintenanceBehavior = 2,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.int32]$WakeUpTimeSpan = 240,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.int32]$MaxPreStagingTime = 365,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.int32]$MinPreStagingTime = 365,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[switch]$IsActiv = $false,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[switch]$IsUserPolicy = $false,
-		[Parameter(Position=8, Mandatory=$false)]
+		[Parameter(Position = 8, Mandatory = $false)]
 		[switch]$IsUserPolicyCurrentComputer = $false,
-		[Parameter(Position=9, Mandatory=$false)]
+		[Parameter(Position = 9, Mandatory = $false)]
 		[switch]$IsUserPolicyAllassociatedComputer = $false,
-		[Parameter(Position=10, Mandatory=$false)]
+		[Parameter(Position = 10, Mandatory = $false)]
 		[switch]$JobPolicy = $false,
-		[Parameter(Position=10, Mandatory=$false)]
+		[Parameter(Position = 10, Mandatory = $false)]
 		[system.int32]$JobPolicyTrigger = 0,
-		[Parameter(Position=10, Mandatory=$false)]
+		[Parameter(Position = 10, Mandatory = $false)]
 		[switch]$DenyPolicy = $false,
-		[Parameter(Position=10, Mandatory=$false)]
+		[Parameter(Position = 10, Mandatory = $false)]
 		[switch]$Pilot = $false,
-		[Parameter(Position=11, Mandatory=$false)]
-		[ValidateSet("CreateActive","CreateInactive")]
+		[Parameter(Position = 11, Mandatory = $false)]
+		[ValidateSet("CreateActive", "CreateInactive")]
 		[System.String]$InstanceActivationOnCreate = "CreateActive",
-		[Parameter(Position=12, Mandatory=$false)]
-		[ValidateSet("AutoActivateAlways","AutoActivateOnce", "DontAutoactivate")]
+		[Parameter(Position = 12, Mandatory = $false)]
+		[ValidateSet("AutoActivateAlways", "AutoActivateOnce", "DontAutoactivate")]
 		[system.string]$InstanceActivationMode = "DontAutoactivate",
-		[Parameter(Position=13, Mandatory=$false)]
+		[Parameter(Position = 13, Mandatory = $false)]
 		[switch]$Stats
 
 	)
@@ -5748,14 +5803,14 @@ function New-DSM7Policy {
 				$AssignedObject = Get-DSM7Software -ID $SwID
 			}
 			if ($AssignedObject) {
-				$DSMSwSetIds = Get-DSM7AssociationList -SchemaTag "SwSetComponents" -SourceObjectID $AssignedObject.ID|select -ExpandProperty TargetObjectID
+				$DSMSwSetIds = Get-DSM7AssociationList -SchemaTag "SwSetComponents" -SourceObjectID $AssignedObject.ID | select -ExpandProperty TargetObjectID
 				if ($DSMSwSetIds) {
 					Write-Log 0 "Software ist ein Set." $MyInvocation.MyCommand
 					$DSMInstallationParamDefinitions = @{}
 					foreach ($DSMSwSetId in $DSMSwSetIds) {
 						$DSMSoftware = Get-DSM7ObjectObject -ID $DSMSwSetId
 						$DSMInstallationParamDefinitions[$DSMSwSetId] = Get-DSM7SwInstallationParamDefinitionsObject $DSMSoftware
-						$DSMTestnoValue =$DSMInstallationParamDefinitions[$DSMSwSetId]|where {$_.IsMandatory -and !$_.DefaultValue}
+						$DSMTestnoValue = $DSMInstallationParamDefinitions[$DSMSwSetId] | where { $_.IsMandatory -and !$_.DefaultValue }
 						if ($DSMTestnoValue -and !$SwInstallationParams -and !$SwSetComponentPolicyIDs) {
 							Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
 							return $false 
@@ -5767,11 +5822,11 @@ function New-DSM7Policy {
 						foreach ($key in $DSMInstallationParamDefinitions.Keys) {
 							$i = 0
 							foreach ($SwInstallationParam in $SwInstallationParams) {
-								$ValueName = $SwInstallationParam.split("=",2)[0]
-								$ValueValue = $SwInstallationParam.split("=",2)[1]
-								$DSMInstallationParamDefinition = $DSMInstallationParamDefinitions[$key]|where {$_.Tag -eq $ValueName}
+								$ValueName = $SwInstallationParam.split("=", 2)[0]
+								$ValueValue = $SwInstallationParam.split("=", 2)[1]
+								$DSMInstallationParamDefinition = $DSMInstallationParamDefinitions[$key] | where { $_.Tag -eq $ValueName }
 								if ($DSMInstallationParamDefinition) {
-									$SwSetComponentInstallationParameters[$key]+= New-Object $DSM7Types["MdsSWInstallationParam"]
+									$SwSetComponentInstallationParameters[$key] += New-Object $DSM7Types["MdsSWInstallationParam"]
 									$SwSetComponentInstallationParameters[$key][$i].Tag = $DSMInstallationParamDefinition.Tag
 									$SwSetComponentInstallationParameters[$key][$i].SwInstallationParamDefID = $DSMInstallationParamDefinition.ID
 									$SwSetComponentInstallationParameters[$key][$i].Type = "SwInstallationConfiguration"
@@ -5783,7 +5838,7 @@ function New-DSM7Policy {
 					}
 				}
 				$DSMInstallationParamDefinitions = Get-DSM7SwInstallationParamDefinitionsObject (Get-DSM7ObjectObject -ID $AssignedObject.ID)
-				$DSMTestnoValue =$DSMInstallationParamDefinitions|where {$_.IsMandatory -and !$_.DefaultValue}
+				$DSMTestnoValue = $DSMInstallationParamDefinitions | where { $_.IsMandatory -and !$_.DefaultValue }
 				if ($DSMTestnoValue -and !$SwInstallationParams -and !$DenyPolicy) {
 					Write-Log 1 "Es kann keine Policy erstellt, es fehlen folgende Parameter: ($($DSMTestnoValue|select Tag))!!!" $MyInvocation.MyCommand
 					return $false 
@@ -5792,16 +5847,16 @@ function New-DSM7Policy {
 					$SwInstallationParameters = @{}
 					$i = 0
 					foreach ($SwInstallationParam in $SwInstallationParams) {
-						$ValueName = $SwInstallationParam.split("=",2)[0]
-						$ValueValue = $SwInstallationParam.split("=",2)[1]
-						$DSMInstallationParamDefinition = $DSMInstallationParamDefinitions|where {$_.Tag -eq $ValueName}
+						$ValueName = $SwInstallationParam.split("=", 2)[0]
+						$ValueValue = $SwInstallationParam.split("=", 2)[1]
+						$DSMInstallationParamDefinition = $DSMInstallationParamDefinitions | where { $_.Tag -eq $ValueName }
 						if ($DSMInstallationParamDefinition) {
 							$Raw = New-Object PSObject
 							add-member -inputobject $Raw -MemberType NoteProperty -name Id -Value $DSMInstallationParamDefinition.ID
 							add-member -inputobject $Raw -MemberType NoteProperty -name Tag -Value $DSMInstallationParamDefinition.Tag
 							add-member -inputobject $Raw -MemberType NoteProperty -name Value -Value $ValueValue
 							add-member -inputobject $Raw -MemberType NoteProperty -name Type -Value $DSMInstallationParamDefinition.InstallationParamType
-							$SwInstallationParameters[$($DSMInstallationParamDefinition.ID)]=$Raw
+							$SwInstallationParameters[$($DSMInstallationParamDefinition.ID)] = $Raw
 						}
 					}
 				}
@@ -5811,7 +5866,7 @@ function New-DSM7Policy {
 					foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
 						$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID 
 						if ($SwSetComponentPolicy.SwInstallationParameters) {
-							$SwSetComponentInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
+							$SwSetComponentInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)] = $SwSetComponentPolicy.SwInstallationParameters
 						}
 					}
 
@@ -5830,17 +5885,17 @@ function New-DSM7Policy {
 				}
 				if ($AssignedObject -and $TargetObject) {
 					switch ($AssignedObject.Schematag) {
-						"VMWPPatchPackage" {$SchemaTag = "PatchPolicy"}
-						"MSWUV6Package" {$SchemaTag = "PatchPolicy"}
-						"LPRPatchPackage" {$SchemaTag = "PatchPolicy"}
-						"PnpPackage" {$SchemaTag = "PnpPolicy"}
-						default {$SchemaTag = "SwPolicy"}
+						"VMWPPatchPackage" { $SchemaTag = "PatchPolicy" }
+						"MSWUV6Package" { $SchemaTag = "PatchPolicy" }
+						"LPRPatchPackage" { $SchemaTag = "PatchPolicy" }
+						"PnpPackage" { $SchemaTag = "PnpPolicy" }
+						default { $SchemaTag = "SwPolicy" }
 					}
 					switch ($AssignedObject."Software.ReleaseStatus") {
-						0 {$StagingMode = "InstallationTest"}
-						1 {$StagingMode = "Standard"}
-						2 {$NoPolicy = $true}
-						default {$StagingMode = "Standard"}
+						0 { $StagingMode = "InstallationTest" }
+						1 { $StagingMode = "Standard" }
+						2 { $NoPolicy = $true }
+						default { $StagingMode = "Standard" }
 					}
 					if ($NoPolicy) {
 						Write-Log 1 "Es kann keine Policy erstellt werden Paket ist zurueckgezogen!!!" $MyInvocation.MyCommand
@@ -5933,8 +5988,7 @@ function New-DSM7Policy {
 
 			} 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -5980,31 +6034,31 @@ function Copy-DSM7Policy {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.Int32]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.int32]$TargetID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetParentContID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$ActivationStartDate,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.array]$SwSetComponentPolicyIDs,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[switch]$IsActiv = $false,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[switch]$IsUserPolicy = $false,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[switch]$IsUserPolicyCurrentComputer = $false,
-		[Parameter(Position=8, Mandatory=$false)]
+		[Parameter(Position = 8, Mandatory = $false)]
 		[switch]$IsUserPolicyAllassociatedComputer = $false,
-		[Parameter(Position=9, Mandatory=$false)]
+		[Parameter(Position = 9, Mandatory = $false)]
 		[switch]$JobPolicy = $false,
-		[Parameter(Position=10, Mandatory=$false)]
+		[Parameter(Position = 10, Mandatory = $false)]
 		[switch]$Stats
 
 
@@ -6033,7 +6087,7 @@ function Copy-DSM7Policy {
 						foreach ($SwSetComponentPolicyID in $SwSetComponentPolicyIDs) {
 							$SwSetComponentPolicy = Get-DSM7PolicyObject -ID $SwSetComponentPolicyID 
 							if ($SwSetComponentPolicy.SwInstallationParameters) {
-								$SwSetComponentInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)]=$SwSetComponentPolicy.SwInstallationParameters
+								$SwSetComponentInstallationParameters[$($SwSetComponentPolicy.AssignedObjectID)] = $SwSetComponentPolicy.SwInstallationParameters
 							}
 						}
 
@@ -6078,8 +6132,7 @@ function Copy-DSM7Policy {
 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -6107,7 +6160,7 @@ function New-DSM7PolicyObject {
 				$i = 0
 				foreach ($key in $SwInstallationParam.Keys) {
 
-					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters+= New-Object $DSM7Types["MdsSWInstallationParam"]
+					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters += New-Object $DSM7Types["MdsSWInstallationParam"]
 					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters[$i].Tag = $SwInstallationParam[$key].Tag
 					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters[$i].SwInstallationParamDefID = $key
 					$Webrequest.PolicyToCreate.Policy.SwInstallationParameters[$i].Type = "SwInstallationConfiguration"
@@ -6119,7 +6172,7 @@ function New-DSM7PolicyObject {
 			if ($InstallationParametersOfSwSetComponents) {
 				$i = 0
 				foreach ($key in $InstallationParametersOfSwSetComponents.Keys) {
-					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents+= New-Object $DSM7Types["SwSetComponentInstallationParameters"]
+					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents += New-Object $DSM7Types["SwSetComponentInstallationParameters"]
 					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents[$i].SwInstallationParameters = $InstallationParametersOfSwSetComponents[$key]
 					$Webrequest.PolicyToCreate.InstallationParametersOfSwSetComponents[$i].SwSetComponentObjectId = $key
 					$i++
@@ -6128,7 +6181,7 @@ function New-DSM7PolicyObject {
 			if ($DSM7Version -gt "7.4.0") {
 				$Webrequest.PolicyToCreate.Policy.GenTypeData = new-object $DSM7Types["MdsGenType"]
 				$CreationSource = $MyInvocation.MyCommand.Module.Name
-				if ($DSM7CreationSource) {$CreationSource = $DSM7CreationSource}
+				if ($DSM7CreationSource) { $CreationSource = $DSM7CreationSource }
 				$Webrequest.PolicyToCreate.Policy.GenTypeData.CreationSource = $CreationSource
 			}
 		}
@@ -6148,8 +6201,7 @@ function New-DSM7PolicyObject {
 
 		return $Webresult.CreatedPolicy
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6177,8 +6229,7 @@ function Remove-DSM7PolicyObject {
 		$Webresult = $DSM7WebService.DeletePolicy($Webrequest).DeletePolicyResult
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6222,19 +6273,19 @@ function Remove-DSM7Policy {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$ID,
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$SwName,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$SwUniqueID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$SwLDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.int32]$TargetID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
 		[switch]$ForceDelete = $false,
 		[switch]$DeleteAssociatedPolicies = $true
@@ -6252,11 +6303,11 @@ function Remove-DSM7Policy {
 			$TargetObject = Find-DSM7Target -ID $TargetID -Name $TargetName -LDAPPath $TargetLDAPPath -ParentContID $TargetParentContID
 			if (($TargetObject -and $AssignedObject) -or $ID) {
 				if (!$ID) {
-					$Policys = Convert-DSM7PolicyListtoPSObject(Get-DSM7PolicyListByAssignedSoftwareObject -ID $AssignedObject.ID)|Select-Object ID -ExpandProperty TargetObjectList|where {$_.TargetObjectID -eq $TargetObject.ID}
+					$Policys = Convert-DSM7PolicyListtoPSObject(Get-DSM7PolicyListByAssignedSoftwareObject -ID $AssignedObject.ID) | Select-Object ID -ExpandProperty TargetObjectList | where { $_.TargetObjectID -eq $TargetObject.ID }
 					if ($Policys.count -gt 1) {
 						Write-Log 1 "Mehere Policys($($Policys.count)) gefunden!!! Bitte ID benutzen." $MyInvocation.MyCommand
 					}
-					else{ 
+					else { 
 						$ID = $Policys.ID
 					}
 				}
@@ -6277,8 +6328,7 @@ function Remove-DSM7Policy {
 				return $false 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -6297,8 +6347,7 @@ function Get-DSM7PolicyListByAssignedSoftwareObject {
 		$Webresult = $DSM7WebService.GetPolicyListByAssignedObject($Webrequest).PolicyList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6342,11 +6391,11 @@ function Get-DSM7PolicyListByAssignedSoftware {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath
 	)
 	if (Confirm-Connect) {
@@ -6374,8 +6423,7 @@ function Get-DSM7PolicyListByAssignedSoftware {
 				}
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -6392,8 +6440,7 @@ function Get-DSM7PolicyListByTargetObject {
 		$Webresult = $DSM7WebService.GetPolicyListByTarget($Webrequest).PolicyList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6433,11 +6480,11 @@ function Get-DSM7PolicyListByTarget {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
 		[switch]$resolvedName
 	)
@@ -6464,8 +6511,7 @@ function Get-DSM7PolicyListByTarget {
 				}
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -6515,27 +6561,27 @@ function Copy-DSM7PolicyListNewTarget {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$ID,
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$TargetName,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$TargetLDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.int32]$TargetParentContID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ExtentionID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ExtentionName,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$ExtentionLDAPPath,
-		[Parameter(Position=17, Mandatory=$false)]
+		[Parameter(Position = 17, Mandatory = $false)]
 		[switch]$Stats
 
 	)
@@ -6573,7 +6619,7 @@ function Copy-DSM7PolicyListNewTarget {
 						$PolicylistTarget = Get-DSM7PolicyListByTarget -ID $TargetObject.ID
 						$I = 0
 						$J = 0
-						$K = $SourcePolicy.Count - ($SourcePolicy|where {$_.SchemaTag -eq "SwSetComponentPolicy"}).Count
+						$K = $SourcePolicy.Count - ($SourcePolicy | where { $_.SchemaTag -eq "SwSetComponentPolicy" }).Count
 						if ($ExtentionID -or $ExtentionName) {
 							if ($ExtentionID -le 1) {
 								$PolicylistExtention = Get-DSM7PolicyListByTarget -Name $ExtentionName -LDAPPath $ExtentionLDAPPath
@@ -6585,17 +6631,18 @@ function Copy-DSM7PolicyListNewTarget {
 						foreach ($Policy in $SourcePolicy) {
 							$SWSetIDs = @()
 							if ($Policy.AssignedObjectSchemaTag -like "*Set") {
-								$SWSetIDs = $SourcePolicy|where {$_.'SwSetComponentPolicy.ParentPolicyId' -eq $Policy.ID}|select -ExpandProperty ID
+								$SWSetIDs = $SourcePolicy | where { $_.'SwSetComponentPolicy.ParentPolicyId' -eq $Policy.ID } | select -ExpandProperty ID
 							}
 							$PolicyTarget = New-Object $DSM7Types["MdsPolicyTarget"]
 							$PolicyTarget.TargetObjectID = $TargetObject.ID
 							$PolicyTarget.TargetSchemaTag = $TargetObject.SchemaTag
-							$IDTarget = $($PolicylistTarget|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
+							$IDTarget = $($PolicylistTarget | where { $_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID) }).ID 
 							if ($IDTarget -gt 0 -and $Policy.SchemaTag -ne "SwSetComponentPolicy") {
 								Write-Log 0 "Paket ($($Policy.AssignedObjectName)) ist schon zugewiesen." $MyInvocation.MyCommand
-								$J++ }
+								$J++ 
+       }
 							elseif ($Policy.SchemaTag -ne "SwSetComponentPolicy") {
-								$ID = $($PolicylistExtention|where {$_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID)}).ID 
+								$ID = $($PolicylistExtention | where { $_.AssignedObjectUniqueID -eq $($Policy.AssignedObjectUniqueID) }).ID 
 								if ($ID -gt 0) {
 									$result = Add-DSM7PolicyToTarget -ID $ID -TargetID $TargetObject.ID
 
@@ -6629,8 +6676,7 @@ function Copy-DSM7PolicyListNewTarget {
 				}
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -6649,8 +6695,7 @@ function Get-DSM7PolicyStatisticsByTargetObject {
 		$Webresult = $DSM7WebService.GetPolicyStatisticsByTarget($Webrequest).ComplianceStatisticResults
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6719,8 +6764,7 @@ function Get-DSM7PolicyStatisticsObject {
 		$Webresult = $DSM7WebService.GetPolicyStatistics($Webrequest).Histogram
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6784,8 +6828,7 @@ function Get-DSM7PolicyStatisticsByPoliciesObject {
 		$Webresult = $DSM7WebService.GetPolicyStatisticsByPolicies($Webrequest).HistogramsByPolicyIds
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6827,7 +6870,7 @@ function Get-DSM7PolicyStatisticsByPolicies {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.array]$IDs
 	)
 	if (Confirm-Connect) {
@@ -6854,9 +6897,9 @@ function Get-DSM7ComputerMissingPatch {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[int32]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Name
 	)
 	if (Confirm-Connect) {
@@ -6865,7 +6908,8 @@ function Get-DSM7ComputerMissingPatch {
 				$ID = $(Get-DSM7Computer -Name $Name).ID
 			}
 			else {
-				$Name = $(Get-DSM7Computer -ID $ID).Name }
+				$Name = $(Get-DSM7Computer -ID $ID).Name 
+   }
 			if ($ID) {
 				$result = Get-DSM7AssociationList -SchemaTag "ComputerMissingPatch" -SourceObjectID $ID
 				if ($result) {
@@ -6889,8 +6933,7 @@ function Get-DSM7ComputerMissingPatch {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -6915,8 +6958,7 @@ function Get-DSM7PolicyInstanceCountByPolicyObject {
 		$Webresult = $DSM7WebService.GetPolicyInstanceCountByPolicy($Webrequest).NumberOfResults
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -6940,10 +6982,10 @@ function Get-DSM7PolicyInstanceCountByPolicy {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$true)] 
+		[Parameter(Position = 0, Mandatory = $true)] 
 		[system.string]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
-		[ValidateSet("Undefined","Compliant","NotCompliant","CompliancePending","NotPossible","ClientSidePrerequisitesFailed")]
+		[Parameter(Position = 1, Mandatory = $false)]
+		[ValidateSet("Undefined", "Compliant", "NotCompliant", "CompliancePending", "NotPossible", "ClientSidePrerequisitesFailed")]
 		[system.string]$ComplianceState
 	)
 	if (Confirm-Connect) {
@@ -6965,8 +7007,7 @@ function Get-DSM7PolicyInstanceListByNodeObject {
 		$Webresult = $DSM7WebService.GetPolicyInstanceListByNode($Webrequest).PolicyInstanceList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -7017,18 +7058,17 @@ Export-ModuleMember -Function Get-DSM7PolicyInstanceListByNode
 function Update-DSM7PolicyInstanceListObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$PolicyInstanceList
 	)
 	try {
 		$Webrequest = Get-DSM7RequestHeader -action "UpdatePolicyInstanceList"
 		$Webrequest.PolicyInstanceListToUpdate = $PolicyInstanceList
 		$Webresult = $DSM7WebService.UpdatePolicyInstanceList($Webrequest).UpdatedPolicyInstanceList
-		$policyInstanceIDs = $PolicyInstanceList| select -ExpandProperty PolicyID
+		$policyInstanceIDs = $PolicyInstanceList | select -ExpandProperty PolicyID
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -7044,8 +7084,7 @@ function Get-DSM7PolicyInstanceListByPolicyObject {
 		$Webresult = $DSM7WebService.GetPolicyInstanceListByPolicy($Webrequest).PolicyInstanceList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -7091,7 +7130,7 @@ Export-ModuleMember -Function Get-DSM7PolicyInstanceListByPolicy
 function Get-DSM7PolicyInstancesObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs
 	)
 	try {
@@ -7100,8 +7139,7 @@ function Get-DSM7PolicyInstancesObject {
 		$Webresult = $DSM7WebService.GetPolicyInstances($Webrequest).PolicyInstanceList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -7128,7 +7166,7 @@ function Get-DSM7PolicyInstances {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.array]$IDs
 	)
 	if (Confirm-Connect) {
@@ -7148,9 +7186,9 @@ Export-ModuleMember -Function Get-DSM7PolicyInstances
 function Remove-DSM7PolicyInstanceListObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$Policy,
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		$PolicyInstance
 	)
 	try {
@@ -7161,8 +7199,7 @@ function Remove-DSM7PolicyInstanceListObject {
 		$policyInstanceID = $PolicyInstance.ID
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -7194,31 +7231,31 @@ function Update-DSM7PolicyInstances {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs,
-        [Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$ActivationStartDate,
-        [Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[switch]$active,
-        [Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[switch]$deactivateuntilreinsall,
-        [Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[switch]$reinstall,
-        [switch]$uninstall
+		[switch]$uninstall
 	)
 	if (Confirm-Connect) {
 		$PolicyInstanceList = Get-DSM7PolicyInstancesObject -IDs $IDs
 		if ($PolicyInstanceList) {
 			foreach ($PolicyInstance in $PolicyInstanceList) {
 				$PolicyInstance.IsActive = $active
-                if ($active) {
-				    Write-Log 0 "Policy Instance aktiviert ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
-                }
-                if ($deactivateuntilreinsall) {
-                    $PolicyInstance.IsActive = $false
-                    $PolicyInstance.InstanceActivationMode = "AutoactivateOnce"
-    				Write-Log 0 "Policy Instance deaktiviert bis zur Neuinstallation ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
-                }
+				if ($active) {
+					Write-Log 0 "Policy Instance aktiviert ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
+				}
+				if ($deactivateuntilreinsall) {
+					$PolicyInstance.IsActive = $false
+					$PolicyInstance.InstanceActivationMode = "AutoactivateOnce"
+					Write-Log 0 "Policy Instance deaktiviert bis zur Neuinstallation ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
+				}
 				if ($reinstall) {
 					if ($DSM7Version -gt "7.3.0") {
 						$PolicyInstance.ReinstallRequestNumber++ 
@@ -7233,21 +7270,21 @@ function Update-DSM7PolicyInstances {
 					}
 					Write-Log 0 "Policy Instance reinstall ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
 				}
-                if ($uninstall) {
-                    $PolicyInstance.RequestType = "UninstalledOnPurpose"
-                    $PolicyInstance.IsActive = $true
-                    $PolicyInstance.DesiredConfiguration = $null
+				if ($uninstall) {
+					$PolicyInstance.RequestType = "UninstalledOnPurpose"
+					$PolicyInstance.IsActive = $true
+					$PolicyInstance.DesiredConfiguration = $null
 
 					Write-Log 0 "Policy Instance uninstall ID ($($PolicyInstance.ID))" $MyInvocation.MyCommand 
 				} 
-                if ($ActivationStartDate) {
-				    $StartDate = $(Get-Date($ActivationStartDate)) 
-                    $StartDate = $StartDate + [System.TimeZoneInfo]::Local.BaseUtcOffset
-			        if ([System.TimeZoneInfo]::Local.IsDaylightSavingTime($StartDate)) {
-				        $StartDate = $StartDate + 36000000000
-			        }
-                    $PolicyInstance.ActivationStartDate = $StartDate
-                }
+				if ($ActivationStartDate) {
+					$StartDate = $(Get-Date($ActivationStartDate)) 
+					$StartDate = $StartDate + [System.TimeZoneInfo]::Local.BaseUtcOffset
+					if ([System.TimeZoneInfo]::Local.IsDaylightSavingTime($StartDate)) {
+						$StartDate = $StartDate + 36000000000
+					}
+					$PolicyInstance.ActivationStartDate = $StartDate
+				}
 			} 
 			$result = Update-DSM7PolicyInstanceListObject $PolicyInstanceList
 			if ($result) {
@@ -7286,7 +7323,7 @@ function Remove-DSM7PolicyInstance {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$ID
 	)
 	if (Confirm-Connect) {
@@ -7309,14 +7346,14 @@ Export-ModuleMember -Function Remove-DSM7PolicyInstance
 function Update-DSM7PolicyInstancesActive {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$ID
 	)
 	$policyInstancelist = Get-DSM7PolicyInstanceListByNode -ID $ID -resolvedName 
-	$policyInstanceIDs = $policyInstancelist| where {$_.IsActive -eq $false}|select -ExpandProperty ID
+	$policyInstanceIDs = $policyInstancelist | where { $_.IsActive -eq $false } | select -ExpandProperty ID
 	if ($policyInstanceIDs) {
 		foreach ($ID in $policyInstanceIDs) {
-			$PolicyName = $($policyInstancelist| where {$_.ID -eq $($ID)}).AssignedObjectName
+			$PolicyName = $($policyInstancelist | where { $_.ID -eq $($ID) }).AssignedObjectName
 			Write-Log 0 "$PolicyName - soll aktiviert werden." $MyInvocation.MyCommand
 		}
 		$result = Update-DSM7PolicyInstances -IDs $policyInstanceIDs -active
@@ -7331,7 +7368,7 @@ function Update-DSM7PolicyInstancesActive {
 function Upgrade-DSM7PolicyInstancesByNodeObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$NodeId
 	)
 	try {
@@ -7340,8 +7377,7 @@ function Upgrade-DSM7PolicyInstancesByNodeObject {
 		$Webresult = $DSM7WebService.UpgradePolicyInstancesByNode($Webrequest).UpdatedPolicyInstanceList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -7349,7 +7385,7 @@ function Upgrade-DSM7PolicyInstancesByNodeObject {
 function Get-DSM7SwInstallationConfigurationsObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[Array]$IDs
 	)
 	try {
@@ -7358,8 +7394,7 @@ function Get-DSM7SwInstallationConfigurationsObject {
 		$Webresult = $DSM7WebService.GetSwInstallationConfigurations($Webrequest).InstallationConfigurations
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -7405,7 +7440,7 @@ function Get-DSM7SoftwareIDs {
 #>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs
 	)
 	if (Confirm-Connect) {
@@ -7423,8 +7458,7 @@ function Get-DSM7SoftwareIDs {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -7472,17 +7506,17 @@ function Get-DSM7Software {
 #>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.int32]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UniqueID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UpdateID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[switch]$IsLastReleasedRev
 	)
 	if (Confirm-Connect) {
@@ -7534,8 +7568,7 @@ function Get-DSM7Software {
 				}
 			} 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -7586,17 +7619,17 @@ function Move-DSM7Software {
 	#>
 	[CmdletBinding()] 
 	param (
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[System.String]$UniqueID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$toLDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[Int]$toLDAPPathID
 	)
 	if (Confirm-Connect) {
@@ -7654,8 +7687,7 @@ function Move-DSM7Software {
 			}
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -7745,8 +7777,7 @@ function Update-DSM7Software {
 			}
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -7893,17 +7924,17 @@ function Get-DSM7SoftwareCategoryList {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Attributes,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Filter,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath = "",
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[int]$ParentContID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[switch]$GenTypeData = $false,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[switch]$recursive = $false
 	)
 	if (Confirm-Connect) {
@@ -7995,15 +8026,15 @@ function Get-DSM7SoftwareCategory {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[switch]$resolvedName = $false,
 		[switch]$LDAP = $false
 
@@ -8040,13 +8071,13 @@ function Get-DSM7SoftwareCategory {
 								}
 							}
 							add-member -inputobject $result -MemberType NoteProperty -name 'DynamicSwCategoryProps.FilterName' -Value $result.'DynamicSwCategoryProps.Filter'
-							if ($IDs){
+							if ($IDs) {
 								$NameIDs = get-dsm7objects -IDs $IDs -ObjectGroupType "Catalog"
 
 								foreach ($NameID in $NameIDs) {
 									$StringName = Convert-StringtoLDAPString $NameID.Name
 									$regex = [Regex]$NameID.ID
-									$result.'DynamicSwCategoryProps.FilterName' = $regex.Replace($result.'DynamicSwCategoryProps.FilterName',$StringName,1)
+									$result.'DynamicSwCategoryProps.FilterName' = $regex.Replace($result.'DynamicSwCategoryProps.FilterName', $StringName, 1)
 								}
 							}
 
@@ -8065,8 +8096,7 @@ function Get-DSM7SoftwareCategory {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -8119,22 +8149,22 @@ function New-DSM7SoftwareCategory {
 #>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Description,
-		[Parameter(Position=2, Mandatory=$false)]
-		[ValidateSet("SwCategory","PatchMgmtRuleFilter","DynamicSwCategory","DynamicPatchMgmtRuleFilter")]
+		[Parameter(Position = 2, Mandatory = $false)]
+		[ValidateSet("SwCategory", "PatchMgmtRuleFilter", "DynamicSwCategory", "DynamicPatchMgmtRuleFilter")]
 		[system.string]$SchemaTag = "SwCategory",
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$ParentDynGroup,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[system.string]$Filter,
-		[Parameter(Position=8, Mandatory=$false)]
+		[Parameter(Position = 8, Mandatory = $false)]
 		[switch]$resolvedName = $false,
 		[switch]$lastCat = $false,
 		[switch]$PatchLink
@@ -8162,27 +8192,27 @@ function New-DSM7SoftwareCategory {
 						$lineIn = $line.TrimStart("(").TrimStart("|").TrimStart("&").TrimStart("(")
 						$linepara = $lineIn.split("=")
 						if ($linepara[0].contains("ContainedIn") -or $linepara[0].contains("ListOfIntContains")) {
-							if ($linepara[0].contains('PatchPackage.Products')) {$PatchSchema = "PatchProduct"}
-							if ($linepara[0].contains('PatchPackage.ProductFamily')) {$PatchSchema = "PatchProductFamily"}
+							if ($linepara[0].contains('PatchPackage.Products')) { $PatchSchema = "PatchProduct" }
+							if ($linepara[0].contains('PatchPackage.ProductFamily')) { $PatchSchema = "PatchProductFamily" }
 
-							foreach ($LineName in $linepara[1].split(",")){
+							foreach ($LineName in $linepara[1].split(",")) {
 								$LineName = Convert-ReplaceStringToLDAPString $LineName
 								[System.Array]$FilterName = Get-DSM7ObjectList -LDAProot "<LDAP://rootCatalog>" -Filter "(&(Name=$LineName)(PatchCategoryObject.RequiredLicense=$PatchMgmtLicense)(SchemaTag=$PatchSchema)(BasePropGroupTag=PatchCategoryObject))" -Attributes "PatchCategoryObject.RequiredLicense"
 								if ($FilterName -and $FilterName.count -gt 0) {
-									$LineName = $LineName.replace("\","\\\")
-									$LineName = $LineName.replace("+","\+")
-									$LineName = $LineName.replace("-","\-")
+									$LineName = $LineName.replace("\", "\\\")
+									$LineName = $LineName.replace("+", "\+")
+									$LineName = $LineName.replace("-", "\-")
 									$regex = [Regex]$LineName
 									if ($FilterName.count -gt 1) {
 										if ($lastCat) { 
-											$Filter = $regex.Replace($Filter,$FilterName[-1].ID,1)
+											$Filter = $regex.Replace($Filter, $FilterName[-1].ID, 1)
 										}
 										else {
 											Write-Log 1 "Konnte Filter ($Filter) nicht aufloesen, mehrere Objekte vorhanden ($($FilterName.count))!!!" $MyInvocation.MyCommand 
 										} 
 									}
 									else {
-										$Filter = $regex.Replace($Filter,$FilterName.ID,1)
+										$Filter = $regex.Replace($Filter, $FilterName.ID, 1)
 									}
 								}
 								else {
@@ -8204,7 +8234,7 @@ function New-DSM7SoftwareCategory {
 				$PropGroupList = @()
 				switch ($SchemaTag) {
 					"DynamicSwCategory" {
-						if ($Filter) {$CreateGroup = $true}
+						if ($Filter) { $CreateGroup = $true }
 						$PropertyList = @()
 						$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
 						$PropertyListObject.Tag = "Filter"
@@ -8228,7 +8258,7 @@ function New-DSM7SoftwareCategory {
 					} 
 					"DynamicPatchMgmtRuleFilter" {
 
-						if ($Filter) {$CreateGroup = $true}
+						if ($Filter) { $CreateGroup = $true }
 						$PropertyList = @()
 						$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
 						$PropertyListObject.Tag = "Filter"
@@ -8300,8 +8330,7 @@ function New-DSM7SoftwareCategory {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -8348,23 +8377,23 @@ function Update-DSM7SoftwareCategory {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$Description,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[int]$ID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=4, Mandatory=$false)]
+		[Parameter(Position = 4, Mandatory = $false)]
 		[system.string]$ParentContID,
-		[Parameter(Position=5, Mandatory=$false)]
+		[Parameter(Position = 5, Mandatory = $false)]
 		[system.string]$Filter,
-		[Parameter(Position=6, Mandatory=$false)]
+		[Parameter(Position = 6, Mandatory = $false)]
 		[switch]$resolvedName = $false,
-		[Parameter(Position=7, Mandatory=$false)]
+		[Parameter(Position = 7, Mandatory = $false)]
 		[switch]$lastCat = $false,
-		[Parameter(Position=8, Mandatory=$false)]
+		[Parameter(Position = 8, Mandatory = $false)]
 		[system.string]$NewName
 	) 
 	if (Confirm-Connect) {
@@ -8395,27 +8424,27 @@ function Update-DSM7SoftwareCategory {
 							$lineIn = $line.TrimStart("(").TrimStart("|").TrimStart("&").TrimStart("(")
 							$linepara = $lineIn.split("=")
 							if ($linepara[0].contains("ContainedIn") -or $linepara[0].contains("ListOfIntContains")) {
-								if ($linepara[0].contains('PatchPackage.Products')) {$PatchSchema = "PatchProduct"}
-								if ($linepara[0].contains('PatchPackage.ProductFamily')) {$PatchSchema = "PatchProductFamily"}
+								if ($linepara[0].contains('PatchPackage.Products')) { $PatchSchema = "PatchProduct" }
+								if ($linepara[0].contains('PatchPackage.ProductFamily')) { $PatchSchema = "PatchProductFamily" }
 
-								foreach ($LineName in $linepara[1].split(",")){
+								foreach ($LineName in $linepara[1].split(",")) {
 									$LineName = Convert-ReplaceStringToLDAPString $LineName
 									[System.Array]$FilterName = Get-DSM7ObjectList -LDAProot "<LDAP://rootCatalog>" -Filter "(&(Name=$LineName)(PatchCategoryObject.RequiredLicense=$PatchMgmtLicense)(SchemaTag=$PatchSchema)(BasePropGroupTag=PatchCategoryObject))" -Attributes "PatchCategoryObject.RequiredLicense"
 									if ($FilterName -and $FilterName.count -gt 0) {
-										$LineName = $LineName.replace("\","\\\")
-										$LineName = $LineName.replace("+","\+")
-										$LineName = $LineName.replace("-","\-")
+										$LineName = $LineName.replace("\", "\\\")
+										$LineName = $LineName.replace("+", "\+")
+										$LineName = $LineName.replace("-", "\-")
 										$regex = [Regex]$LineName
 										if ($FilterName.count -gt 1) {
 											if ($lastCat) { 
-												$Filter = $regex.Replace($Filter,$FilterName[-1].ID,1)
+												$Filter = $regex.Replace($Filter, $FilterName[-1].ID, 1)
 											}
 											else {
 												Write-Log 1 "Konnte Filter ($Filter) nicht aufloesen, mehrere Objekte vorhanden ($($FilterName.count))!!!" $MyInvocation.MyCommand 
 											} 
 										}
 										else {
-											$Filter = $regex.Replace($Filter,$FilterName.ID,1)
+											$Filter = $regex.Replace($Filter, $FilterName.ID, 1)
 										}
 									}
 									else {
@@ -8435,12 +8464,12 @@ function Update-DSM7SoftwareCategory {
 					switch ($Category.SchemaTag) {
 						"DynamicSwCategory" {
 							if ($Filter) {
-								$Values += "DynamicSwCategoryProps.Filter="+$Filter
+								$Values += "DynamicSwCategoryProps.Filter=" + $Filter
 							} 
 						}
 						"DynamicPatchMgmtRuleFilter" {
 							if ($Filter) {
-								$Values += "DynamicSwCategoryProps.Filter="+$Filter
+								$Values += "DynamicSwCategoryProps.Filter=" + $Filter
 							} 
 						}
 						default {}
@@ -8472,8 +8501,7 @@ function Update-DSM7SoftwareCategory {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -8522,13 +8550,13 @@ function Remove-DSM7SoftwareCategory {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[System.Int32]$ID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$ParentContID
 	) 
 	if (Confirm-Connect) {
@@ -8566,8 +8594,7 @@ function Remove-DSM7SoftwareCategory {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -8663,8 +8690,7 @@ function Get-DSM7SwInstallationParamDefinitions {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -8675,7 +8701,7 @@ Export-ModuleMember -Function Get-DSM7SwInstallationParamDefinitions
 function Get-DSM7SwInstallationParamDefinitionsObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$Object
 	)
 	try {
@@ -8684,8 +8710,7 @@ function Get-DSM7SwInstallationParamDefinitionsObject {
 		$Webresult = $DSM7WebService.GetSwInstallationParamDefinitions($Webrequest).InstallationParameterDefinitions
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -8694,15 +8719,15 @@ function Get-DSM7SwInstallationParamDefinitionsObject {
 function Add-DSM7SwInstallationParamDefinitionsObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$UniqueID,
-		[Parameter(Position=1, Mandatory=$true)]
+		[Parameter(Position = 1, Mandatory = $true)]
 		$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		$Values,
-		[Parameter(Position=2, Mandatory=$true)]
+		[Parameter(Position = 2, Mandatory = $true)]
 		$InstallationParamType = "String" ,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		$LocigalCategory
 
 	)
@@ -8716,23 +8741,23 @@ function Add-DSM7SwInstallationParamDefinitionsObject {
 		$Webrequest.SwInstallationParamDefinitionToAdd.SoftwareRevision = 1
 		$DisplayNameList = @()
 		$DisplayName = New-Object $DSM7Types["MdsDisplayName"]
-		$DisplayName.CultureCode ="de"
-		$DisplayName.Representation ="Test456"
+		$DisplayName.CultureCode = "de"
+		$DisplayName.Representation = "Test456"
 		$DisplayNameList += $DisplayName 
 		$Webrequest.SwInstallationParamDefinitionToAdd.DisplayNameList = $DisplayNameList
 		$LocigalCategory = @()
 		$DisplayName = New-Object $DSM7Types["MdsDisplayName"]
-		$DisplayName.CultureCode ="de"
-		$DisplayName.Representation ="Test456"
+		$DisplayName.CultureCode = "de"
+		$DisplayName.Representation = "Test456"
 		$LocigalCategory += $DisplayName 
 		$Webrequest.SwInstallationParamDefinitionToAdd.LocigalCategory = $LocigalCategory
 		$PredefinedValues = @()
 		$PredefinedValue = New-Object $DSM7Types["MdsSWIPPredefinedValue"]
-		$PredefinedValue.PredefinedValue ="Test"
+		$PredefinedValue.PredefinedValue = "Test"
 		$PredefinedValueDisplayNameList = @()
 		$PredefinedValueDisplayName = New-Object $DSM7Types["MdsDisplayName"]
-		$PredefinedValueDisplayName.CultureCode ="de"
-		$PredefinedValueDisplayName.Representation ="Test456"
+		$PredefinedValueDisplayName.CultureCode = "de"
+		$PredefinedValueDisplayName.Representation = "Test456"
 		$PredefinedValueDisplayNameList += $PredefinedValueDisplayName 
 		$PredefinedValue.DisplayNameList = $PredefinedValueDisplayNameList
 		$PredefinedValues += $PredefinedValue
@@ -8742,8 +8767,7 @@ function Add-DSM7SwInstallationParamDefinitionsObject {
 
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -8751,7 +8775,7 @@ function Add-DSM7SwInstallationParamDefinitionsObject {
 function Remove-DSM7SwInstallationParamDefinitionsObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$Object
 
 	)
@@ -8762,8 +8786,7 @@ function Remove-DSM7SwInstallationParamDefinitionsObject {
 
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -8771,7 +8794,7 @@ function Remove-DSM7SwInstallationParamDefinitionsObject {
 function Get-DSM7DepotStatesOfPackage {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int32]$ID
 	)
 	$result = Get-DSM7DepotStatesOfPackageObject -ID $ID
@@ -8781,7 +8804,7 @@ function Get-DSM7DepotStatesOfPackage {
 function Get-DSM7DepotStatesOfPackageObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		[int32]$ID
 
 	)
@@ -8791,8 +8814,7 @@ function Get-DSM7DepotStatesOfPackageObject {
 		$Webresult = $DSM7WebService.GetDepotStatesOfPackage($Webrequest).DepotStates
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -8810,8 +8832,7 @@ function Get-DSM7ResolveVariablesForTargetObject {
 		$Webresult = $DSM7WebService.ResolveVariablesForTarget($Webrequest).ResolvedVariableValues
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -8865,8 +8886,7 @@ function Get-DSM7ResolveVariablesForTarget {
 				return $false
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -8884,8 +8904,7 @@ function Get-DSM7VariableGroupsObject {
 		$Webresult = $DSM7WebService.GetVariableGroups($Webrequest).VariableGroups
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -8921,8 +8940,7 @@ function Get-DSM7VariableGroups {
 			return $VariableGroups
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -8942,8 +8960,7 @@ function Set-DSM7VariablesOnTargetObject {
 		$Webresult = $DSM7WebService.SetVariablesOnTarget($Webrequest)
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -8973,7 +8990,7 @@ function Set-DSM7VariablesOnTarget {
 		[int]$TargetID,
 		[system.string]$TargetName,
 		[system.string]$LDAPPath,
-		[Parameter(Position=2, Mandatory=$true)]
+		[Parameter(Position = 2, Mandatory = $true)]
 		[system.array]$Variables
 	)
 	if (Confirm-Connect) {
@@ -8989,17 +9006,17 @@ function Set-DSM7VariablesOnTarget {
 			if ($TargetID) {
 				$VariableGroups = Get-DSM7VariableGroups
 				foreach ($Variable in $Variables) {
-					$VariableNameGroup = $Variable.split("=",2)[0]
-					$VariableValue = $Variable.split("=",2)[1]
+					$VariableNameGroup = $Variable.split("=", 2)[0]
+					$VariableValue = $Variable.split("=", 2)[1]
 					$VariableGroup = $VariableNameGroup.split(".")[0]
 					$VariableName = $VariableNameGroup.split(".")[1]
-					$VariableID = $($VariableGroups|where {$_.Tag -eq $VariableName -and $_.GroupTag -eq $VariableGroup}).ID
+					$VariableID = $($VariableGroups | where { $_.Tag -eq $VariableName -and $_.GroupTag -eq $VariableGroup }).ID
 					if ($VariableID) {
 
 						$VariableSet = New-Object $DSM7Types["MdsVariableValueAssignment"]
 
 						$VariableSet.VariableId = $VariableID
-						$VariableSet.Value=$VariableValue
+						$VariableSet.Value = $VariableValue
 						$VariableSets += @($VariableSet)
 						$VariableSetsName += @("$VariableGroup.$VariableName=$VariableValue")
 					}
@@ -9026,8 +9043,7 @@ function Set-DSM7VariablesOnTarget {
 			return $result
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -9047,8 +9063,7 @@ function Remove-DSM7VariablesOnTargetObject {
 		$Webresult = $DSM7WebService.RemoveVariablesFromTarget($Webrequest)
 		return $true
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -9078,7 +9093,7 @@ function Remove-DSM7VariablesOnTarget {
 		[int]$TargetID,
 		[system.string]$TargetName,
 		[system.string]$LDAPPath,
-		[Parameter(Position=2, Mandatory=$true)]
+		[Parameter(Position = 2, Mandatory = $true)]
 		[system.array]$Variables
 	)
 	if (Confirm-Connect) {
@@ -9096,7 +9111,7 @@ function Remove-DSM7VariablesOnTarget {
 				foreach ($Variable in $Variables) {
 					$VariableGroup = $Variable.split(".")[0]
 					$VariableName = $Variable.split(".")[1]
-					$VariableID = $($VariableGroups|where {$_.Tag -eq $VariableName -and $_.GroupTag -eq $VariableGroup}).ID
+					$VariableID = $($VariableGroups | where { $_.Tag -eq $VariableName -and $_.GroupTag -eq $VariableGroup }).ID
 					if ($VariableID) {
 						$VariableIDs += @($VariableID)
 					}
@@ -9123,8 +9138,7 @@ function Remove-DSM7VariablesOnTarget {
 			return $result
 
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -9137,19 +9151,18 @@ Export-ModuleMember -Function Remove-DSM7VariablesOnTarget
 function Get-DSM7ObjectSchemaListObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		$Names = @()
 
 	)
 	try {
-		$IDs = $IDs|Sort-Object|Get-Unique
+		$IDs = $IDs | Sort-Object | Get-Unique
 		$Webrequest = Get-DSM7RequestHeader -action "GetObjectSchemaList"
 		$Webrequest.Schematags = $Names
 		$Webresult = $DSM7WebService.GetObjectSchemaList($Webrequest).SchemaList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -9157,19 +9170,18 @@ function Get-DSM7ObjectSchemaListObject {
 function Get-DSM7PropGroupDefListObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		$Names = @()
 
 	)
 	try {
-		$IDs = $IDs|Sort-Object|Get-Unique
+		$IDs = $IDs | Sort-Object | Get-Unique
 		$Webrequest = Get-DSM7RequestHeader -action "GetPropGroupDefList"
 		$Webrequest.PropGroupTags = $Names
 		$Webresult = $DSM7WebService.GetPropGroupDefList($Webrequest).PropGroupDefList
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -9179,19 +9191,18 @@ function Get-DSM7PropGroupDefListObject {
 function Get-DSM7DisplayNameListsObject {
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$true)]
+		[Parameter(Position = 0, Mandatory = $true)]
 		$IDs = @()
 
 	)
 	try {
-		$IDs = $IDs|Sort-Object|Get-Unique
+		$IDs = $IDs | Sort-Object | Get-Unique
 		$Webrequest = Get-DSM7RequestHeader -action "GetDisplayNameLists"
 		$Webrequest.DisplayNameIds = $IDs
 		$Webresult = $DSM7WebService.GetDisplayNameLists($Webrequest).DisplayNames
 		return $Webresult
 	}
-	catch [system.exception] 
-	{
+	catch [system.exception] {
 		Write-Log 2 $_ $MyInvocation.MyCommand 
 		return $false 
 	} 
@@ -9220,19 +9231,19 @@ function Add-DSM7ComputerToUser {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.int32]$ID,
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.int32]$UserID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UserName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UserUniqueID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$UserLDAPPath
 	)
 	if (Confirm-Connect) {
@@ -9292,19 +9303,19 @@ function Get-DSM7ComputerToUser {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.int32]$ID,
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.int32]$UserID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UserName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UserUniqueID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$UserLDAPPath
 	)
 	if (Confirm-Connect) {
@@ -9410,19 +9421,19 @@ function Remove-DSM7ComputerToUser {
 	#>
 	[CmdletBinding()] 
 	param ( 
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.int32]$ID,
-		[Parameter(Position=0, Mandatory=$false)]
+		[Parameter(Position = 0, Mandatory = $false)]
 		[system.string]$Name,
-		[Parameter(Position=1, Mandatory=$false)]
+		[Parameter(Position = 1, Mandatory = $false)]
 		[system.string]$LDAPPath,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.int32]$UserID,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UserName,
-		[Parameter(Position=2, Mandatory=$false)]
+		[Parameter(Position = 2, Mandatory = $false)]
 		[system.string]$UserUniqueID,
-		[Parameter(Position=3, Mandatory=$false)]
+		[Parameter(Position = 3, Mandatory = $false)]
 		[system.string]$UserLDAPPath
 	)
 	if (Confirm-Connect) {
@@ -9603,8 +9614,7 @@ function Get-DSM7User {
 				Write-Log 1 "Name oder ID nicht angegeben!!!" $MyInvocation.MyCommand 
 			}
 		}
-		catch [system.exception] 
-		{
+		catch [system.exception] {
 			Write-Log 2 $_ $MyInvocation.MyCommand 
 			return $false 
 		} 
@@ -9645,45 +9655,29 @@ function Get-DSM7NCP {
 	}
 	Write-Log 0 "DSM Server Path: ($DSM7Path)." $MyInvocation.MyCommand 
 	if ($Credential) {
-		New-PSDrive -Name ORG -PSProvider FileSystem -Root $DSM7Path -Credential $Credential |Out-Null
+		New-PSDrive -Name ORG -PSProvider FileSystem -Root $DSM7Path -Credential $Credential | Out-Null
 	}
 	else {
-		New-PSDrive -Name ORG -PSProvider FileSystem -Root $DSM7Path |Out-Null
+		New-PSDrive -Name ORG -PSProvider FileSystem -Root $DSM7Path | Out-Null
 
 	}
 	$DSM7ExportNCPlocal = $NCPFile
 	if (Test-Path "ORG:\$DSM7ExportNCP") {
-		if (Test-Path "ORG:\$DSM7ExportNCPfile") {
+		if (Test-Path "ORG:\$DSM7NCPfile") {
 			$NCPFilelastwritetime = [datetime](Get-ItemProperty -Path "ORG:\$DSM7NCPfile" -Name LastWriteTime).lastwritetime
 			Write-Log 0 "Lastwritetime of file $DSM7Path\$DSM7NCPfile ($NCPFilelastwritetime)." $MyInvocation.MyCommand 
 		} 
-		if (Test-Path "ORG:\$DSM7ExportNCPXML") {
-			$DSM7ExportNCPlastwritetime = [datetime](Get-ItemProperty -Path "ORG:\$DSM7ExportNCPXML" -Name LastWriteTime).lastwritetime
-			Write-Log 0 "Lastwritetime of file $DSM7Path\$DSM7ExportNCPXML ($DSM7ExportNCPlastwritetime)." $MyInvocation.MyCommand 
+		if (!$DSM7ExportNCPlocal) { $DSM7ExportNCPlocal = "$ENV:Temp\$DSM7ExportNCPXML" }
+		if (Test-Path $DSM7ExportNCPlocal) {
+			$DSM7ExportNCPlastwritetime = [datetime](Get-ItemProperty -Path $DSM7ExportNCPlocal -Name LastWriteTime).lastwritetime
+			Write-Log 0 "Lastwritetime of file $DSM7ExportNCPlocal ($DSM7ExportNCPlastwritetime)." $MyInvocation.MyCommand 
 		}
 		else {
 			[datetime]$DSM7ExportNCPlastwritetime = "1970/01/01"
 		}
-		if ($NCPFilelastwritetime -gt $DSM7ExportNCPlastwritetime ){
+		if ($NCPFilelastwritetime -gt $DSM7ExportNCPlastwritetime ) {
 			Write-Log 0 "Create DSM Export XML.($NCPFilelastwritetime > $DSM7ExportNCPlastwritetime)" $MyInvocation.MyCommand 
-			Start-Process -FilePath "ORG:\$DSM7ExportNCP" -Wait
-		}
-		if (!$DSM7ExportNCPlocal) {$DSM7ExportNCPlocal = "$ENV:Temp\$DSM7ExportNCPXML"}
-		if (!(Test-Path $DSM7ExportNCPlocal)) {
-			if (Test-Path "ORG:\$DSM7ExportNCPXML") {
-				Write-Log 0 "Copy  $DSM7Path\$DSM7ExportNCPXML to $DSM7ExportNCPlocal." $MyInvocation.MyCommand 
-				Copy-Item -Path "ORG:\$DSM7ExportNCPXML" -Destination $DSM7ExportNCPlocal
-			}
-			else {
-				Write-Log 1 "Nicht vorhanden  $DSM7Path\$DSM7ExportNCPXML!" $MyInvocation.MyCommand 
-			}
-		}
-		else {
-			$DSM7ExportNCPlocallastwritetime = [datetime](Get-ItemProperty -Path $DSM7ExportNCPlocal -Name LastWriteTime).lastwritetime
-			if ($DSM7ExportNCPlocallastwritetime -lt $DSM7ExportNCPlastwritetime ){
-				Write-Log 0 "Copy $DSM7Path\$DSM7ExportNCPXML to $DSM7ExportNCPlocal." $MyInvocation.MyCommand 
-				Copy-Item -Path "ORG:\$DSM7ExportNCPXML" -Destination $DSM7ExportNCPlocal -Force
-			}
+			Start-Process -FilePath "ORG:\$DSM7ExportNCP" -ArgumentList "/xml:$DSM7ExportNCPlocal /full"  -Wait
 		}
 	}
 	Remove-PSDrive ORG
@@ -9722,14 +9716,14 @@ function Get-DSM7NCPObjects {
 	}
 	foreach ($item in $object) {
 		switch ($item.type) {
-			"ORG" {$InfraID = 0}
-			"OU" {$InfraID = 1}
-			"Site" {$InfraID = 2}
-			Default {$InfraID = 9}
+			"ORG" { $InfraID = 0 }
+			"OU" { $InfraID = 1 }
+			"Site" { $InfraID = 2 }
+			Default { $InfraID = 9 }
 		}
 		$Raw = New-Object PSObject
-		if ($item.Type -eq "MGNT_POINT") {$Name = $item.Name -replace "Management Point " -replace '\(|\)' }
-		else {$Name = $item.Name}
+		if ($item.Type -eq "MGNT_POINT") { $Name = $item.Name -replace "Management Point " -replace '\(|\)' }
+		else { $Name = $item.Name }
 		add-member -inputobject $Raw -MemberType NoteProperty -name "Name" -Value $Name
 		add-member -inputobject $Raw -MemberType NoteProperty -name "Type" -Value $item.Type
 		add-member -inputobject $Raw -MemberType NoteProperty -name "InfraID" -Value $InfraID

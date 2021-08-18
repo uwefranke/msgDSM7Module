@@ -58,6 +58,9 @@ PS> DisConnect-DSM7Web
 * [Add-DSM7ComputerToUser](Add-DSM7ComputerToUser.md)
 * [Remove-DSM7ComputerToUser](Remove-DSM7ComputerToUser.md)
 
+* [WakeUp-DSM7Computer](Send-DSM7ComputerWakeUP.md)
+* [FastInstall-DSM7Computer](Send-DSM7ComputerFastInstall.md)
+
 ### DSM user objects
 
 * [Get-DSM7UserList](Get-DSM7UserList.md)
