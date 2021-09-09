@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 * function New-DSM7Policy (create ShopPolicy)
 
 ### Fixed
+## [1.0.3.9] - 2021-09-09
+### Add
+
+* function New-DSM7PolicyInstance
+
 ## [1.0.3.8] - 2021-08-18
 ### Add
 

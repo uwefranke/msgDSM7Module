@@ -6,7 +6,7 @@
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.3.8
+	Version		: 1.0.3.9
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -2638,7 +2638,7 @@ function Send-DSM7ComputerFastInstall {
 					$executionContextProperty.Type = "Option"
 					$executionContextProperty.TypedValue = $ExecutionContext
 					
-					$ignoreMaintenanceWindowProperty= New-Object $DSM7Types["MdsTypedPropertyOfNullableOfBoolean"]
+					$ignoreMaintenanceWindowProperty = New-Object $DSM7Types["MdsTypedPropertyOfNullableOfBoolean"]
 					$ignoreMaintenanceWindowProperty.Tag = "IgnoreMaintenanceWindow"
 					$ignoreMaintenanceWindowProperty.Type = "Bool"
 					$ignoreMaintenanceWindowProperty.TypedValue = $IgnoreMaintenanceWindow
@@ -7055,6 +7055,49 @@ function Get-DSM7PolicyInstanceListByNode {
 	}
 }
 Export-ModuleMember -Function Get-DSM7PolicyInstanceListByNode
+function New-DSM7PolicyInstance {
+	<#
+	.SYNOPSIS
+		Erstellt eine PolicyInstance.
+	.DESCRIPTION
+		Erstellt eine PolicyInstance.
+	.EXAMPLE
+		New-DSM7PolicyInstance -PolicyID 1234 -NodeId 1234
+	.NOTES
+	.LINK
+		Get-DSM7PolicyInstanceCountByPolicy
+	.LINK
+		Get-DSM7PolicyInstanceListByNode
+	.LINK
+		Update-DSM7PolicyInstance
+	#>	[CmdletBinding()] 
+	param (
+		[Parameter(Position = 0, Mandatory = $true)]
+		[System.Int32]$PolicyID,
+		[Parameter(Position = 1, Mandatory = $true)]
+		[System.Int32]$NodeId
+	)
+	if (Confirm-Connect) {
+		$Policy = Get-DSM7PolicyObject -ID $PolicyID
+		if ($Policy.InstanceCreationMode -eq 1) {
+			try {
+				$Webrequest = Get-DSM7RequestHeader -action "CreatePolicyInstance"
+				$Webrequest.Policy = $Policy
+				$Webrequest.NodeId = $NodeId
+				$Webresult = $DSM7WebService.CreatePolicyInstance($Webrequest).CreatedPolicyInstance 
+				Write-Log 0 "PolicyInstance ($($Webresult.ID)) erfolgreich erstell für NodeID ($NodeID)." $MyInvocation.MyCommand
+				return $Webresult
+			}
+			catch [system.exception] {
+				Write-Log 2 $_ $MyInvocation.MyCommand 
+				return $false 
+			} 
+		}
+		Write-Log 1 "Policy InstanceCreationMode ($($Policy.InstanceCreationMode)) kann keine Instanz erstellt werden!" $MyInvocation.MyCommand
+		return $false
+	}
+}
+Export-ModuleMember -Function New-DSM7PolicyInstance
 function Update-DSM7PolicyInstanceListObject {
 	[CmdletBinding()] 
 	param ( 
