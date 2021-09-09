@@ -89,7 +89,7 @@
     'Get-DSM7OrgTreeContainer', 'Remove-DSM7VariablesOnTarget', 
     'Get-DSM7Policy', 'Remove-Log', 'Move-DSM7Software', 
     'Remove-DSM7ComputerFromGroup', 'Get-DSM7PolicyStatisticsByTarget',
-    'Get-DSM7PolicyInstances','New-DSM7PolicyInstance'
+    'Get-DSM7PolicyInstances','New-DSM7PolicyInstance',
     'Get-DSM7PolicyStatistics', 'Get-DSM7VariableGroups', 
     'Remove-DSM7SoftwareCategory', 'Remove-DSM7OrgTreeContainer', 
     'Get-DSM7User', 'Get-DSM7ComputerToUserList', 'Install-DSM7Computer', 
