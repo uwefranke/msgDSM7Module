@@ -67,6 +67,10 @@ functions in msgDSM7Module
     Add-DSM7ComputerToUser
     *
     Remove-DSM7ComputerToUser
+    *
+    WakeUp-DSM7Computer
+    *
+    FastInstall-DSM7Computer
 
     DSM USER OBJECTS
     *
