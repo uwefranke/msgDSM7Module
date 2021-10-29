@@ -765,7 +765,8 @@ function Convert-DSM7AssociationListtoPSObject {
 	$IDs += ($ObjectList | Select-Object -ExpandProperty SourceObjectID)
 	$IDs += ($ObjectList | Select-Object -ExpandProperty TargetObjectID)
 	$IDs = $IDs | Get-Unique
-	$DSM7Objects = Get-DSM7ObjectsObject -IDs $IDs
+    $DSM7Objects = @()
+	$DSM7Objects += Get-DSM7ObjectsObject -IDs $IDs
 	$DSM7Objects += Get-DSM7ObjectsObject -IDs $IDs -ObjectGroupType "Catalog"
 	$DSM7Objects = Convert-DSM7ObjectListtoPSObjectID ($DSM7Objects)
 	foreach ($DSM7Object in $ObjectList) {
