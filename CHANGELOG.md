@@ -11,6 +11,13 @@ All notable changes to this project will be documented in this file.
 * function New-DSM7Policy (create ShopPolicy)
 
 ### Fixed
+## [1.0.4.1] - 2022-03-01
+
+### Changed
+
+* copyright 2022
+* DSM Version 2021.1
+
 ## [1.0.3.10] - 2021-10-28
 ### Fixed
 
