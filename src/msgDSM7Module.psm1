@@ -33,6 +33,39 @@ $DSM7RegPath = "HKEY_LOCAL_MACHINE\SOFTWARE\NetSupport\NetInstall"
 $DSM7ExportNCP = "NcpExport.exe"
 $DSM7ExportNCPXML = "NcpExport.xml"
 $DSM7NCPfile = "NiCfgSrv.ncp"
+# table of types and DSMTypeTags
+$DSMTypeTags = @{
+	'Int32'                           = 'MdsTypedPropertyOfNullableOfInt32'
+	'Double'                          = 'MdsTypedPropertyOfNullableOfDouble'
+	'Bool'                            = 'MdsTypedPropertyOfNullableOfBoolean'
+	'DateTime'                        = 'MdsTypedPropertyOfNullableOfDateTime'
+	'String'                          = 'MdsTypedPropertyOfString'
+	'LocalizedString'                 = 'MdsTypedPropertyOfString'
+	'Option'                          = 'MdsTypedPropertyOfString'
+	'CatalogLink'                     = 'MdsTypedPropertyOfNullableOfInt32'
+	'ObjectLink'                      = 'MdsTypedPropertyOfNullableOfInt32'
+	'PrimaryKey'                      = 'MdsTypedPropertyOfNullableOfInt32'
+	'ForeignKey'                      = 'MdsTypedPropertyOfNullableOfInt32'
+	'StringList'                      = 'MdsTypedPropertyOfString'
+	'PolicyLink'                      = 'MdsTypedPropertyOfNullableOfInt32'
+	'PolicyInstanceLink'              = 'MdsTypedPropertyOfNullableOfInt32'
+	'Clob'                            = 'MdsTypedPropertyOfString'
+	'ExternalObjectLink'              = 'MdsTypedPropertyOfNullableOfInt32'
+	'EncryptedString'                 = 'MdsTypedPropertyOfString'
+	'Timetable'                       = 'MdsTypedPropertyOfString'
+	'Version'                         = 'MdsTypedPropertyOfMdsVersion'
+	'IPv4'                            = 'MdsTypedPropertyOfString'
+	'IPv6'                            = 'MdsTypedPropertyOfString'
+	'UniqueKey'                       = 'MdsTypedPropertyOfUniqueKey'
+	'UniqueKeyLink'                   = 'MdsTypedPropertyOfUniqueKey'
+	'SwInstallationConfigurationLink' = 'MdsTypedPropertyOfMdsCollectionOfInt'
+	'CollectionOfString'              = 'MdsTypedPropertyOfMdsCollectionOfString'
+	'CollectionOfInt'                 = 'MdsTypedPropertyOfMdsCollectionOfInt'
+	'CollectionOfCatalogLink'         = 'MdsTypedPropertyOfMdsCollectionOfInt'
+	'CollectionOfObjectLink'          = 'MdsTypedPropertyOfMdsCollectionOfInt'
+	'HierarchicalObjectLink'          = 'MdsTypedPropertyOfNullableOfInt32'
+}
+
 ###############################################################################
 # Allgemeine interne Funktionen
 function Get-PSCredential {
@@ -765,7 +798,7 @@ function Convert-DSM7AssociationListtoPSObject {
 	$IDs += ($ObjectList | Select-Object -ExpandProperty SourceObjectID)
 	$IDs += ($ObjectList | Select-Object -ExpandProperty TargetObjectID)
 	$IDs = $IDs | Get-Unique
-    $DSM7Objects = @()
+	$DSM7Objects = @()
 	$DSM7Objects += Get-DSM7ObjectsObject -IDs $IDs
 	$DSM7Objects += Get-DSM7ObjectsObject -IDs $IDs -ObjectGroupType "Catalog"
 	$DSM7Objects = Convert-DSM7ObjectListtoPSObjectID ($DSM7Objects)
@@ -1552,9 +1585,16 @@ function Update-DSM7Object {
 					$Value = $groupkey.$groupname.$Valuename
 				}
 				Write-Log 0 "aendere $Groupname.$Valuename = $Value" $MyInvocation.MyCommand
-				$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
+
+				# get DSM object property type
+				$DSM7PropertyType = ((($Object.PropGroupList | Where-Object Tag -EQ $Groupname).propertyList) | Where-Object Tag -EQ $Valuename).Type
+				# get DSM type tag from hashtable - we assume there are no DSM7PropertyTypes that are not in the hashtable - otherwise: boom
+				$DSM7TypeTag = $DSMTypeTags.$DSM7PropertyType
+				If (!$DSMTypeTag) { throw "unknown property type '$DSMPropertyType' - aborting" }
+				# create new object with proper DSM7 type and set property values
+				$PropertyListObject = New-Object $DSM7Types[$DSM7TypeTag]
 				$PropertyListObject.Tag = $Valuename
-				$PropertyListObject.Type = ((($Object.PropGroupList | Where Tag -EQ $Groupname).propertyList) | where Tag -EQ $Valuename).Type
+				$PropertyListObject.Type = $DSM7PropertyType
 				$PropertyListObject.TypedValue = $Value
 				$PropertyList += $PropertyListObject
 			}
