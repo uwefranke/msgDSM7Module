@@ -33,38 +33,6 @@ $DSM7RegPath = "HKEY_LOCAL_MACHINE\SOFTWARE\NetSupport\NetInstall"
 $DSM7ExportNCP = "NcpExport.exe"
 $DSM7ExportNCPXML = "NcpExport.xml"
 $DSM7NCPfile = "NiCfgSrv.ncp"
-# table of types and DSMTypeTags
-$DSMTypeTags = @{
-	'Int32'                           = 'MdsTypedPropertyOfNullableOfInt32'
-	'Double'                          = 'MdsTypedPropertyOfNullableOfDouble'
-	'Bool'                            = 'MdsTypedPropertyOfNullableOfBoolean'
-	'DateTime'                        = 'MdsTypedPropertyOfNullableOfDateTime'
-	'String'                          = 'MdsTypedPropertyOfString'
-	'LocalizedString'                 = 'MdsTypedPropertyOfString'
-	'Option'                          = 'MdsTypedPropertyOfString'
-	'CatalogLink'                     = 'MdsTypedPropertyOfNullableOfInt32'
-	'ObjectLink'                      = 'MdsTypedPropertyOfNullableOfInt32'
-	'PrimaryKey'                      = 'MdsTypedPropertyOfNullableOfInt32'
-	'ForeignKey'                      = 'MdsTypedPropertyOfNullableOfInt32'
-	'StringList'                      = 'MdsTypedPropertyOfString'
-	'PolicyLink'                      = 'MdsTypedPropertyOfNullableOfInt32'
-	'PolicyInstanceLink'              = 'MdsTypedPropertyOfNullableOfInt32'
-	'Clob'                            = 'MdsTypedPropertyOfString'
-	'ExternalObjectLink'              = 'MdsTypedPropertyOfNullableOfInt32'
-	'EncryptedString'                 = 'MdsTypedPropertyOfString'
-	'Timetable'                       = 'MdsTypedPropertyOfString'
-	'Version'                         = 'MdsTypedPropertyOfMdsVersion'
-	'IPv4'                            = 'MdsTypedPropertyOfString'
-	'IPv6'                            = 'MdsTypedPropertyOfString'
-	'UniqueKey'                       = 'MdsTypedPropertyOfUniqueKey'
-	'UniqueKeyLink'                   = 'MdsTypedPropertyOfUniqueKey'
-	'SwInstallationConfigurationLink' = 'MdsTypedPropertyOfMdsCollectionOfInt'
-	'CollectionOfString'              = 'MdsTypedPropertyOfMdsCollectionOfString'
-	'CollectionOfInt'                 = 'MdsTypedPropertyOfMdsCollectionOfInt'
-	'CollectionOfCatalogLink'         = 'MdsTypedPropertyOfMdsCollectionOfInt'
-	'CollectionOfObjectLink'          = 'MdsTypedPropertyOfMdsCollectionOfInt'
-	'HierarchicalObjectLink'          = 'MdsTypedPropertyOfNullableOfInt32'
-}
 
 ###############################################################################
 # Allgemeine interne Funktionen
@@ -1536,6 +1504,18 @@ function Get-DSM7Objects {
 	}
 }
 Export-ModuleMember -Function Get-DSM7Objects
+# property types not supported:
+#  Version
+#  Bool
+# property types supported:
+#  String
+#  Int32
+#  DateTime
+#  Timetable
+#  IPv4
+#  IPv6
+#  Optionlist
+
 function Update-DSM7Object {
 	[CmdletBinding()] 
 	param ( 
@@ -1586,13 +1566,12 @@ function Update-DSM7Object {
 				}
 				Write-Log 0 "aendere $Groupname.$Valuename = $Value" $MyInvocation.MyCommand
 
-				# get DSM object property type
-				$DSM7PropertyType = ((($Object.PropGroupList | Where-Object Tag -EQ $Groupname).propertyList) | Where-Object Tag -EQ $Valuename).Type
-				# get DSM type tag from hashtable - we assume there are no DSM7PropertyTypes that are not in the hashtable - otherwise: boom
-				$DSM7TypeTag = $DSMTypeTags.$DSM7PropertyType
-				If (!$DSMTypeTag) { throw "unknown property type '$DSMPropertyType' - aborting" }
-				# create new object with proper DSM7 type and set property values
-				$PropertyListObject = New-Object $DSM7Types[$DSM7TypeTag]
+				# get DSM object property
+				$DSM7Property = ((($Object.PropGroupList | Where-Object Tag -EQ $Groupname).propertyList) | Where-Object Tag -EQ $Valuename)
+				$DSM7PropertyType = $DSM7Property.Type
+				$DSM7PropertyClassTypeName = $DSM7Property.gettype().name
+				# create new object with proper DSM7 DSM7PropertyClassType and set property value
+				$PropertyListObject = New-Object $DSM7Types[$DSM7PropertyClassTypeName]
 				$PropertyListObject.Tag = $Valuename
 				$PropertyListObject.Type = $DSM7PropertyType
 				$PropertyListObject.TypedValue = $Value
