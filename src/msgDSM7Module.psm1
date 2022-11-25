@@ -33,6 +33,7 @@ $DSM7RegPath = "HKEY_LOCAL_MACHINE\SOFTWARE\NetSupport\NetInstall"
 $DSM7ExportNCP = "NcpExport.exe"
 $DSM7ExportNCPXML = "NcpExport.xml"
 $DSM7NCPfile = "NiCfgSrv.ncp"
+
 ###############################################################################
 # Allgemeine interne Funktionen
 function Get-PSCredential {
@@ -765,7 +766,7 @@ function Convert-DSM7AssociationListtoPSObject {
 	$IDs += ($ObjectList | Select-Object -ExpandProperty SourceObjectID)
 	$IDs += ($ObjectList | Select-Object -ExpandProperty TargetObjectID)
 	$IDs = $IDs | Get-Unique
-    $DSM7Objects = @()
+	$DSM7Objects = @()
 	$DSM7Objects += Get-DSM7ObjectsObject -IDs $IDs
 	$DSM7Objects += Get-DSM7ObjectsObject -IDs $IDs -ObjectGroupType "Catalog"
 	$DSM7Objects = Convert-DSM7ObjectListtoPSObjectID ($DSM7Objects)
@@ -1503,6 +1504,18 @@ function Get-DSM7Objects {
 	}
 }
 Export-ModuleMember -Function Get-DSM7Objects
+# property types not supported:
+#  Version
+#  Bool
+# property types supported:
+#  String
+#  Int32
+#  DateTime
+#  Timetable
+#  IPv4
+#  IPv6
+#  Optionlist
+
 function Update-DSM7Object {
 	[CmdletBinding()] 
 	param ( 
@@ -1552,9 +1565,15 @@ function Update-DSM7Object {
 					$Value = $groupkey.$groupname.$Valuename
 				}
 				Write-Log 0 "aendere $Groupname.$Valuename = $Value" $MyInvocation.MyCommand
-				$PropertyListObject = New-Object $DSM7Types["MdsTypedPropertyOfString"]
+
+				# get DSM object property
+				$DSM7Property = ((($Object.PropGroupList | Where-Object Tag -EQ $Groupname).propertyList) | Where-Object Tag -EQ $Valuename)
+				$DSM7PropertyType = $DSM7Property.Type
+				$DSM7PropertyClassTypeName = $DSM7Property.gettype().name
+				# create new object with proper DSM7 DSM7PropertyClassType and set property value
+				$PropertyListObject = New-Object $DSM7Types[$DSM7PropertyClassTypeName]
 				$PropertyListObject.Tag = $Valuename
-				$PropertyListObject.Type = ((($Object.PropGroupList | Where Tag -EQ $Groupname).propertyList) | where Tag -EQ $Valuename).Type
+				$PropertyListObject.Type = $DSM7PropertyType
 				$PropertyListObject.TypedValue = $Value
 				$PropertyList += $PropertyListObject
 			}
