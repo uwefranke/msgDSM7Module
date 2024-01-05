@@ -12,7 +12,7 @@
     RootModule             = 'msgDSM7Module.psm1'
     
     # Die Versionsnummer dieses Moduls
-    ModuleVersion          = '1.0.4.1'
+    ModuleVersion          = '1.0.4.2'
     
     # Unterstï¿½tzte PSEditions
     # CompatiblePSEditions = @()
@@ -24,10 +24,10 @@
     Author                 = 'Uwe Franke'
     
     # Unternehmen oder Hersteller dieses Moduls
-    CompanyName            = 'msg services AG'
+    CompanyName            = 'msg services GmbH'
     
     # Urheberrechtserklï¿½rung fï¿½r dieses Modul
-    Copyright              = 'msg services AG (c) 2013-2022. All rights reserved.'
+    Copyright              = 'msg services GmbH (c) 2013-2024. All rights reserved.'
     
     # Beschreibung der von diesem Modul bereitgestellten Funktionen
     Description            = 'powershell Module for SOAP interface Ivanti (https://www.ivanti.com) DSM'

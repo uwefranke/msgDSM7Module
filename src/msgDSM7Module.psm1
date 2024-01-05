@@ -1,12 +1,12 @@
 <#  
 .SYNOPSIS  
-    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.2)  
+    msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2023.1)  
 .DESCRIPTION
- 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2020.2)  
+ 	msg powershell Module fuer die SOAP Schnittstelle fuer Ivanti DSM (Version 7.0 - 2023.1)  
 .NOTES  
     File Name	: msgDSM7Module.psm1  
     Author		: Raymond von Wolff, Uwe Franke
-	Version		: 1.0.4.1
+	Version		: 1.0.4.2
     Requires	: PowerShell V5.1  
 	History		: https://github.com/uwefranke/msgDSM7Module/blob/master/CHANGELOG.md
 	Help		: https://github.com/uwefranke/msgDSM7Module/blob/master/docs/about_msgDSM7Module.md
@@ -22,7 +22,7 @@
 ###############################################################################
 # Allgemeine Variablen
 $DSM7requiredVersion = "7.0" # benoetigte DSM Version 7.0 oder hoeher
-$DSM7testedVersion = "7.4.5.0" # hoechste getestet DSM Version mit diesem Modul
+$DSM7testedVersion = "7.5.2.0" # hoechste getestet DSM Version mit diesem Modul
 $DSM7Targets = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=Computer)(SchemaTag=User)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=ExternalGroup)(SchemaTag=DynamicGroup))"
 $DSM7Structure = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=Group)(SchemaTag=DynamicGroup)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
 $DSM7Container = "(|(SchemaTag=Domain)(SchemaTag=OU)(SchemaTag=CitrixFarm)(SchemaTag=CitrixZone)(SchemaTag=SwFolder)(SchemaTag=SwLibrary)(SchemaTag=DynamicSwCategory)(SchemaTag=SwCategory))"
